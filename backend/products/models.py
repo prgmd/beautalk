@@ -8,6 +8,15 @@ class Product(models.Model):
     price = models.IntegerField()
     oliveyoung_url = models.URLField()
     image_url = models.URLField()
+    category = models.CharField(max_length=50)
+    review_summary = models.TextField(blank=True)
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    text = models.TextField()
+    rating = models.IntegerField()
+    skin_type = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Like(models.Model):
     user = models.ForeignKey('accounts.UserInfo', on_delete=models.CASCADE)
