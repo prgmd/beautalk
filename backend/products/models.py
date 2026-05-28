@@ -9,13 +9,19 @@ class Product(models.Model):
     oliveyoung_url = models.URLField()
     image_url = models.URLField()
     category = models.CharField(max_length=50)
-    review_summary = models.TextField(blank=True)
+    ai_summary = models.TextField(blank=True)
+    average_rating = models.FloatField(null=True, blank=True)
+    review_count = models.IntegerField(default=0)
+    satisfaction_by_type = models.JSONField(default=dict, blank=True)
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
     rating = models.IntegerField()
     skin_type = models.CharField(max_length=50, blank=True)
+    user_name = models.CharField(max_length=100, blank=True)
+    recommend_count = models.IntegerField(default=0)
+    review_date = models.CharField(max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Like(models.Model):
