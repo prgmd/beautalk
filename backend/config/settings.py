@@ -62,6 +62,10 @@ CORS_ALLOWED_ORIGINS = [
 
 # DRF 전역 설정
 REST_FRAMEWORK = {
+    # JWT 설정
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     # 페이지네이션 (목록을 페이지 번호로 나누고, 10개씩 보여주겠다)
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
