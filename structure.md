@@ -5,12 +5,12 @@
 ```
 config/
 ├── settings.py       # Django 설정 (JWT, CORS, 환경변수 로드)
-├── urls.py           # 루트 URL 라우팅 (token, profile, kakao callback)
+├── urls.py           # 루트 URL 라우팅 (token, profile, kakao/google callback)
 
 accounts/
 ├── models.py         # UserInfo, SkinProfile 모델
 ├── serializers.py    # SkinProfileSerializer
-├── views.py          # ProfileView, KakaoCallbackView
+├── views.py          # ProfileView, KakaoLoginView, GoogleLoginView, KakaoCallbackView, GoogleCallbackView
 ├── urls.py           # accounts 앱 URL 라우팅
 
 products/

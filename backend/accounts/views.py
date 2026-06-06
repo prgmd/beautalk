@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # OAuth 용도
 import os
-import requests as kakao_requests # DRF의 request와 충돌 방지
+import requests as http  # DRF의 request 파라미터와 충돌 방지
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -49,6 +49,33 @@ class ProfileView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class KakaoLoginView(APIView):
+    def get(self, request):
+        # 카카오 인증 페이지 URL 조립 후 리다이렉트
+        # 브라우저가 이 URL로 이동하면 카카오 로그인 페이지가 뜸
+        # 로그인 완료 시 카카오가 redirect_uri로 code를 담아 돌려보냄
+        kakao_auth_url = (
+            'https://kauth.kakao.com/oauth/authorize'
+            f'?client_id={os.environ.get("KAKAO_CLIENT_ID")}'
+            '&redirect_uri=http://localhost:8000/api/v1/auth/kakao/callback/'
+            '&response_type=code'  # Authorization Code 방식
+        )
+        return redirect(kakao_auth_url)
+
+
+class GoogleLoginView(APIView):
+    def get(self, request):
+        # 구글 인증 페이지 URL 조립 후 리다이렉트
+        # scope: 요청할 권한 범위 (openid + 이메일 + 프로필)
+        google_auth_url = (
+            'https://accounts.google.com/o/oauth2/v2/auth'
+            f'?client_id={os.environ.get("GOOGLE_CLIENT_ID")}'
+            '&redirect_uri=http://localhost:8000/api/v1/auth/google/callback/'
+            '&response_type=code'
+            '&scope=openid email profile'
+        )
+        return redirect(google_auth_url)
+
 class KakaoCallbackView(APIView):
     def get(self, request):
         # 리다이렉트될 때 URL에 ?code=xxx... 형태로 들어온다.
@@ -56,7 +83,7 @@ class KakaoCallbackView(APIView):
         code = request.GET.get('code')
 
         # (1) 인가 코드를 통해 액세스 토큰을 교환
-        token_response = kakao_requests.post(
+        token_response = http.post(
             # 카카오 토큰 발급 엔드포인트에 POST 요청을 보내고,
             'https://kauth.kakao.com/oauth/token',
             data={
@@ -71,7 +98,7 @@ class KakaoCallbackView(APIView):
         access_token = token_response.json().get('access_token')
 
         # (2) 액세스 토큰으로 카카오에게 사용자 정보를 요청
-        kakao_user_info = kakao_requests.get(
+        kakao_user_info = http.get(
             'https://kapi.kakao.com/v2/user/me',
             headers={'Authorization': f'Bearer {access_token}'}
         ).json()
@@ -102,6 +129,48 @@ class KakaoCallbackView(APIView):
         '''
 
         # 리다이렉트 링크
+        return redirect(
+            f'http://localhost:5173/auth/callback'
+            f'?access={str(refresh.access_token)}'
+            f'&refresh={str(refresh)}'
+        )
+
+class GoogleCallbackView(APIView):
+    def get(self, request):
+        code = request.GET.get('code')
+
+        # (1) 인가 코드 → 액세스 토큰 교환
+        # 구글은 카카오와 달리 client_secret도 필요
+        token_response = http.post(
+            'https://oauth2.googleapis.com/token',
+            data={
+                'grant_type': 'authorization_code',
+                'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
+                'client_secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
+                'redirect_uri': 'http://localhost:8000/api/v1/auth/google/callback/',
+                'code': code,
+            }
+        )
+        access_token = token_response.json().get('access_token')
+
+        # (2) 액세스 토큰 → 구글 사용자 정보 요청
+        google_user_info = http.get(
+            'https://www.googleapis.com/oauth2/v3/userinfo',
+            headers={'Authorization': f'Bearer {access_token}'}
+        ).json()
+
+        google_id = google_user_info.get('sub')  # 구글 고유 사용자 ID
+        email = google_user_info.get('email', f'{google_id}@google.com')
+
+        # (3) Django User 조회 or 생성
+        django_user, _ = User.objects.get_or_create(username=f'google_{google_id}')
+        user_info, _ = UserInfo.objects.get_or_create(
+            email=email,
+            defaults={'user': django_user, 'auth_provider': 'google'}
+        )
+
+        # (4) JWT 발급 후 Vue로 리다이렉트
+        refresh = RefreshToken.for_user(django_user)
         return redirect(
             f'http://localhost:5173/auth/callback'
             f'?access={str(refresh.access_token)}'
