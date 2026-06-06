@@ -6,6 +6,13 @@ from .models import SkinProfile
 from .serializers import SkinProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 
+# OAuth 용도
+import os
+import requests as kakao_requests # DRF의 request와 충돌 방지
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
 class ProfileView(APIView):
     # DRF가 요청 처리 전 먼저 토큰이 있는지, 유효한지 확인하도록 오버라이딩
     # 기존 APIView에 permission_classes가 기본값으로 설정되어 있기 때문
@@ -41,3 +48,50 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class KakaoCallbackView(APIView):
+    def get(self, request):
+        # 리다이렉트될 때 URL에 ?code=xxx... 형태로 들어온다.
+        # request.GET에는 URL 쿼리스트링 파라미터 정보가 담겨있음.
+        code = request.GET.get('code')
+
+        # (1) 인가 코드를 통해 액세스 토큰을 교환
+        token_response = kakao_requests.post(
+            # 카카오 토큰 발급 엔드포인트에 POST 요청을 보내고,
+            'https://kauth.kakao.com/oauth/token',
+            data={
+                # 환경 변수에 저장해둔 REST API 키(클라이언트 ID)를 함께 보낸다.
+                'grant_type': 'authorization_code',
+                'client_id': os.environ.get('KAKAO_CLIENT_ID'),
+                'redirect_uri': 'http://localhost:8000/api/v1/auth/kakao/callback/',
+                'code': code,
+            }
+        )
+        # 응답이 오면 JSON 형식에서 액세스 토큰만 추출
+        access_token = token_response.json().get('access_token')
+
+        # (2) 액세스 토큰으로 카카오에게 사용자 정보를 요청
+        user_info = kakao_requests.get(
+            'https://kapi.kakao.com/v2/user/me',
+            headers={'Authorization': f'Bearer {access_token}'}
+        ).json()
+
+        kakao_id = user_info.get('id')
+        # 이메일 동의 안 한 사용자가 있을 경우, 없다면 kakao_id 기반의 임시 이메일 생성
+        email = user_info.get('kakao_account', {}).get('email', f'{kakao_id}@kakao.com')
+
+        # (3) Django User 조회 or 생성
+        # get_or_create는 (user 객체, 생성여부 bool)로 이뤄진 튜블 반환.
+        # 생성 여부는 필요 없어서 _ 처리했음. 
+        user, _ = User.objects.get_or_create(
+            username=f'kakao_{kakao_id}',
+            defaults={'email': email} # 최초 생성시에만 적용되는 필드
+        )
+
+        # (4) JWT 발급
+        # simplejwt의 RefreshToken으로 refresh + access 토큰 쌍 생성
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        })
