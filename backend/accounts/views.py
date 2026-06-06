@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
-from .models import SkinProfile
+from django.shortcuts import get_object_or_404, redirect
+from .models import SkinProfile, UserInfo
 from .serializers import SkinProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 
@@ -22,24 +22,24 @@ class ProfileView(APIView):
         # get은 해당 데이터가 없으면 예외가 터지므로, 먼저 filter로 있는지 여부 조사
         # filter는 쿼리셋(목록) 반환이므로, first()로 첫 번째 객체 반환하게 해야함
         # get은 단일 반환. PK로 조회할 때 자주 쓴다.
-        profile = SkinProfile.objects.filter(user=request.user).first() 
+        profile = SkinProfile.objects.filter(user=request.user.userinfo).first() 
 
         if profile:
             serializer = SkinProfileSerializer(profile)
             return Response(serializer.data) 
-        return Response(None, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
     def post(self, request):
         serializer = SkinProfileSerializer(data=request.data) # request.data는 입력 데이터
 
         if serializer.is_valid():
-            serializer.save(user=request.user) # serializer 안에 없는 user 필드를 여기서 주입해줘야 함
+            serializer.save(user=request.user.userinfo) # serializer 안에 없는 user 필드를 여기서 주입해줘야 함
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
     def patch(self, request):
-        profile = get_object_or_404(SkinProfile, user=request.user)
+        profile = get_object_or_404(SkinProfile, user=request.user.userinfo)
 
         # 정보값을 일부만 수정하는 patch에서 partial=True는 사실상 필수. 안 그러면 is_valid에서 필드 누락으로 처리된다
         serializer = SkinProfileSerializer(profile, data=request.data, partial=True)
@@ -71,27 +71,39 @@ class KakaoCallbackView(APIView):
         access_token = token_response.json().get('access_token')
 
         # (2) 액세스 토큰으로 카카오에게 사용자 정보를 요청
-        user_info = kakao_requests.get(
+        kakao_user_info = kakao_requests.get(
             'https://kapi.kakao.com/v2/user/me',
             headers={'Authorization': f'Bearer {access_token}'}
         ).json()
 
-        kakao_id = user_info.get('id')
+        kakao_id = kakao_user_info.get('id')
         # 이메일 동의 안 한 사용자가 있을 경우, 없다면 kakao_id 기반의 임시 이메일 생성
-        email = user_info.get('kakao_account', {}).get('email', f'{kakao_id}@kakao.com')
+        email = kakao_user_info.get('kakao_account', {}).get('email', f'{kakao_id}@kakao.com')
 
         # (3) Django User 조회 or 생성
         # get_or_create는 (user 객체, 생성여부 bool)로 이뤄진 튜블 반환.
         # 생성 여부는 필요 없어서 _ 처리했음. 
-        user, _ = User.objects.get_or_create(
-            username=f'kakao_{kakao_id}',
-            defaults={'email': email} # 최초 생성시에만 적용되는 필드
+        django_user, _ = User.objects.get_or_create(username=f'kakao_{kakao_id}')
+        user_info, _ = UserInfo.objects.get_or_create(
+            email=email,
+            defaults={'user': django_user, 'auth_provider': 'kakao'}
         )
 
         # (4) JWT 발급
         # simplejwt의 RefreshToken으로 refresh + access 토큰 쌍 생성
-        refresh = RefreshToken.for_user(user)
+        refresh = RefreshToken.for_user(django_user)
+
+        '''
+        # 초기 JSON 형태 반환 구조 (테스트)
         return Response({
             'access': str(refresh.access_token),
             'refresh': str(refresh),
         })
+        '''
+
+        # 리다이렉트 링크
+        return redirect(
+            f'http://localhost:5173/auth/callback'
+            f'?access={str(refresh.access_token)}'
+            f'&refresh={str(refresh)}'
+        )

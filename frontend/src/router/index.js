@@ -38,6 +38,12 @@ const router = createRouter({
         { path: 'account', name: 'mypage-account', component: () => import('@/views/mypage/AccountView.vue') },
       ],
     },
+    {
+      // 로그인 callback 경로 추가
+      path: '/auth/callback',
+      name: 'auth-callback',
+      component: () => import('@/views/AuthCallbackView.vue'),
+    },
   ],
 })
 
