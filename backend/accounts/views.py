@@ -4,8 +4,13 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import SkinProfile
 from .serializers import SkinProfileSerializer
+from rest_framework.permissions import IsAuthenticated
 
 class ProfileView(APIView):
+    # DRF가 요청 처리 전 먼저 토큰이 있는지, 유효한지 확인하도록 오버라이딩
+    # 기존 APIView에 permission_classes가 기본값으로 설정되어 있기 때문
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         # get은 해당 데이터가 없으면 예외가 터지므로, 먼저 filter로 있는지 여부 조사
         # filter는 쿼리셋(목록) 반환이므로, first()로 첫 번째 객체 반환하게 해야함

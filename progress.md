@@ -5,48 +5,23 @@
 ## ✅ 완료
 
 ### 프로젝트 세팅
-- [x] 주제 선정 / 기능 명세 회의
-- [x] 레포지토리 생성 (private)
-- [x] Collaborator 초대
-- [x] 브랜치 룰셋 설정 (`protect-main`, `dev_rule`)
-- [x] PR 템플릿 추가 (`.github/PULL_REQUEST_TEMPLATE.md`)
-- [x] `.gitignore` 추가
-- [x] `README.md` 초안 작성
-- [x] default 브랜치 → `develop`으로 변경
+- [x] 레포지토리 생성 및 협업 환경 구성 (Collaborator, 브랜치 룰셋, PR 템플릿, gitignore)
+- [x] README.md 초안 작성
 
 ### Django·Vue 초기화
-- [x] Django 프로젝트 생성 (`config`)
-- [x] 패키지 설치 (`DRF`, `django-cors-headers`, `python-dotenv`, `simplejwt`)
-- [x] `settings.py` 수정 (INSTALLED_APPS, MIDDLEWARE, CORS, REST_FRAMEWORK, 언어/타임존)
-- [x] Vue 3 프로젝트 생성 (`beautalk-frontend`)
-- [x] Vue 옵션 설정 (Router, Pinia, ESLint, Prettier)
-- [x] DB 초기 마이그레이션 (`python manage.py migrate`)
-- [x] `requirements.txt` 저장
-- [x] 앱 구조 설계 (`accounts`, `products`, `chat`)
-- [x] 모델 작성 (UserInfo, SkinProfile, Product, Like, InUseProduct, Recommendation)
-- [x] 모델 마이그레이션
+- [x] Django 프로젝트 초기화 (config, 패키지 설치, settings.py 설정)
+- [x] Vue 3 프로젝트 초기화 (Router, Pinia, ESLint, Prettier)
+- [x] DB 초기화 (앱 구조 설계, 모델 작성, 마이그레이션)
 
 ### 기획 및 설계
-- [x] 기능명세서 v1.0 작성
-- [x] 와이어프레임 완성
-- [x] 유스케이스 목록 도출 (UC-01 ~ UC-14)
-- [x] 유스케이스 다이어그램 작성
-- [x] ERD 설계 (요구사항 분석 → 엔티티 도출 → 속성/식별자 정의 → 관계 설정 → 차수 분석)
-- [x] ERDCloud / dbdiagram.io로 ERD 다이어그램 작성
+- [x] 기획 문서 작성 (기능명세서 v1.0, 와이어프레임, 유스케이스 다이어그램)
+- [x] ERD 설계 및 다이어그램 작성
 - [x] API 명세서 작성 (Request Body, Response, Status Code 포함)
 
 ### 크롤링 스크립트
-- [x] 올리브영 `robots.txt` 확인 → 베스트 리스트 + 상품 상세 허용 확인
-- [x] 크롤링 도구 확정 → undetected_chromedriver (Cloudflare bypass)
-- [x] 크롤링 카테고리 범위 결정 → 4개 (스킨케어, 클렌징, 선케어, 메이크업)
-- [x] 크롤링 스크립트 작성
-- [x] 상품 기본정보 수집 (brand, name, price, image_url, category, oliveyoung_url) + DB 저장
-- [x] Product 모델 확장 (ai_summary, satisfaction_by_type)
-- [x] Review 모델 신규 생성 (text, rating, user_name, recommend_count, review_date)
-- [x] 마이그레이션 적용
-- [x] 리뷰 데이터 수집 (API 기반, 제품당 10개)
-- [x] 타입별 만족도 수집 (Stats API로 가장 높은 선택 옵션 추출)
-- [x] Gemini API로 리뷰 요약 → `Product.ai_summary` 저장
+- [x] 크롤링 환경 구성 (robots.txt 확인, undetected_chromedriver 적용, 카테고리 4종)
+- [x] 상품·리뷰 데이터 수집 및 DB 저장
+- [x] Gemini API 연동 → ai_summary 및 타입별 만족도 생성
 
 ---
 
@@ -55,7 +30,7 @@
 ### OAuth
 - [ ] 카카오 OAuth 연동
 - [ ] 구글 OAuth 연동
-- [ ] JWT 토큰 발급 및 갱신
+- [x] JWT 토큰 발급 및 갱신
 - [ ] Vue 라우터 가드
 - [ ] 온보딩 스킵 시 챗봇 진입 처리
 
@@ -67,7 +42,9 @@
 - [ ] 프로필 지정 → 챗봇 추천 자동 참조 연동
 
 ### 프로필 API·UI
-- [ ] 프로필 조회/수정 API
+- [x] Serializer 작성 (SkinProfileSerializer, UserInfoSerializer)
+- [x] 프로필 조회/생성/수정 API (GET, POST, PATCH /api/v1/profile)
+- [x] URL 연결 (accounts/urls.py, config/urls.py)
 - [ ] 마이페이지 UI (피부 프로필 확인 및 수정)
 - [ ] 찜한 제품 리스트 확인 및 올리브영 링크 이동
 - [ ] 로그아웃 / 회원 탈퇴
