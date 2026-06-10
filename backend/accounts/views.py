@@ -30,11 +30,14 @@ class ProfileView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     def post(self, request):
-        serializer = SkinProfileSerializer(data=request.data) # request.data는 입력 데이터
+        # 이미 프로필이 있으면 덮어쓰기(update), 없으면 새로 생성(create)
+        # OneToOne 구조라 POST를 두 번 보내면 IntegrityError가 터지므로 upsert 처리
+        existing = SkinProfile.objects.filter(user=request.user.userinfo).first()
+        serializer = SkinProfileSerializer(existing, data=request.data) if existing else SkinProfileSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save(user=request.user.userinfo) # serializer 안에 없는 user 필드를 여기서 주입해줘야 함
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(user=request.user.userinfo)
+            return Response(serializer.data, status=status.HTTP_200_OK if existing else status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     

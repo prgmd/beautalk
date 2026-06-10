@@ -51,6 +51,10 @@
 
 ### 챗봇 API
 > 아키텍처: GMS(SSAFY 제공 LLM) 직접 호출 방식. 프로필 + 제품 목록(ai_summary 포함) → LLM 컨텍스트 주입. 프론트엔드가 대화 기록(`history[]`) 관리, 백엔드는 stateless.
+>
+> ⚠️ **토큰 한도 주의**: 전체 제품 ai_summary를 그대로 주입하면 제품 수 증가 시 토큰 한도 초과 가능.
+> → **RAG 방식 권장**: 유저 질문을 임베딩 → 벡터 DB에서 유사 제품 5~10개만 검색 → 해당 제품만 컨텍스트에 주입.
+> Gemini Embedding API + pgvector(PostgreSQL 확장) 또는 Chroma(로컬) 조합으로 구현 가능. 토큰 최대 95% 절감.
 - [ ] 챗봇 메시지 API (`POST /api/v1/chat`) — `content` + `history[]` 수신
 - [ ] GMS 연동 (프로필 + 전체 제품 ai_summary → LLM 컨텍스트 구성)
 - [ ] 자연어 질문 이해 → 피부 프로필 자동 참조 답변 생성
@@ -75,5 +79,7 @@
 ### 배포·QA
 - [ ] Docker 컨테이너화
 - [ ] AWS 배포·Nginx 설정
+- [ ] **SECRET_KEY → 환경변수 이동** (배포 전 필수 — 현재 settings.py에 하드코딩됨. 노출 시 JWT 위조로 계정 탈취 가능)
+- [ ] **JWT 토큰 URL 쿼리스트링 전달 방식 개선** (현재 `/auth/callback?access=...&refresh=...` 형태 — 브라우저 히스토리·서버 로그 노출. 최소 대응: 토큰 읽은 후 `history.replaceState`로 URL 교체)
 - [ ] 전체 QA·버그 수정
 - [ ] 발표 준비
