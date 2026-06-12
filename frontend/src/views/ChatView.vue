@@ -4,15 +4,19 @@ import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
 import { useProfileStore } from '@/stores/profile'
 import { useProductDetailStore } from '@/stores/productDetail'
+import { useUsageStore } from '@/stores/usage'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
+import PaywallModal from '@/components/PaywallModal.vue'
 
 const router = useRouter()
 const chat = useChatStore()
 const profile = useProfileStore()
 const productDetail = useProductDetailStore()
+const usage = useUsageStore()
 
 const inputText = ref('')
 const chatBody = ref(null)
+const showPaywall = ref(false)
 
 const isEmpty = computed(() => chat.messages.length === 0)
 
@@ -32,6 +36,13 @@ const MOCK_PRODUCTS = [
 async function sendMessage(text) {
   const msg = text || inputText.value.trim()
   if (!msg) return
+
+  // 무료 사용량 한도 체크 — 초과 시 결제 모달 노출
+  if (!usage.consume()) {
+    showPaywall.value = true
+    return
+  }
+
   inputText.value = ''
 
   chat.addMessage({ id: Date.now(), role: 'user', text: msg })
@@ -79,6 +90,9 @@ function askWhy(product) {
       <!-- 채팅 헤더 (활성 상태) -->
       <div v-if="!isEmpty" class="chat-header">
         <span class="chat-title">챗봇 추천</span>
+        <button class="usage-pill" :class="{ depleted: usage.remaining === 0 }" @click="showPaywall = true">
+          오늘 남은 대화 {{ usage.remaining }}/{{ usage.limit }}
+        </button>
       </div>
 
       <!-- 채팅 영역 -->
@@ -154,18 +168,25 @@ function askWhy(product) {
 
       <!-- 입력 영역 -->
       <div class="input-bar">
+        <div v-if="usage.remaining === 0" class="limit-notice">
+          오늘의 무료 대화를 모두 사용했어요.
+          <button class="upgrade-link" @click="showPaywall = true">프리미엄으로 계속하기</button>
+        </div>
         <div class="input-inner">
           <input
             v-model="inputText"
-            placeholder="메시지를 입력하세요"
+            :placeholder="usage.remaining === 0 ? '내일 다시 이용하거나 프리미엄으로 업그레이드하세요' : '메시지를 입력하세요'"
+            :disabled="usage.remaining === 0"
             @keyup.enter="sendMessage()"
           />
-          <button class="send-btn" :disabled="!inputText.trim()" @click="sendMessage()">
+          <button class="send-btn" :disabled="!inputText.trim() || usage.remaining === 0" @click="sendMessage()">
             ↑
           </button>
         </div>
       </div>
     </div>
+
+    <PaywallModal v-if="showPaywall" @close="showPaywall = false" />
   </div>
 </template>
 
@@ -185,7 +206,24 @@ function askWhy(product) {
   border-bottom: 1px solid var(--border);
   font-size: 16px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+
+.usage-pill {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.usage-pill:hover { background: var(--surface-hover); }
+.usage-pill.depleted { color: var(--danger); border-color: var(--danger-border); background: var(--danger-bg); }
 
 .chat-body {
   flex: 1;
@@ -376,6 +414,24 @@ function askWhy(product) {
   background: var(--surface);
 }
 
+.limit-notice {
+  max-width: 820px;
+  margin: 0 auto 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.upgrade-link {
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0 2px;
+}
+
 .input-inner {
   display: flex;
   gap: 10px;
@@ -395,6 +451,7 @@ function askWhy(product) {
   transition: border-color 0.15s;
 }
 .input-bar input:focus { border-color: var(--text-primary); background: var(--surface); }
+.input-bar input:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .send-btn {
   width: 44px;

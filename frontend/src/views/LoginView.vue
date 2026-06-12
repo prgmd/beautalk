@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import TermsModal from '@/components/TermsModal.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -12,6 +13,7 @@ const password = ref('')
 const agreeTerms = ref(false)
 const agreePrivacy = ref(false)
 const error = ref('')
+const activeModal = ref(null) // null | 'terms' | 'privacy'
 
 function handleSubmit() {
   error.value = ''
@@ -64,11 +66,11 @@ function handleOAuth(provider) {
         <div v-if="tab === 'signup'" class="agreements">
           <label class="checkbox-row">
             <input v-model="agreeTerms" type="checkbox" />
-            <span>(필수) 이용약관 동의 <a href="#">보기</a></span>
+            <span>(필수) 이용약관 동의 <a href="#" @click.prevent="activeModal = 'terms'">보기</a></span>
           </label>
           <label class="checkbox-row">
             <input v-model="agreePrivacy" type="checkbox" />
-            <span>(필수) 개인정보처리방침 동의 <a href="#">보기</a></span>
+            <span>(필수) 개인정보처리방침 동의 <a href="#" @click.prevent="activeModal = 'privacy'">보기</a></span>
           </label>
         </div>
 
@@ -92,6 +94,8 @@ function handleOAuth(provider) {
         </button>
       </div>
     </div>
+
+    <TermsModal v-if="activeModal" :type="activeModal" @close="activeModal = null" />
   </div>
 </template>
 
