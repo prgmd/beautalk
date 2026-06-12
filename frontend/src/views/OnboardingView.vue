@@ -78,16 +78,33 @@ function removeAvoid(item) {
   avoidList.value = avoidList.value.filter(i => i !== item)
 }
 
+const saving = ref(false)
+const saveError = ref('')
+
 async function finishOnboarding() {
+  if (saving.value) return
   profile.update({
     skinType: selectedSkinType.value,
     concerns: selectedConcerns.value,
     avoidIngredients: avoidList.value,
   })
-  auth.setProfileComplete()
 
   messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: avoidList.value.length ? avoidList.value.join(', ') : '없어요' })
   await nextTick()
+  scrollToBottom()
+
+  // 백엔드에 프로필 저장
+  saving.value = true
+  saveError.value = ''
+  try {
+    await profile.saveProfile()
+    auth.setProfileComplete()
+  } catch (e) {
+    saveError.value = '프로필 저장에 실패했어요. 잠시 후 다시 시도해 주세요.'
+    saving.value = false
+    return
+  }
+  saving.value = false
 
   setTimeout(async () => {
     messages.value.push({
@@ -176,7 +193,10 @@ function goChat() {
                 />
                 <button class="add-btn" @click="addAvoid">추가</button>
               </div>
-              <button class="confirm-btn" @click="finishOnboarding">완료</button>
+              <button class="confirm-btn" :disabled="saving" @click="finishOnboarding">
+                {{ saving ? '저장 중...' : '완료' }}
+              </button>
+              <p v-if="saveError" class="save-error">{{ saveError }}</p>
             </div>
           </div>
         </div>
@@ -300,6 +320,8 @@ function goChat() {
   transition: opacity 0.15s;
 }
 .confirm-btn:disabled { opacity: 0.4; cursor: default; }
+
+.save-error { font-size: 13px; color: var(--danger); }
 
 .avoid-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .avoid-tag {

@@ -6,10 +6,12 @@
 import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useProfileStore } from '@/stores/profile'
 
 const router = useRouter()
 const route = useRoute()   // 현재 URL 정보 접근용 (쿼리스트링 포함)
 const auth = useAuthStore()
+const profile = useProfileStore()
 
 onMounted(async () => {
   // 카카오 콜백 URL: /auth/callback?access=eyJ...&refresh=eyJ...
@@ -23,17 +25,19 @@ onMounted(async () => {
     return
   }
 
-  // 프로필 API 호출로 온보딩 완료 여부 확인
-  // Authorization 헤더에 방금 받은 access 토큰 첨부
-  const res = await fetch('http://localhost:8000/api/v1/profile', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  const data = res.status === 204 ? null : await res.json()
-  // 프로필 없으면 Django가 204 반환 → data = null → !!null = false
-  // 프로필 있으면 객체 반환 → !!{} = true
+  // 먼저 토큰을 store에 저장해야 이후 API 호출에 자동 첨부됨 (api.js 참고)
+  auth.login({ access, refresh, hasProfile: false })
 
-  // Pinia store에 저장 → localStorage에도 자동 반영 (auth.js 참고)
-  auth.login({ access, refresh, hasProfile: !!data })
+  // 프로필 조회로 온보딩 완료 여부 확인 (없으면 204 → null)
+  // 동시에 profile store에 채워둬서 마이페이지에서 재호출 안 하도록 함
+  let data = null
+  try {
+    data = await profile.fetchProfile()
+  } catch {
+    data = null
+  }
+
+  if (data) auth.setProfileComplete()
 
   // 프로필 존재 여부로 이동 경로 분기
   router.push(data ? '/chat' : '/onboarding')

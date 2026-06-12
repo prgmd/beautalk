@@ -1,12 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 
 const profile = useProfileStore()
-const router = useRouter()
 
 const editing = ref(false)
+const loading = ref(false)
+const saving = ref(false)
+const errorMsg = ref('')
 
 const SKIN_TYPES = ['건성', '지성', '복합성', '민감성']
 const CONCERNS = ['여드름', '주름', '색소침착', '모공', '트러블', '건조함', '민감성', '탄력']
@@ -16,22 +17,43 @@ const editConcerns = ref([])
 const editAvoidInput = ref('')
 const editAvoidList = ref([])
 
+// 진입 시 백엔드에서 최신 프로필 로드 (이미 로드됐으면 생략)
+onMounted(async () => {
+  if (profile.loaded) return
+  loading.value = true
+  try {
+    await profile.fetchProfile()
+  } catch {
+    errorMsg.value = '프로필을 불러오지 못했어요.'
+  }
+  loading.value = false
+})
+
 function startEdit() {
   editSkinType.value = profile.skinType
   editConcerns.value = [...profile.concerns]
   editAvoidList.value = [...profile.avoidIngredients]
+  errorMsg.value = ''
   editing.value = true
 }
 
 function cancelEdit() { editing.value = false }
 
-function saveEdit() {
-  profile.update({
-    skinType: editSkinType.value,
-    concerns: editConcerns.value,
-    avoidIngredients: editAvoidList.value,
-  })
-  editing.value = false
+async function saveEdit() {
+  if (saving.value) return
+  saving.value = true
+  errorMsg.value = ''
+  try {
+    await profile.patchProfile({
+      skinType: editSkinType.value,
+      concerns: editConcerns.value,
+      avoidIngredients: editAvoidList.value,
+    })
+    editing.value = false
+  } catch {
+    errorMsg.value = '저장에 실패했어요. 잠시 후 다시 시도해 주세요.'
+  }
+  saving.value = false
 }
 
 function toggleConcern(c) {
@@ -60,10 +82,13 @@ function removeAvoid(item) {
       </div>
       <button v-if="!editing" class="edit-btn" @click="startEdit">✏️ 수정</button>
       <div v-else class="edit-actions">
-        <button class="cancel-btn" @click="cancelEdit">취소</button>
-        <button class="save-btn" @click="saveEdit">저장</button>
+        <button class="cancel-btn" :disabled="saving" @click="cancelEdit">취소</button>
+        <button class="save-btn" :disabled="saving" @click="saveEdit">{{ saving ? '저장 중...' : '저장' }}</button>
       </div>
     </div>
+
+    <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+    <p v-if="loading" class="loading-msg">프로필을 불러오는 중...</p>
 
     <!-- 보기 모드 -->
     <div v-if="!editing" class="cards">
@@ -140,6 +165,11 @@ function removeAvoid(item) {
 }
 .page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
 .page-desc { font-size: 13px; color: var(--text-secondary); }
+
+.error-msg { font-size: 13px; color: var(--danger); margin-bottom: 12px; }
+.loading-msg { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+
+.save-btn:disabled, .cancel-btn:disabled { opacity: 0.5; cursor: default; }
 
 .edit-btn {
   padding: 8px 16px;
