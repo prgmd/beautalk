@@ -15,6 +15,15 @@
 - REST API 구축: DRF
 - JWT 구현: simplejwt
 
+## 문서
+
+| 파일 | 설명 |
+|---|---|
+| [docs/API.md](docs/API.md) | API 명세서 (엔드포인트, Request/Response, 에러 코드) |
+| [docs/progress.md](docs/progress.md) | 구현 현황 및 진행 예정 작업 |
+| [docs/structure.md](docs/structure.md) | 프로젝트 디렉토리 구조 |
+| [docs/plan.md](docs/plan.md) | 보안 취약점 진단·해결, RAG 도입 계획, 잔여 작업 로드맵 |
+
 ## 팀원
 | 이름 | 역할 | GitHub |
 |---|---|---|

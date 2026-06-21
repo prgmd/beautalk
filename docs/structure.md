@@ -1,5 +1,15 @@
 # 프로젝트 구조
 
+## 문서 (`docs/`)
+
+```
+docs/
+├── API.md        # API 명세서 (엔드포인트, Request/Response, 에러 코드)
+├── progress.md   # 구현 현황 및 진행 예정 작업
+├── structure.md  # 프로젝트 디렉토리 구조 (이 파일)
+└── plan.md       # 보안 취약점 진단·해결, RAG 도입 계획, 잔여 작업 로드맵
+```
+
 ## Backend (`backend/`)
 
 ```
@@ -14,12 +24,12 @@ accounts/
 ├── urls.py           # accounts 앱 URL 라우팅
 
 products/
-├── models.py         # Product, Review 모델
+├── models.py         # Product, Review, Like, InUseProduct 모델
 
 chat/
-├── models.py         # Chat 관련 모델
+├── models.py         # Recommendation 모델
 
-crawling.py           # 크롤링 스크립트
+crawling.py           # 크롤링 스크립트 (Selenium + Gemini AI 요약)
 ```
 
 ## Frontend (`frontend/src/`)
