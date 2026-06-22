@@ -32,12 +32,10 @@ async function request(path, { method = 'GET', body, auth = true } = {}) {
     if (token) headers.Authorization = `Bearer ${token}`
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    credentials: 'include',
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
+  const options = { method, headers, credentials: 'include' }
+  if (body !== undefined) options.body = JSON.stringify(body)
+
+  const res = await fetch(`${BASE_URL}${path}`, options)
 
   // access 토큰 만료 → refresh 시도 후 재요청 (무한 루프 방지: refresh 경로 제외)
   if (res.status === 401 && path !== '/auth/token/refresh') {
