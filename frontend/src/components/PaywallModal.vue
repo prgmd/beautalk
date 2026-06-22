@@ -12,7 +12,7 @@ const PLANS = [
     name: '무료',
     price: '0원',
     period: '',
-    features: ['하루 10회 대화', '맞춤 제품 추천', '찜하기'],
+    features: ['하루 100회 대화', '맞춤 제품 추천', '찜하기'],
     current: true,
   },
   {
@@ -98,7 +98,9 @@ function selectPlan(plan) {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(40, 28, 22, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,11 +110,16 @@ function selectPlan(plan) {
 
 .modal {
   background: var(--surface);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   width: 100%;
   max-width: 460px;
   position: relative;
   padding: 32px 28px 28px;
+  box-shadow: var(--shadow-lg);
+}
+.head-icon {
+  display: inline-block;
+  animation: bt-float 5s var(--ease) infinite;
 }
 
 .close-btn {
@@ -148,18 +155,30 @@ function selectPlan(plan) {
   flex-direction: column;
   gap: 12px;
 }
-.plan-card.highlight { border-color: var(--text-primary); border-width: 1.5px; }
+.plan-card {
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.plan-card.highlight {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    var(--gradient-brand) border-box;
+  border: 1.5px solid transparent;
+  box-shadow: var(--shadow-glow);
+}
+.plan-card.highlight:hover { transform: translateY(-3px); }
 .plan-card.current { background: var(--bg); }
 
 .plan-head { display: flex; align-items: center; gap: 6px; }
 .plan-name { font-size: 14px; font-weight: 700; }
 .badge {
   font-size: 10px;
-  font-weight: 600;
-  background: var(--text-primary);
+  font-weight: 700;
+  background: var(--gradient-brand);
   color: #fff;
   border-radius: 10px;
-  padding: 2px 8px;
+  padding: 3px 9px;
+  box-shadow: var(--shadow-sm);
 }
 
 .plan-price { font-size: 20px; font-weight: 700; }
@@ -188,11 +207,12 @@ function selectPlan(plan) {
 }
 .plan-btn:hover:not(:disabled) { background: var(--bg); }
 .plan-btn.primary {
-  background: var(--text-primary);
+  background: var(--gradient-brand);
   color: #fff;
-  border-color: var(--text-primary);
+  border-color: transparent;
+  box-shadow: var(--shadow-sm);
 }
-.plan-btn.primary:hover:not(:disabled) { opacity: 0.85; background: var(--text-primary); }
+.plan-btn.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
 .plan-btn:disabled { opacity: 0.5; cursor: default; }
 
 .footnote { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 16px; }

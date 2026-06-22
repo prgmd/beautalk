@@ -112,7 +112,9 @@ function stars(rating) {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(40, 28, 22, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,12 +124,13 @@ function stars(rating) {
 
 .modal {
   background: var(--surface);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   width: 100%;
   max-width: 560px;
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
+  box-shadow: var(--shadow-lg);
 }
 
 .close-btn {
@@ -231,7 +234,7 @@ function stars(rating) {
 .satisfaction-row { display: flex; align-items: center; gap: 12px; }
 .sat-type { font-size: 13px; width: 48px; flex-shrink: 0; }
 .sat-bar { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
-.sat-fill { height: 100%; background: var(--ai-avatar); border-radius: 4px; }
+.sat-fill { height: 100%; background: var(--gradient-brand); border-radius: 4px; transition: width var(--t-slow) var(--ease); }
 .sat-value { font-size: 12px; color: var(--text-secondary); width: 38px; text-align: right; flex-shrink: 0; }
 
 .review-list { display: flex; flex-direction: column; gap: 10px; }
@@ -258,8 +261,8 @@ function stars(rating) {
 .review-recommend { font-size: 11px; color: var(--text-muted); }
 
 /* Transition */
-.modal-enter-active, .modal-leave-active { transition: opacity 0.2s; }
+.modal-enter-active, .modal-leave-active { transition: opacity 0.25s var(--ease); }
 .modal-enter-from, .modal-leave-to { opacity: 0; }
-.modal-enter-active .modal, .modal-leave-active .modal { transition: transform 0.2s; }
-.modal-enter-from .modal, .modal-leave-to .modal { transform: scale(0.96); }
+.modal-enter-active .modal, .modal-leave-active .modal { transition: transform 0.3s var(--ease-back); }
+.modal-enter-from .modal, .modal-leave-to .modal { transform: scale(0.94) translateY(12px); }
 </style>

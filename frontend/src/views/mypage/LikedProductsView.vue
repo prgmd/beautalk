@@ -78,8 +78,15 @@ function unlike(product) {
   justify-content: space-between;
   margin-bottom: 20px;
 }
-.page-title { font-size: 20px; font-weight: 700; }
-.count { font-size: 13px; color: var(--text-muted); }
+.page-title { font-size: 21px; font-weight: 800; letter-spacing: -0.4px; }
+.count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  background: var(--brand-soft);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
 .loading-msg { font-size: 13px; color: var(--text-muted); padding: 40px 0; text-align: center; }
 
 .product-grid {
@@ -89,13 +96,19 @@ function unlike(product) {
 }
 
 .product-card {
-  background: var(--bg);
-  border-radius: 14px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--border);
-  transition: box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+  animation: bt-rise 0.5s var(--ease) both;
 }
-.product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.product-grid .product-card:nth-child(2) { animation-delay: 0.05s; }
+.product-grid .product-card:nth-child(3) { animation-delay: 0.1s; }
+.product-grid .product-card:nth-child(4) { animation-delay: 0.15s; }
+.product-grid .product-card:nth-child(n+5) { animation-delay: 0.2s; }
+.product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 
 .product-image {
   width: 100%;
@@ -106,7 +119,13 @@ function unlike(product) {
   justify-content: center;
   overflow: hidden;
 }
-.product-image img { width: 100%; height: 100%; object-fit: cover; }
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-slow) var(--ease);
+}
+.product-card:hover .product-image img { transform: scale(1.06); }
 .clickable { cursor: pointer; }
 .product-body .clickable:hover .name { text-decoration: underline; }
 .img-placeholder { font-size: 48px; }
@@ -122,7 +141,7 @@ function unlike(product) {
 .action-btn {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
   font-size: 13px;
@@ -132,9 +151,16 @@ function unlike(product) {
   justify-content: center;
   text-decoration: none;
   color: var(--text-secondary);
-  transition: background 0.15s;
+  transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease-back), border-color var(--t-fast) var(--ease);
 }
-.action-btn:hover { background: var(--surface-hover); }
+.action-btn:hover { background: var(--surface-hover); transform: translateY(-1px); }
+/* 찜한 제품 목록의 ♥ 버튼은 항상 찜 상태이므로 로즈 톤으로 강조 */
+.actions .action-btn[title="찜 해제"] {
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-color: var(--brand-1);
+}
+.actions .action-btn[title="찜 해제"]:hover { box-shadow: var(--shadow-glow); }
 
 /* Empty */
 .empty {

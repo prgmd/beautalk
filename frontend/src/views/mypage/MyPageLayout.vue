@@ -49,6 +49,7 @@ const tabs = [
 }
 
 .sub-tab {
+  position: relative;
   width: 100%;
   padding: 10px 14px;
   border: none;
@@ -56,18 +57,31 @@ const tabs = [
   text-align: left;
   font-size: 14px;
   color: var(--text-secondary);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  border-left: 2px solid transparent;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+  overflow: hidden;
+}
+.sub-tab::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 3px;
+  height: 56%;
+  border-radius: 0 3px 3px 0;
+  background: var(--gradient-brand);
+  transition: transform var(--t) var(--ease-back);
 }
 .sub-tab:hover { background: var(--surface-hover); color: var(--text-primary); }
 .sub-tab.active {
-  background: var(--sidebar-active);
-  color: var(--text-primary);
-  font-weight: 500;
-  border-left-color: var(--text-primary);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
 }
+.sub-tab.active::before { transform: translateY(-50%) scaleY(1); }
 
 .content {
   flex: 1;
