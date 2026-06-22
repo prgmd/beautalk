@@ -38,6 +38,13 @@ async function sendMessage(text) {
   await chat.sendChat(msg)
 }
 
+// 한글 등 IME 조합 중의 Enter는 무시한다.
+// (조합 확정 Enter로 전송하면 마지막 글자가 입력칸에 다시 남는 버그 방지)
+function onEnterKey(e) {
+  if (e.isComposing) return
+  sendMessage()
+}
+
 function getRecommendations() {
   chat.requestRecommend()
 }
@@ -152,6 +159,11 @@ function formatPrice(n) {
                 <div v-if="msg.role === 'assistant'" class="ai-avatar">B</div>
                 <div class="bubble-wrap">
                   <div class="bubble" :class="[msg.role, { error: msg.error }]">{{ msg.text }}</div>
+                  <button
+                    v-if="msg.error && msg.id === chat.messages.at(-1)?.id"
+                    class="retry-btn"
+                    @click="chat.retryChat()"
+                  >다시 시도</button>
                 </div>
               </div>
 
@@ -188,7 +200,7 @@ function formatPrice(n) {
               v-model="inputText"
               :placeholder="usage.remaining === 0 ? '내일 다시 이용하거나 프리미엄으로 업그레이드하세요' : '메시지를 입력하세요'"
               :disabled="usage.remaining === 0 || chat.isLoading"
-              @keyup.enter="sendMessage()"
+              @keydown.enter="onEnterKey"
             />
             <button class="send-btn" :disabled="!inputText.trim() || usage.remaining === 0 || chat.isLoading" @click="sendMessage()">
               ↑
@@ -320,6 +332,17 @@ function formatPrice(n) {
 .bubble.assistant { background: var(--ai-bubble); border-top-left-radius: 4px; }
 .bubble.user { background: var(--user-bubble); color: #fff; border-top-right-radius: 4px; }
 .bubble.error { background: var(--danger-bg); color: var(--danger); }
+.retry-btn {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.retry-btn:hover { background: var(--bg); }
 
 .bubble.loading { display: flex; gap: 4px; align-items: center; padding: 14px 18px; }
 .dot {
