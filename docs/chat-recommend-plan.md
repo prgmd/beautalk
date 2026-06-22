@@ -4,6 +4,9 @@
 > 목적: 챗봇을 **"대화 단계"와 "추천 단계"로 분리**하는 설계를 프론트/백엔드가 함께 합의하기 위함
 > 상태: **설계 합의 단계** (구현 전). 이 문서로 API 계약을 먼저 확정한 뒤 양쪽이 병렬 작업한다.
 
+> ⚠️ **이 문서의 §4 API 계약은 기존 챗봇 구현(커밋 `d87e50d`, `POST /chat/` → `{content}`)을 대체한다.**
+> 프론트는 옛 응답 형식에 붙이지 말고 이 문서 확정본 기준으로 작업할 것. (헛수고 방지)
+
 ---
 
 ## 1. 배경 — 왜 나누는가
@@ -59,13 +62,23 @@ LLM이 JSON으로 답하면 **그 JSON이 채팅 말풍선에 그대로 노출�
 - 정보 슬롯 예시:
   - 피부 타입 · 피부 고민 → **SkinProfile에서 이미 채워짐** (시작부터 어느 정도 준비됨)
   - 원하는 제품군(토너/세럼/클렌저 등) · 향/가격대 선호 → **대화로 채움**
-- `ready=true` 기준: 추천을 의미 있게 할 만큼 정보가 모인 상태(예: 제품군이 특정됨).
+
+### ⚠️ readiness 요동 문제 (프론트/백엔드 합의 필요)
+
+LLM 자율 판단이라 값이 `60 → 40 → 70`처럼 **역행/요동**할 수 있다. 이를 progress 바에
+그대로 그리면 사용자 눈엔 고장처럼 보인다.
+
+- **백엔드 입장**: LLM이 매 턴 독립 평가하므로 값이 내려갈 수 있음(원천적으로 단조 증가 보장 못 함).
+- **프론트 처리(합의안)**: 표시값은 **단조 증가**(한 번 오른 값은 안 내림) 또는 부드러운 보간으로 처리.
+- **확정 필요**: ① 백엔드가 단조 증가를 보장할지(직전 값과 비교해 max 처리) vs 프론트가 처리할지.
+  ② `ready` 임계값 수치(예: `readiness ≥ 70`).
 
 ---
 
 ## 4. API 계약
 
 > 공통: 응답은 **snake_case**. 인증 **JWT 필수**(`Authorization: Bearer <access>`). base `/api/v1/`.
+> 어시스턴트 텍스트 키는 대화/추천 **둘 다 `content`로 통일**한다. (불일치 제거)
 
 ### 4-1. 대화 — `POST /api/v1/chat/` (기존 수정)
 
@@ -89,6 +102,12 @@ LLM이 JSON으로 답하면 **그 JSON이 채팅 말풍선에 그대로 노출�
 }
 ```
 
+**에러 Response (공통 포맷)**
+```json
+// 502 (AI 서버 연결 실패) / 504 (타임아웃) / 400 (content 누락)
+{ "error": "AI 서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요." }
+```
+- 대화/추천 **둘 다 동일한 에러 포맷**(상태코드 + `{ "error": "..." }`)을 쓴다.
 - `history`는 프론트가 관리하고 매 요청마다 전송한다(백엔드 Stateless).
 - 프론트는 `content`만 말풍선에 그린다. `readiness`/`ready`는 UI 상태(progress, 버튼 강조)에만 쓴다.
 
@@ -107,7 +126,7 @@ LLM이 JSON으로 답하면 **그 JSON이 채팅 말풍선에 그대로 노출�
 **200 Response**
 ```json
 {
-  "reply": "여드름 자국 + 민감성을 고려해 3가지를 골랐어요.",
+  "content": "여드름 자국 + 민감성을 고려해 3가지를 골랐어요.",
   "products": [
     {
       "id": "product-uuid",
@@ -124,13 +143,13 @@ LLM이 JSON으로 답하면 **그 JSON이 채팅 말풍선에 그대로 노출�
 ```
 
 - 백엔드 처리: 대화 내역 + 피부 프로필 + 제품 목록 → LLM이 **제품 목록의 정확한 id 3개**를 고르도록 강제.
-  → 백엔드가 그 id로 DB 조회 → 실제 제품만 반환(환각 방지). + `RecommendedProduct`에 저장.
+  → 백엔드가 그 id로 DB 조회 → 실제 제품만 반환(환각 방지). + 추천 기록 저장(§5).
 - 기피 성분 포함 제품은 후보에서 제외(후처리 필터).
-- **실패 시**: 502/504 + `{ "error": "..." }`. 프론트는 에러 안내 후 "다시 시도".
+- **실패 시**: §4-1과 동일 포맷. 프론트는 에러 안내 후 "다시 시도".
 
 ### 4-3. 추천 히스토리 — `GET /api/v1/recommendations/` (기존 수정)
 
-나에게 추천된 제품 목록(최신순, 중복 제품은 최신 1건).
+나에게 추천된 제품 목록(최신순).
 ```json
 [
   {
@@ -140,6 +159,7 @@ LLM이 JSON으로 답하면 **그 JSON이 채팅 말풍선에 그대로 노출�
     "price": 12000,
     "image_url": "https://...",
     "oliveyoung_url": "https://...",
+    "reason": "여드름 자국 진정에 호평이 많고...",   // §5 결정에 따라 포함/제외
     "recommended_at": "2026-06-22T10:30:00Z"
   }
 ]
@@ -147,25 +167,41 @@ LLM이 JSON으로 답하면 **그 JSON이 채팅 말풍선에 그대로 노출�
 
 ---
 
-## 5. 모델 변경
+## 5. 추천 기록 모델 (⚠️ 핵심 합의 포인트)
 
-> ⚠️ 현재 `chat.Recommendation`은 `{ user, title(TextField), created_at }`라 **제품을 가리키지 않는다.**
+> 현재 `chat.Recommendation`은 `{ user, title(TextField), created_at }`라 **제품을 가리키지 않는다.**
 > 추천된 "제품"을 기록하려면 제품 FK가 필요하다.
 
-신규 모델 (`products` 또는 `chat`):
+### 쟁점 1 — `reason` 저장 여부
+
+`/recommend/` 응답엔 제품별 `reason`(추천 이유)이 있는데, 모델에 안 담으면
+나중에 히스토리(`GET /recommendations/`)에서 **추천 이유가 사라진다.** 추천 이유는
+히스토리에서도 가치가 크다.
+- **결정 필요**: (A) 모델에 `reason` 필드 추가해 히스토리에서도 보여준다 / (B) 이유는 추천 순간에만 보여주고 버린다.
+- **권장: (A)**. 비용이 거의 없고 히스토리 품질이 크게 오른다.
+
+### 쟁점 2 — 제품 단위 dedup vs 추천 이벤트 로그
+
+`UniqueConstraint(user, product)` + 최신 upsert로 가면 **제품 단위로 dedup**된다.
+즉 "추천된 적 있는 제품 + 최신 시각"만 남고 **"어떤 대화에서 왜 추천됐나"는 사라진다.**
+쟁점 1(reason)과 합쳐지면 히스토리가 빈약해질 수 있다.
+- **결정 필요**:
+  - (A) **dedup** — 제품 단위 1행, MVP에 단순. 히스토리는 "찜 후보 목록"에 가까움.
+  - (B) **이벤트 로그** — UniqueConstraint 제거, 추천할 때마다 새 행 + 그 시점 reason 저장.
+    "언제 어떤 이유로 추천받았는지" 타임라인이 남음.
+- **권장: (B)** (쟁점 1=A와 묶어서). 히스토리가 "추천 내역"으로서 의미를 가진다.
+
+### 모델 초안 (쟁점 1=A, 쟁점 2=B 가정)
+
 ```python
 class RecommendedProduct(models.Model):
-    user    = models.ForeignKey('accounts.UserInfo', on_delete=models.CASCADE)
-    product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
+    user       = models.ForeignKey('accounts.UserInfo', on_delete=models.CASCADE)
+    product    = models.ForeignKey('products.Product', on_delete=models.CASCADE)
+    reason     = models.TextField(blank=True)        # 쟁점 1=A
     created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'product'], name='unique_recommendation')
-        ]
-        # 같은 제품이 여러 번 추천되면 upsert(최신 created_at 갱신) — 중복 행을 만들지 않는다.
+    # 쟁점 2=B: UniqueConstraint 없음 → 추천 이벤트마다 행 누적
 ```
-- 기존 `Recommendation` 모델은 (유지/삭제) 추후 논의. 당장은 `RecommendedProduct`로 제품 추천 기록을 담는다.
+- 기존 `Recommendation`(title 기반) 모델 처리(유지/삭제)도 함께 결정.
 
 ---
 
@@ -173,31 +209,35 @@ class RecommendedProduct(models.Model):
 
 | 구분 | 백엔드 | 프론트 |
 |------|--------|--------|
-| 대화 | LLM 호출, `content`/`readiness` 분리 반환 | `content`만 말풍선, `readiness`로 progress 바 |
+| 대화 | LLM 호출, `content`/`readiness`/`ready` 분리 반환 | `content`만 말풍선, `readiness`로 progress 바(단조 증가 처리) |
 | 추천 트리거 | `ready` 플래그 계산 | `ready=true`면 버튼 강조, 클릭 시 `/recommend/` 호출 |
 | 추천 | id 추출 → DB 조회 → 저장 → 제품 반환 | "추천 중..." 로딩 → 제품 3개 카드 렌더 |
 | 더 대화하기 | (없음) | 추천 화면 → 대화 화면 라우팅 |
-| 히스토리 | `RecommendedProduct` 조회 반환 | 마이페이지 추천 히스토리 렌더 |
+| 히스토리 | 추천 기록 조회 반환 | 마이페이지 추천 히스토리 렌더 |
 
 ---
 
-## 7. 논의 필요 / 미확정
+## 7. 팀 확정 필요 (= 이 문서 합의 전 결정할 것)
 
-- [ ] `readiness` 산출을 LLM 자율 판단으로 둘지, 슬롯(피부타입·고민·제품군) 채움률 규칙으로 둘지
-      → 1차는 **LLM 자율 판단**으로 가고, 불안정하면 규칙 보강 제안.
-- [ ] 추천 개수 고정 3개 vs 가변(최대 5개). → 1차 **3개 고정**.
-- [ ] `ready` 임계값(예: readiness ≥ 70). → 프론트와 수치 합의 필요.
-- [ ] 기존 `chat.Recommendation` 모델 처리(유지/마이그레이션).
-- [ ] 사용량 제한(일 N회)은 이 작업과 별개로 추후(`ScopedRateThrottle`).
+- [ ] **§4 계약이 기존 챗봇 구현(d87e50d)을 대체함**을 양 팀이 확인.
+- [ ] **reason 저장 여부** (§5 쟁점 1) — 권장 A(모델에 저장).
+- [ ] **dedup vs 이벤트 로그** (§5 쟁점 2) — 권장 B(이벤트 로그).
+- [ ] **readiness 단조 증가 보장 주체** (백엔드 max 처리 vs 프론트 표시 처리) + **`ready` 임계값 수치**.
+- [ ] 어시스턴트 텍스트 키 `content`로 통일 — 이의 없으면 확정.
+- [ ] 추천 개수: 1차 **3개 고정** — 이의 없으면 확정.
+- [ ] `readiness` 산출: 1차 **LLM 자율 판단**, 불안정 시 슬롯 채움률 규칙으로 보강.
+- [ ] **사용량 제한 위치**: 현재 프론트에 로컬 usage 카운터 + 페이월 목업 존재.
+      실제 챗봇 붙을 때 한도를 (a) 프론트 목업 유지 / (b) 서버사이드(`ScopedRateThrottle`)로 이전 중 택1.
+      → 서버 권위가 정석이나, 이번 범위 밖. **언제 이전할지**만 합의.
 
 ---
 
-## 8. 작업 순서 (백엔드)
+## 8. 작업 순서 (백엔드, §7 확정 후 착수)
 
-1. `RecommendedProduct` 모델 + 마이그레이션
-2. `POST /api/v1/chat/` 수정 — LLM 구조화 출력(JSON 모드) → `content`/`readiness`/`ready` 분리
+1. `RecommendedProduct` 모델 + 마이그레이션 (§5 결정 반영)
+2. `POST /api/v1/chat/` 수정 — LLM 구조화 출력(JSON 모드) → `content`/`readiness`/`ready` 분리 + 에러 포맷
 3. `POST /api/v1/recommend/` 신설 — history → 제품 id 추출 → DB 조회 → 저장 → 반환
-4. `GET /api/v1/recommendations/` 수정 — 제품 정보 포함 반환
+4. `GET /api/v1/recommendations/` 수정 — 제품 정보(+reason) 포함 반환
 5. 테스트 (LLM 호출은 mock)
 
-> 이 문서의 API 계약(§4)이 확정되면 프론트는 §6 기준으로 병렬 작업 가능.
+> 이 문서의 §4 계약 + §7 확정이 끝나면 프론트는 §6 기준으로 병렬 작업 가능.
