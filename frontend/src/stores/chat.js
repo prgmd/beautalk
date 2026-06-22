@@ -47,7 +47,10 @@ export const useChatStore = defineStore('chat', () => {
       push('assistant', data?.content || '...')
       if (data?.ready) ready.value = true // sticky
     } catch (e) {
-      push('assistant', e?.data?.error || 'AI 응답을 받지 못했어요. 잠시 후 다시 시도해 주세요.', { error: true })
+      // 429(사용 한도 초과)는 api.js가 페이월을 띄우므로 에러 말풍선은 생략
+      if (e?.status !== 429) {
+        push('assistant', e?.data?.error || 'AI 응답을 받지 못했어요. 잠시 후 다시 시도해 주세요.', { error: true })
+      }
     } finally {
       isLoading.value = false
     }
@@ -75,7 +78,12 @@ export const useChatStore = defineStore('chat', () => {
         products: (data.products || []).map(normalizeProduct),
       }
     } catch (e) {
-      recommendError.value = e?.data?.error || '추천을 받지 못했어요. 잠시 후 다시 시도해 주세요.'
+      // 429는 api.js가 페이월을 띄우므로 결과 화면 대신 대화로 복귀
+      if (e?.status === 429) {
+        mode.value = 'chat'
+      } else {
+        recommendError.value = e?.data?.error || '추천을 받지 못했어요. 잠시 후 다시 시도해 주세요.'
+      }
     } finally {
       isRecommending.value = false
     }

@@ -3,10 +3,13 @@ import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLikesStore } from '@/stores/likes'
+import { usePaywallStore } from '@/stores/paywall'
 import ProductDetailModal from '@/components/ProductDetailModal.vue'
+import PaywallModal from '@/components/PaywallModal.vue'
 
 const auth = useAuthStore()
 const likes = useLikesStore()
+const paywall = usePaywallStore()
 
 onMounted(async () => {
   // 페이지 새로고침 시 메모리의 accessToken이 사라진다.
@@ -39,4 +42,5 @@ onMounted(async () => {
 <template>
   <RouterView />
   <ProductDetailModal />
+  <PaywallModal v-if="paywall.isOpen" @close="paywall.close()" />
 </template>

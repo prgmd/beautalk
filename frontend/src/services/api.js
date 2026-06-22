@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/stores/auth'
+import { usePaywallStore } from '@/stores/paywall'
 
 const BASE_URL = 'http://localhost:8000/api/v1'
 
@@ -51,9 +52,10 @@ async function request(path, { method = 'GET', body, auth = true } = {}) {
     return { status: 401, data: null }
   }
 
-  // Rate Limiting 초과 → 사용자에게 안내 (백엔드 throttle: anon 20/h, user 100/h)
+  // Rate Limiting 초과(백엔드 throttle: 인증 100/day) → 프리미엄 안내(페이월) 노출.
+  // 사용량은 서버가 단일 기준으로 관리하므로 프론트는 429를 받아 안내만 한다.
   if (res.status === 429) {
-    window.alert('요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.')
+    usePaywallStore().open()
   }
 
   if (res.status === 204) return { status: 204, data: null }
