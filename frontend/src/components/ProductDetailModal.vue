@@ -51,7 +51,7 @@ function stars(rating) {
               <button
                 class="like-btn"
                 :class="{ liked: chat.isLiked(product?.id) }"
-                @click="chat.toggleLike(product?.id)"
+                @click="chat.toggleLike(product)"
               >{{ chat.isLiked(product?.id) ? '♥ 찜함' : '♡ 찜하기' }}</button>
               <a :href="product?.oliveyoungUrl" target="_blank" class="oliveyoung-btn">
                 올리브영에서 보기 ↗
