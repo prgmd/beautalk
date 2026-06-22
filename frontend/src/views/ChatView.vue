@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
 import { useLikesStore } from '@/stores/likes'
 import { useProfileStore } from '@/stores/profile'
@@ -9,7 +8,6 @@ import { useUsageStore } from '@/stores/usage'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import PaywallModal from '@/components/PaywallModal.vue'
 
-const router = useRouter()
 const chat = useChatStore()
 const likes = useLikesStore()
 const profile = useProfileStore()

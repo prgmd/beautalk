@@ -41,7 +41,7 @@ onMounted(async () => {
   // access 토큰은 메모리(Pinia)에만 저장
   auth.login({}, access)
 
-  let data = null
+  let data
   try {
     data = await profile.fetchProfile()
   } catch {
