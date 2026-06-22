@@ -1,9 +1,11 @@
 <script setup>
 import { computed } from 'vue'
 import { useChatStore } from '@/stores/chat'
+import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 
 const chat = useChatStore()
+const likes = useLikesStore()
 const productDetail = useProductDetailStore()
 
 const products = computed(() => chat.recommendedProducts)
@@ -47,10 +49,10 @@ function relativeTime(dateStr) {
             <div class="actions">
               <button
                 class="action-btn"
-                :class="{ liked: chat.isLiked(product.id) }"
-                @click="chat.toggleLike(product)"
+                :class="{ liked: likes.isLiked(product.id) }"
+                @click="likes.toggleLike(product)"
                 title="찜하기"
-              >{{ chat.isLiked(product.id) ? '♥' : '♡' }}</button>
+              >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
               <a :href="product.oliveyoungUrl" target="_blank" class="action-btn" title="올리브영">↗</a>
             </div>
           </div>

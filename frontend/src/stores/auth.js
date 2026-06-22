@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { api } from '@/services/api'
 
 export const useAuthStore = defineStore('auth', () => {
   // 로그인 상태(hasProfile)만 localStorage에 유지 — 토큰은 저장하지 않는다.
@@ -55,5 +56,30 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { user, accessToken, isLoggedIn, hasProfile, login, setAccessToken, logout, serverLogout, setProfileComplete }
+  // GET /account/ — 계정 정보(이메일·가입경로·가입일)를 받아 user에 병합한다.
+  async function fetchAccount() {
+    const { data } = await api.get('/account/')
+    if (data) {
+      user.value = {
+        ...user.value,
+        email: data.email,
+        authProvider: data.auth_provider,
+        joinedAt: data.created_at,
+      }
+      localStorage.setItem('bt_user', JSON.stringify(user.value))
+    }
+    return data
+  }
+
+  // DELETE /account/ — 회원 탈퇴. 서버가 데이터 연쇄 삭제 + 토큰 무효화 후 로컬 상태 정리.
+  async function withdraw() {
+    await api.del('/account/')
+    logout()
+  }
+
+  return {
+    user, accessToken, isLoggedIn, hasProfile,
+    login, setAccessToken, logout, serverLogout, setProfileComplete,
+    fetchAccount, withdraw,
+  }
 })

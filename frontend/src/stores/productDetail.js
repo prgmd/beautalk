@@ -27,7 +27,22 @@ export const useProductDetailStore = defineStore('productDetail', () => {
 
   function open(p) {
     product.value = p
-    detail.value = MOCK_DETAIL
+    // 제품 객체가 백엔드 실데이터(ai_summary·평점·만족도)를 들고 있으면 그대로 쓰고,
+    // 없으면 목업으로 채운다. 리뷰 목록은 아직 API 미제공이라 목업을 유지한다.
+    const hasReal =
+      p && (p.ai_summary || p.average_rating != null || (p.satisfaction_by_type && Object.keys(p.satisfaction_by_type).length))
+    detail.value = hasReal
+      ? {
+          ai_summary: p.ai_summary || MOCK_DETAIL.ai_summary,
+          average_rating: p.average_rating ?? MOCK_DETAIL.average_rating,
+          review_count: p.review_count ?? MOCK_DETAIL.review_count,
+          satisfaction_by_type:
+            p.satisfaction_by_type && Object.keys(p.satisfaction_by_type).length
+              ? p.satisfaction_by_type
+              : MOCK_DETAIL.satisfaction_by_type,
+          reviews: MOCK_DETAIL.reviews,
+        }
+      : MOCK_DETAIL
     isOpen.value = true
   }
 

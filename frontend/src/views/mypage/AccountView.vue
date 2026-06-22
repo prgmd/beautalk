@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -7,25 +7,49 @@ const router = useRouter()
 const auth = useAuthStore()
 
 const showWithdrawModal = ref(false)
+const withdrawing = ref(false)
+const errorMsg = ref('')
+
+// 진입 시 백엔드에서 최신 계정 정보를 불러온다(실패해도 기존 표시 유지).
+onMounted(() => {
+  auth.fetchAccount().catch(() => {})
+})
 
 async function logout() {
   await auth.serverLogout()
   router.push('/login')
 }
 
-function openWithdraw() { showWithdrawModal.value = true }
-function closeWithdraw() { showWithdrawModal.value = false }
-
-function doWithdraw() {
-  // TODO: API
-  auth.logout()
-  router.push('/login')
+function openWithdraw() {
+  errorMsg.value = ''
+  showWithdrawModal.value = true
+}
+function closeWithdraw() {
+  if (withdrawing.value) return
+  showWithdrawModal.value = false
 }
 
+async function doWithdraw() {
+  if (withdrawing.value) return
+  withdrawing.value = true
+  errorMsg.value = ''
+  try {
+    await auth.withdraw()
+    router.push('/login')
+  } catch {
+    errorMsg.value = '탈퇴 처리에 실패했어요. 잠시 후 다시 시도해 주세요.'
+    withdrawing.value = false
+  }
+}
+
+const PROVIDER_LABEL = { kakao: '카카오', google: '구글' }
+
 function formatJoinDate() {
-  const raw = auth.user?.joinedAt || '2025-05-01'
-  const [y, m, d] = raw.split('-')
-  return `이메일 가입 · ${y}년 ${parseInt(m)}월 ${parseInt(d)}일`
+  const raw = auth.user?.joinedAt
+  const provider = PROVIDER_LABEL[auth.user?.authProvider] || '이메일'
+  if (!raw) return `${provider} 가입`
+  const d = new Date(raw)
+  return `${provider} 가입 · ${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`
 }
 
 function getInitials(email) {
@@ -81,9 +105,12 @@ function getInitials(email) {
       <div class="modal" @click.stop>
         <h3>정말 탈퇴하시겠어요?</h3>
         <p>프로필, 추천 기록, 찜한 제품 등 모든 데이터가 영구 삭제됩니다. 이 작업은 되돌릴 수 없어요.</p>
+        <p v-if="errorMsg" class="modal-error">{{ errorMsg }}</p>
         <div class="modal-actions">
-          <button class="modal-cancel" @click="closeWithdraw">취소</button>
-          <button class="modal-confirm" @click="doWithdraw">탈퇴하기</button>
+          <button class="modal-cancel" :disabled="withdrawing" @click="closeWithdraw">취소</button>
+          <button class="modal-confirm" :disabled="withdrawing" @click="doWithdraw">
+            {{ withdrawing ? '처리 중...' : '탈퇴하기' }}
+          </button>
         </div>
       </div>
     </div>
@@ -170,6 +197,8 @@ function getInitials(email) {
 }
 .modal h3 { font-size: 16px; font-weight: 700; }
 .modal p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.modal-error { color: var(--danger); }
+.modal-confirm:disabled, .modal-cancel:disabled { opacity: 0.5; cursor: default; }
 .modal-actions { display: flex; gap: 8px; margin-top: 8px; }
 .modal-cancel {
   flex: 1;

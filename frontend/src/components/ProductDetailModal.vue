@@ -1,10 +1,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useProductDetailStore } from '@/stores/productDetail'
-import { useChatStore } from '@/stores/chat'
+import { useLikesStore } from '@/stores/likes'
 
 const store = useProductDetailStore()
-const chat = useChatStore()
+const likes = useLikesStore()
 
 const product = computed(() => store.product)
 const detail = computed(() => store.detail)
@@ -50,9 +50,9 @@ function stars(rating) {
             <div class="head-actions">
               <button
                 class="like-btn"
-                :class="{ liked: chat.isLiked(product?.id) }"
-                @click="chat.toggleLike(product)"
-              >{{ chat.isLiked(product?.id) ? '♥ 찜함' : '♡ 찜하기' }}</button>
+                :class="{ liked: likes.isLiked(product?.id) }"
+                @click="likes.toggleLike(product)"
+              >{{ likes.isLiked(product?.id) ? '♥ 찜함' : '♡ 찜하기' }}</button>
               <a :href="product?.oliveyoungUrl" target="_blank" class="oliveyoung-btn">
                 올리브영에서 보기 ↗
               </a>
