@@ -38,15 +38,19 @@ products/
 chat/
 ├── models.py         # Recommendation 모델
 ├── serializers.py    # RecommendationSerializer
-├── views.py          # RecommendationListCreateView (GET/POST /api/v1/recommendations/)
+├── views.py          # 챗봇 + 추천 기록 API
+│   ├── ChatView                     # POST /api/v1/chat/ (GMS LLM 호출, Stateless)
+│   │   └── _build_system_prompt()   # 피부 프로필 + 전체 제품 ai_summary → 시스템 프롬프트 조립
+│   └── RecommendationListCreateView # GET/POST /api/v1/recommendations/
 ├── urls.py           # chat 앱 URL 라우팅
-├── tests.py          # 추천 기록 API 테스트 3가지
+├── tests.py          # 챗봇(mock) + 추천 기록 테스트 10가지
 
 crawling.py           # 크롤링 스크립트
 ```
 
-> 챗봇 메시지 API(`POST /api/v1/chat`)와 서버사이드 사용량 제한은 GMS(LLM) 크리덴셜과
-> RAG 인프라(pgvector)가 전제라 Phase 2로 보류. 상세 근거는 `docs/backend-api-report.md` 참고.
+> 챗봇은 GMS(`gpt-5-nano`)를 `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions`로
+> 직접 호출하는 Stateless 구조. 프론트가 `history[]`를 관리해 매 요청마다 전송한다.
+> 서버사이드 사용량 제한 / RAG(pgvector)는 Phase 2. 근거: `docs/backend-api-report.md`
 
 ## Frontend (`frontend/src/`)
 

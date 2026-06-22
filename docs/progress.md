@@ -64,13 +64,13 @@
 > → **RAG 방식 권장**: 유저 질문을 임베딩 → 벡터 DB에서 유사 제품 5~10개만 검색 → 해당 제품만 컨텍스트에 주입.
 > Gemini Embedding API + pgvector(PostgreSQL 확장) 또는 Chroma(로컬) 조합으로 구현 가능. 토큰 최대 95% 절감.
 - [x] 추천 기록 API (GET/POST /api/v1/recommendations/ — 히스토리 저장·조회, LLM과 독립)
-- [ ] 챗봇 메시지 API (`POST /api/v1/chat`) — `content` + `history[]` 수신 *(GMS 크리덴셜·RAG 인프라 필요, Phase 2)*
-- [ ] GMS 연동 (프로필 + 전체 제품 ai_summary → LLM 컨텍스트 구성)
-- [ ] 자연어 질문 이해 → 피부 프로필 자동 참조 답변 생성
-- [ ] 기피 성분 필터링 로직
-- [ ] 화장품 외 질문 범위 제한
-- [ ] 후속 질문 처리 (history[] 기반 대화 맥락 유지)
-- [ ] 챗봇 응답 실패 에러 핸들링
+- [x] 챗봇 메시지 API (`POST /api/v1/chat/`) — `content` + `history[]` 수신, Stateless
+- [x] GMS 연동 (피부 프로필 + 전체 제품 ai_summary → LLM 시스템 프롬프트 주입)
+- [x] 자연어 질문 이해 → 피부 프로필 자동 참조 답변 생성
+- [x] 기피 성분 필터링 로직 (시스템 프롬프트에 기피 성분 강조 주입)
+- [x] 화장품 외 질문 범위 제한 (시스템 프롬프트 규칙으로 처리)
+- [x] 후속 질문 처리 (history[] 기반 대화 맥락 유지, Stateless)
+- [x] 챗봇 응답 실패 에러 핸들링 (Timeout→504, ConnectionError→502)
 
 ### UI 완성
 - [ ] 챗봇 UI (말풍선, 로딩 인디케이터)
