@@ -16,6 +16,54 @@ from .serializers import SkinProfileSerializer
 
 
 # ──────────────────────────────────────────────
+# Refresh 쿠키 설정
+# ──────────────────────────────────────────────
+
+FRONTEND_LOGIN_URL = 'http://localhost:5173/login'
+
+REFRESH_COOKIE_NAME = 'bt_refresh'
+# logout(/api/v1/auth/logout/)과 refresh(/api/v1/auth/token/refresh) 요청에
+# 모두 쿠키가 전송되도록 path를 /api/v1/auth로 넓힌다.
+# (좁히면 logout 요청에 쿠키가 안 실려 블랙리스트가 동작하지 않는다)
+REFRESH_COOKIE_PATH = '/api/v1/auth'
+REFRESH_COOKIE_MAX_AGE = 7 * 24 * 60 * 60  # 7일 (REFRESH_TOKEN_LIFETIME과 일치)
+
+
+def set_refresh_cookie(response, token):
+    response.set_cookie(
+        REFRESH_COOKIE_NAME,
+        token,
+        httponly=True,
+        samesite='Lax',
+        path=REFRESH_COOKIE_PATH,
+        max_age=REFRESH_COOKIE_MAX_AGE,
+    )
+
+
+def resolve_oauth_user(username, email, provider):
+    """
+    provider_id를 인코딩한 username으로 사용자를 식별한다.
+    이메일이 아니라 (provider + provider_id)로 식별하므로
+    동일 이메일을 가진 타 provider 계정과 섞이지 않는다.
+
+    신규 가입인데 해당 이메일이 다른 계정에서 이미 사용 중이면
+    None을 반환해 호출 측이 email_duplicated로 처리하게 한다.
+    """
+    django_user, created = User.objects.get_or_create(username=username)
+    user_info = UserInfo.objects.filter(user=django_user).first()
+
+    if user_info is None:
+        # 신규 가입 — 이메일 선점 여부 확인 (계정 탈취/충돌 방지)
+        if UserInfo.objects.filter(email=email).exists():
+            if created:
+                django_user.delete()  # 가입 실패 시 빈 User 레코드 정리
+            return None
+        UserInfo.objects.create(user=django_user, email=email, auth_provider=provider)
+
+    return django_user
+
+
+# ──────────────────────────────────────────────
 # Skin Profile
 # ──────────────────────────────────────────────
 
@@ -118,13 +166,10 @@ class KakaoCallbackView(APIView):
         kakao_id = kakao_user_info.get('id')
         email = kakao_user_info.get('kakao_account', {}).get('email', f'{kakao_id}@kakao.com')
 
-        # (3) Django User + UserInfo 조회/생성
-        django_user, _ = User.objects.get_or_create(username=f'kakao_{kakao_id}')
-        UserInfo.objects.get_or_create(
-            auth_provider='kakao',
-            email=email,
-            defaults={'user': django_user},
-        )
+        # (3) provider_id 기반으로 사용자 식별 (이메일 중복 시 명시적 에러)
+        django_user = resolve_oauth_user(f'kakao_{kakao_id}', email, 'kakao')
+        if django_user is None:
+            return redirect(f'{FRONTEND_LOGIN_URL}?error=email_duplicated')
 
         # (4) JWT 발급 → 세션에 임시 저장
         refresh = RefreshToken.for_user(django_user)
@@ -201,13 +246,10 @@ class GoogleCallbackView(APIView):
         google_id = google_user_info.get('sub')
         email = google_user_info.get('email', f'{google_id}@google.com')
 
-        # (3) Django User + UserInfo 조회/생성
-        django_user, _ = User.objects.get_or_create(username=f'google_{google_id}')
-        UserInfo.objects.get_or_create(
-            auth_provider='google',
-            email=email,
-            defaults={'user': django_user},
-        )
+        # (3) provider_id 기반으로 사용자 식별 (이메일 중복 시 명시적 에러)
+        django_user = resolve_oauth_user(f'google_{google_id}', email, 'google')
+        if django_user is None:
+            return redirect(f'{FRONTEND_LOGIN_URL}?error=email_duplicated')
 
         # (4) JWT 발급 → 세션에 임시 저장
         refresh = RefreshToken.for_user(django_user)
@@ -234,14 +276,7 @@ class TokenExchangeView(APIView):
             return Response({'error': 'no pending token'}, status=status.HTTP_401_UNAUTHORIZED)
 
         response = Response({'access': access})
-        response.set_cookie(
-            'bt_refresh',
-            refresh,
-            httponly=True,
-            samesite='Lax',
-            path='/api/v1/auth/token/refresh',
-            max_age=7 * 24 * 60 * 60,
-        )
+        set_refresh_cookie(response, refresh)
         return response
 
 
@@ -251,7 +286,7 @@ class TokenExchangeView(APIView):
 
 class CookieTokenRefreshView(APIView):
     def post(self, request):
-        refresh_token = request.COOKIES.get('bt_refresh')
+        refresh_token = request.COOKIES.get(REFRESH_COOKIE_NAME)
         if not refresh_token:
             return Response({'error': 'refresh token not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -262,15 +297,8 @@ class CookieTokenRefreshView(APIView):
             return Response({'error': 'invalid or expired refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
 
         response = Response({'access': access})
-        # ROTATE_REFRESH_TOKENS=True이면 새 refresh 토큰이 발급되므로 쿠키 갱신
-        response.set_cookie(
-            'bt_refresh',
-            str(refresh),
-            httponly=True,
-            samesite='Lax',
-            path='/api/v1/auth/token/refresh',
-            max_age=7 * 24 * 60 * 60,
-        )
+        # 동일 refresh 토큰 유효기간 동안 쿠키 만료시간을 갱신해 슬라이딩 세션처럼 동작시킨다
+        set_refresh_cookie(response, str(refresh))
         return response
 
 
@@ -282,7 +310,7 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        refresh_token = request.COOKIES.get('bt_refresh')
+        refresh_token = request.COOKIES.get(REFRESH_COOKIE_NAME)
         if refresh_token:
             try:
                 RefreshToken(refresh_token).blacklist()
@@ -290,5 +318,5 @@ class LogoutView(APIView):
                 pass  # 이미 만료/블랙리스트된 토큰이면 무시
 
         response = Response(status=status.HTTP_204_NO_CONTENT)
-        response.delete_cookie('bt_refresh', path='/api/v1/auth/token/refresh')
+        response.delete_cookie(REFRESH_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
         return response
