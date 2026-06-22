@@ -120,15 +120,17 @@ function getInitials(email) {
 <style scoped>
 .view { max-width: 560px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
 
-.page-title { font-size: 20px; font-weight: 700; }
+.page-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
 
 .account-card {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: var(--bg);
-  border-radius: 14px;
-  padding: 16px 20px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  box-shadow: var(--shadow-sm);
+  animation: bt-rise 0.5s var(--ease) both;
 }
 .avatar {
   width: 44px;
@@ -143,29 +145,33 @@ function getInitials(email) {
   color: #3A5F80;
   flex-shrink: 0;
 }
-.email { font-size: 15px; font-weight: 600; }
+.email { font-size: 15px; font-weight: 700; }
 .join-date { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
 .section { display: flex; flex-direction: column; gap: 8px; }
-.section-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+.section:nth-of-type(2) { animation: bt-rise 0.5s var(--ease) 0.06s both; }
+.danger-section { animation: bt-rise 0.5s var(--ease) 0.12s both; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
 
 .action-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg);
-  border-radius: 12px;
-  padding: 14px 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 15px 18px;
   cursor: pointer;
-  transition: background 0.15s;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
 }
-.action-card:hover { background: var(--surface-hover); }
+.action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
 .action-left { display: flex; align-items: center; gap: 12px; }
 .action-icon { font-size: 18px; width: 24px; text-align: center; }
-.action-label { font-size: 14px; font-weight: 500; }
+.action-label { font-size: 14px; font-weight: 600; }
 .action-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.chevron { font-size: 18px; color: var(--text-muted); }
+.chevron { font-size: 18px; color: var(--text-muted); transition: transform var(--t-fast) var(--ease); }
+.action-card:hover .chevron { transform: translateX(3px); }
 
 /* Danger zone */
 .danger-title { color: var(--danger); }
@@ -173,29 +179,34 @@ function getInitials(email) {
   border: 1px solid var(--danger-border);
   background: var(--danger-bg);
 }
-.danger-card:hover { background: #FEE2E2; }
+.danger-card:hover { background: #FEE2E2; box-shadow: var(--shadow-md); }
 .danger-label { color: var(--danger); }
 
 /* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.3);
+  background: rgba(40,28,22,0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  animation: bt-rise 0.25s var(--ease) both;
 }
 .modal {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 28px;
   width: 340px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: var(--shadow-lg);
+  animation: bt-pop 0.3s var(--ease-back) both;
 }
-.modal h3 { font-size: 16px; font-weight: 700; }
+.modal h3 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
 .modal p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 .modal-error { color: var(--danger); }
 .modal-confirm:disabled, .modal-cancel:disabled { opacity: 0.5; cursor: default; }
@@ -204,20 +215,26 @@ function getInitials(email) {
   flex: 1;
   padding: 11px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
+.modal-cancel:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-md); }
 .modal-confirm {
   flex: 1;
   padding: 11px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--danger);
   color: #fff;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
+.modal-confirm:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(220,38,38,0.28); filter: brightness(1.05); }
 </style>

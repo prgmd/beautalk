@@ -40,7 +40,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <Transition name="route" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
   <ProductDetailModal />
   <PaywallModal v-if="paywall.isOpen" @close="paywall.close()" />
 </template>

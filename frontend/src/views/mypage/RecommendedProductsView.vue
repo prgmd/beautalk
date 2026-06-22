@@ -109,25 +109,53 @@ function formatDate(dateStr) {
   justify-content: space-between;
   margin-bottom: 24px;
 }
-.page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.page-title { font-size: 21px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
 .page-desc { font-size: 13px; color: var(--text-secondary); }
-.count { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+.count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  background: var(--brand-soft);
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
 
 .error-msg { font-size: 13px; color: var(--danger); margin-bottom: 12px; }
 .loading-msg { font-size: 13px; color: var(--text-muted); padding: 40px 0; text-align: center; }
 
 /* 배치 타임라인 */
 .timeline { display: flex; flex-direction: column; gap: 28px; }
-.batch { display: flex; flex-direction: column; gap: 12px; }
+.batch {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: bt-rise 0.5s var(--ease) both;
+}
+.batch:nth-child(2) { animation-delay: 0.08s; }
+.batch:nth-child(3) { animation-delay: 0.16s; }
+.batch:nth-child(n+4) { animation-delay: 0.24s; }
 .batch-head {
+  position: relative;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
+  padding-left: 14px;
   border-bottom: 1px solid var(--border);
 }
-.batch-summary { font-size: 14px; font-weight: 600; line-height: 1.5; }
+.batch-head::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 4px;
+  height: 1.1em;
+  border-radius: 999px;
+  background: var(--gradient-brand);
+}
+.batch-summary { font-size: 14px; font-weight: 700; line-height: 1.5; letter-spacing: -0.2px; }
 .batch-date { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
 
 .product-grid {
@@ -137,15 +165,16 @@ function formatDate(dateStr) {
 }
 
 .product-card {
-  background: var(--bg);
-  border-radius: 14px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--border);
-  transition: box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
   display: flex;
   flex-direction: column;
 }
-.product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 
 .product-image {
   width: 100%;
@@ -156,7 +185,13 @@ function formatDate(dateStr) {
   justify-content: center;
   overflow: hidden;
 }
-.product-image img { width: 100%; height: 100%; object-fit: cover; }
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-slow) var(--ease);
+}
+.product-card:hover .product-image img { transform: scale(1.06); }
 .clickable { cursor: pointer; }
 .product-body .clickable:hover .name { text-decoration: underline; }
 .img-placeholder { font-size: 48px; }
@@ -168,8 +203,8 @@ function formatDate(dateStr) {
   font-size: 12px;
   line-height: 1.5;
   color: var(--text-secondary);
-  background: var(--surface);
-  border-radius: 8px;
+  background: var(--brand-soft);
+  border-radius: var(--radius-sm);
   padding: 8px 10px;
 }
 
@@ -180,7 +215,7 @@ function formatDate(dateStr) {
 .action-btn {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
   font-size: 13px;
@@ -190,10 +225,16 @@ function formatDate(dateStr) {
   justify-content: center;
   text-decoration: none;
   color: var(--text-secondary);
-  transition: background 0.15s;
+  transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease-back), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
-.action-btn:hover { background: var(--surface-hover); }
-.action-btn.liked { color: #E53935; border-color: #FECACA; }
+.action-btn:hover { background: var(--surface-hover); transform: translateY(-1px); }
+.action-btn.liked {
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-color: var(--brand-1);
+  animation: bt-pop var(--t) var(--ease-back);
+}
+.action-btn.liked:hover { box-shadow: var(--shadow-glow); }
 
 .empty {
   display: flex;

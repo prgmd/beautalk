@@ -37,6 +37,10 @@ function handleOAuth(provider) {
 
 <template>
   <div class="page">
+    <div class="blob blob-1" />
+    <div class="blob blob-2" />
+    <div class="blob blob-3" />
+
     <div class="card">
       <div class="logo">beautalk</div>
       <h1 class="title">시작하기</h1>
@@ -69,37 +73,64 @@ function handleOAuth(provider) {
 
 <style scoped>
 .page {
+  position: relative;
   min-height: 100vh;
-  background: var(--bg);
+  width: 100%;
+  background: radial-gradient(140% 120% at 50% 0%, #FBF4EF 0%, var(--bg) 55%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overflow: hidden;
 }
 
+/* Ambient floating blobs */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(56px);
+  opacity: 0.55;
+  pointer-events: none;
+  will-change: transform;
+}
+.blob-1 { width: 360px; height: 360px; background: #FFB7CE; top: -90px; left: -70px; animation: bt-float 11s var(--ease) infinite; }
+.blob-2 { width: 320px; height: 320px; background: #D6BBFF; bottom: -100px; right: -60px; animation: bt-float 13s var(--ease) infinite reverse; }
+.blob-3 { width: 240px; height: 240px; background: #FFD7B5; top: 40%; right: 18%; opacity: 0.4; animation: bt-float 16s var(--ease) infinite; }
+
 .card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 40px 32px;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 44px 34px;
   width: 100%;
-  max-width: 380px;
+  max-width: 390px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  animation: bt-pop 0.6s var(--ease-back) both;
 }
 
 .logo {
   text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--text-muted);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  background: var(--gradient-brand-rich);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
 }
 
 .title {
   text-align: center;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 23px;
+  font-weight: 800;
   letter-spacing: -0.5px;
 }
 
@@ -127,18 +158,23 @@ function handleOAuth(provider) {
 
 .btn-oauth {
   width: 100%;
-  padding: 13px;
+  padding: 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: var(--surface);
   font-size: 14px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: background 0.15s;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), background var(--t-fast);
 }
-.btn-oauth:hover { background: var(--bg); }
+.btn-oauth:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn-oauth:active { transform: translateY(0) scale(0.99); }
+.btn-oauth.kakao { background: #FEE500; border-color: #FEE500; color: #191600; }
+.btn-oauth.kakao:hover { box-shadow: 0 8px 20px rgba(254, 229, 0, 0.4); }
 .oauth-icon { width: 20px; height: 20px; }
 
 .terms-notice {
