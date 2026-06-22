@@ -1,8 +1,27 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import TermsModal from '@/components/TermsModal.vue'
 
+const route = useRoute()
 const activeModal = ref(null) // null | 'terms' | 'privacy'
+
+// 백엔드 OAuth 콜백이 실패하면 /login?error=<사유> 로 리다이렉트한다.
+// (backend/accounts/views.py 의 KakaoCallbackView/GoogleCallbackView 참고)
+const ERROR_MESSAGES = {
+  csrf_detected: '보안 인증에 실패했습니다. 다시 시도해 주세요.',
+  email_duplicated: '이미 다른 소셜 계정으로 가입된 이메일입니다. 기존에 사용하던 플랫폼으로 로그인해 주세요.',
+  oauth_failed: '소셜 로그인이 취소되었거나 실패했습니다. 다시 시도해 주세요.',
+  missing_code: '로그인 정보가 올바르지 않습니다. 다시 시도해 주세요.',
+  token_exchange_failed: '로그인 처리 중 오류가 발생했습니다. 다시 시도해 주세요.',
+  userinfo_failed: '사용자 정보를 가져오지 못했습니다. 다시 시도해 주세요.',
+}
+
+const errorMessage = computed(() => {
+  const code = route.query.error
+  if (!code) return ''
+  return ERROR_MESSAGES[code] || '로그인 중 오류가 발생했습니다. 다시 시도해 주세요.'
+})
 
 function handleOAuth(provider) {
   // 백엔드 로그인 시작 endpoint로 이동
@@ -22,6 +41,8 @@ function handleOAuth(provider) {
       <div class="logo">beautalk</div>
       <h1 class="title">시작하기</h1>
       <p class="subtitle">챗봇이 내 피부에 맞는 화장품을 추천해드려요.</p>
+
+      <p v-if="errorMessage" class="error-banner" role="alert">{{ errorMessage }}</p>
 
       <div class="oauth">
         <button class="btn-oauth kakao" @click="handleOAuth('kakao')">
@@ -88,6 +109,18 @@ function handleOAuth(provider) {
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 16px;
+}
+
+.error-banner {
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--danger-bg, #FEF2F2);
+  border: 1px solid var(--danger-border, #FECACA);
+  color: var(--danger, #DC2626);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .oauth { display: flex; flex-direction: column; gap: 10px; }

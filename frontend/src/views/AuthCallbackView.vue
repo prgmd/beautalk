@@ -15,8 +15,9 @@ const profile = useProfileStore()
 
 onMounted(async () => {
   // 백엔드가 OAuth 에러 발생 시 ?error= 를 붙여 리다이렉트한다.
+  // 에러 사유를 LoginView로 그대로 전달해 안내 메시지를 띄운다.
   if (route.query.error) {
-    router.push('/login')
+    router.push({ path: '/login', query: { error: route.query.error } })
     return
   }
 
@@ -33,7 +34,7 @@ onMounted(async () => {
     const data = await res.json()
     access = data.access
   } catch {
-    router.push('/login')
+    router.push({ path: '/login', query: { error: 'token_exchange_failed' } })
     return
   }
 
