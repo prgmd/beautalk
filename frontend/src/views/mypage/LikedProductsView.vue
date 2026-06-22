@@ -1,19 +1,32 @@
 <script setup>
-import { computed } from 'vue'
-import { useChatStore } from '@/stores/chat'
+import { computed, onMounted, ref } from 'vue'
+import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 
-const chat = useChatStore()
+const likes = useLikesStore()
 const productDetail = useProductDetailStore()
 
-const likedProducts = computed(() => chat.likedProducts)
+const likedProducts = computed(() => likes.items)
+const loading = ref(false)
+
+// 진입 시 백엔드에서 최신 찜 목록을 불러온다(이미 불러왔으면 생략).
+onMounted(async () => {
+  if (likes.loaded) return
+  loading.value = true
+  try {
+    await likes.fetchLikes()
+  } catch {
+    // 실패해도 로컬 캐시로 계속 표시한다.
+  }
+  loading.value = false
+})
 
 function formatPrice(n) {
   return n.toLocaleString('ko-KR') + '원'
 }
 
 function unlike(product) {
-  chat.toggleLike(product)
+  likes.toggleLike(product)
 }
 </script>
 
@@ -23,6 +36,8 @@ function unlike(product) {
       <h2 class="page-title">찜한 제품</h2>
       <span class="count">총 {{ likedProducts.length }}개</span>
     </div>
+
+    <p v-if="loading && !likedProducts.length" class="loading-msg">찜한 제품을 불러오는 중...</p>
 
     <div v-if="likedProducts.length" class="product-grid">
       <div v-for="product in likedProducts" :key="product.id" class="product-card">
@@ -45,7 +60,7 @@ function unlike(product) {
       </div>
     </div>
 
-    <div v-else class="empty">
+    <div v-else-if="!loading" class="empty">
       <p class="empty-icon">🤍</p>
       <p class="empty-text">아직 찜한 제품이 없어요.</p>
       <p class="empty-sub">챗봇에서 마음에 드는 제품에 ♡를 눌러보세요.</p>
@@ -64,6 +79,7 @@ function unlike(product) {
 }
 .page-title { font-size: 20px; font-weight: 700; }
 .count { font-size: 13px; color: var(--text-muted); }
+.loading-msg { font-size: 13px; color: var(--text-muted); padding: 40px 0; text-align: center; }
 
 .product-grid {
   display: grid;

@@ -2,6 +2,7 @@
 import { ref, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
+import { useLikesStore } from '@/stores/likes'
 import { useProfileStore } from '@/stores/profile'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useUsageStore } from '@/stores/usage'
@@ -10,6 +11,7 @@ import PaywallModal from '@/components/PaywallModal.vue'
 
 const router = useRouter()
 const chat = useChatStore()
+const likes = useLikesStore()
 const profile = useProfileStore()
 const productDetail = useProductDetailStore()
 const usage = useUsageStore()
@@ -144,10 +146,10 @@ function askWhy(product) {
                     <button class="action-btn why" @click="askWhy(product)">왜 이 제품?</button>
                     <button
                       class="action-btn icon"
-                      :class="{ liked: chat.isLiked(product.id) }"
-                      @click="chat.toggleLike(product)"
+                      :class="{ liked: likes.isLiked(product.id) }"
+                      @click="likes.toggleLike(product)"
                       title="찜하기"
-                    >{{ chat.isLiked(product.id) ? '♥' : '♡' }}</button>
+                    >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
                     <a :href="product.oliveyoungUrl" target="_blank" class="action-btn icon" title="올리브영">↗</a>
                   </div>
                 </div>
