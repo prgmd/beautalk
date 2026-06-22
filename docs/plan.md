@@ -6,145 +6,140 @@
 
 ---
 
-#### [Critical] SECRET_KEY 하드코딩
-**위치:** [config/settings.py:27](../backend/config/settings.py#L27)
+#### [Critical] SECRET_KEY 하드코딩 ✅
 
-```python
-SECRET_KEY = 'django-insecure-k#7o(uz1nc^xr04)ks@g8$uq7)#vwe+9$td)iwygji+_u=&*i3'
-```
+**상태:** 수정 완료 (2026-06-22)
 
-`.env` 로드 로직이 이미 있음에도 SECRET_KEY는 코드에 하드코딩되어 있다. SECRET_KEY가 노출되면 Django 서명 기반 보안(세션, CSRF 토큰, JWT 서명 등) 전체가 무력화된다.
-
-**수정 방향:** `SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')`
+**변경 사항:**
+- `.env` 파일 추가, `DJANGO_SECRET_KEY` 환경변수로 분리
+- [config/settings.py:15](../backend/config/settings.py#L15): `SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')`
+- 새 SECRET_KEY 발급 완료
 
 ---
 
-#### [Critical] JWT 토큰을 URL 쿼리스트링으로 전달
-**위치:** [accounts/views.py:135-138](../backend/accounts/views.py#L135) / [views.py:177-180](../backend/accounts/views.py#L177)
+#### [Critical] JWT 토큰을 URL 쿼리스트링으로 전달 ✅
 
-```python
-return redirect(
-    f'http://localhost:5173/auth/callback'
-    f'?access={str(refresh.access_token)}'
-    f'&refresh={str(refresh)}'
-)
-```
+**상태:** 수정 완료 (2026-06-22)
 
-OAuth 콜백 후 JWT access + refresh 토큰 둘 다를 URL 쿼리스트링으로 프론트엔드에 전달한다. 이 토큰은 브라우저 히스토리, Nginx/서버 액세스 로그, HTTP Referrer 헤더에 평문으로 기록되어 토큰 탈취로 이어질 수 있다.
-
-**수정 방향:** 임시 일회용 코드(short-lived code)를 URL에 담고, 프론트엔드가 해당 코드를 백엔드에 POST로 교환하는 방식으로 전환. 또는 HttpOnly 쿠키 사용.
+**변경 사항:**
+- 콜백 후 토큰을 세션에 임시 저장 (`pending_access`, `pending_refresh`)
+- `/api/v1/auth/exchange/` 엔드포인트 추가: access는 응답 바디, refresh는 HttpOnly 쿠키로 반환
+- Access 토큰: 메모리(Pinia)에만 유지, refresh 토큰: HttpOnly; SameSite=Lax 쿠키로 백엔드 관리
+- 토큰이 브라우저 히스토리/로그에 남지 않음
 
 ---
 
-#### [Critical] OAuth CSRF 방어 누락 (state 파라미터 없음)
-**위치:** [accounts/views.py:60-66](../backend/accounts/views.py#L60) / [views.py:73-80](../backend/accounts/views.py#L73)
+#### [Critical] OAuth CSRF 방어 누락 (state 파라미터 없음) ✅
 
-카카오, 구글 OAuth 요청 URL에 `state` 파라미터가 없다. 공격자가 자신의 OAuth 인가 코드를 피해자의 브라우저에서 사용하게 만드는 OAuth CSRF 공격이 가능하다. 예를 들어 공격자가 자신의 계정으로 시작한 OAuth 흐름의 콜백 URL을 피해자가 열도록 유도하면, 피해자 세션에 공격자 계정이 연결된다.
+**상태:** 수정 완료 (2026-06-22)
 
-**수정 방향:** 로그인 시작 시 서버에서 random state를 생성해 세션에 저장하고, 콜백에서 비교 검증.
+**변경 사항:**
+- 로그인 시작 시 `secrets.token_urlsafe(16)` 로 state 생성, 세션 저장
+- 카카오/구글 Auth URL에 `&state={state}` 파라미터 추가
+- 콜백에서 반환된 state와 세션 state 비교, 불일치 시 `?error=csrf_detected` 리다이렉트
+- [accounts/views.py:KakaoLoginView, GoogleLoginView, KakaoCallbackView, GoogleCallbackView]
 
 ---
 
-#### [High] 이메일 중복 시 계정 탈취 버그
-**위치:** [accounts/views.py:116-120](../backend/accounts/views.py#L116)
+#### [High] 이메일 중복 시 계정 탈취 버그 ✅
 
-```python
-django_user, _ = User.objects.get_or_create(username=f'kakao_{kakao_id}')
-user_info, _ = UserInfo.objects.get_or_create(
-    email=email,
-    defaults={'user': django_user, 'auth_provider': 'kakao'}
-)
-```
+**상태:** 수정 완료 (2026-06-22)
 
-이미 구글로 가입한 이메일과 동일한 이메일을 가진 카카오 계정으로 로그인하면:
-- `django_user`는 새로 만들어진 카카오 유저
-- `user_info`는 기존 구글 유저가 반환됨 (`get_or_create`에서 이미 존재하므로)
-- JWT는 새 `django_user` 기준으로 발급되나, SkinProfile 등 데이터는 `user_info`(구글 유저)에 연결되어 있음
-
-결과적으로 인증 주체와 데이터 소유자가 불일치하여 다른 사용자 데이터에 접근하는 버그가 발생한다. 구글의 경우도 동일한 패턴이다.
-
-**수정 방향:** `UserInfo`를 email이 아닌 `auth_provider + provider_id` 조합으로 식별하거나, 이메일 중복 시 명시적 오류 반환.
+**변경 사항:**
+- `resolve_oauth_user()` 헬퍼 함수 추가: provider_id를 username으로 인코딩해 사용자 식별
+- 신규 가입 시 이메일이 이미 선점돼 있으면 None 반환 → `?error=email_duplicated` 리다이렉트
+- 기존 사용자는 동일 provider_id로 기존 계정 재사용
+- [accounts/views.py:resolve_oauth_user(), KakaoCallbackView, GoogleCallbackView]
 
 ---
 
 #### [High] DEBUG=True, ALLOWED_HOSTS 미설정
-**위치:** [config/settings.py:29](../backend/config/settings.py#L29), [settings.py:32](../backend/config/settings.py#L32)
 
-```python
-DEBUG = True
-ALLOWED_HOSTS = []
-```
+**상태:** 부분 완료 (배포 단계에서 최종 처리)
 
-프로덕션 배포 시 `DEBUG=True`이면 500 에러 발생 시 스택 트레이스, 로컬 변수, 설정값이 브라우저에 그대로 출력된다. `ALLOWED_HOSTS = []`는 Django 개발 서버에서는 모든 호스트를 허용하는 기본 동작을 한다.
-
-**수정 방향:** 환경변수로 분기 처리, 프로덕션에서 `DEBUG=False` + `ALLOWED_HOSTS=['yourdomain.com']` 명시.
+**현재:**
+- 개발 환경: DEBUG=True (의도적, 로컬 개발용)
+- 프로덕션 배포 시 수정 필요: 환경변수 분기 처리, DEBUG=False 설정
 
 ---
 
-#### [High] Refresh Token을 localStorage에 저장
-**위치:** [frontend/src/stores/auth.js:5](../frontend/src/stores/auth.js#L5), [auth.js:12](../frontend/src/stores/auth.js#L12)
+#### [High] Refresh Token을 localStorage에 저장 ✅
 
-```js
-const user = ref(JSON.parse(localStorage.getItem('bt_user') || 'null'))
-// ...
-localStorage.setItem('bt_user', JSON.stringify(userData))
-```
+**상태:** 수정 완료 (2026-06-22)
 
-`bt_user` 객체에 access와 refresh 토큰이 함께 저장된다. localStorage는 동일 출처의 JavaScript에서 접근 가능하므로 XSS 취약점이 하나라도 있으면 두 토큰 모두 즉시 탈취된다. Refresh 토큰은 수명이 길어 특히 위험하다.
-
-**수정 방향:** Refresh 토큰은 HttpOnly 쿠키로 저장하고, Access 토큰은 메모리(Pinia 상태)에만 유지.
+**변경 사항:**
+- localStorage: `{ hasProfile }` 정보만 저장 (토큰 제거)
+- Access 토큰: Pinia 메모리에만 유지 (페이지 새로고침 시 App.vue startup refresh로 복원)
+- Refresh 토큰: HttpOnly; SameSite=Lax 쿠키로 백엔드 관리
+- [frontend/src/stores/auth.js, App.vue, services/api.js]
 
 ---
 
-#### [Medium] OAuth 콜백 에러 처리 없음
-**위치:** [accounts/views.py:86](../backend/accounts/views.py#L86), [views.py:101](../backend/accounts/views.py#L101)
+#### [Medium] OAuth 콜백 에러 처리 없음 ✅
 
-```python
-code = request.GET.get('code')
-# code가 None인 경우 바로 카카오 API 요청 → 500 에러
-access_token = token_response.json().get('access_token')
-# access_token이 None이면 이후 Authorization 헤더가 'Bearer None'이 됨
-```
+**상태:** 수정 완료 (2026-06-22)
 
-`code`가 없거나, OAuth 제공자가 에러를 반환하거나(`?error=access_denied`), 토큰 교환이 실패해도 예외 처리 없이 None이 전파되어 500 Internal Server Error가 발생한다.
-
-**수정 방향:** 각 단계에서 명시적 검증 및 400/502 에러 반환.
+**변경 사항:**
+- `code` 누락: `?error=missing_code` 리다이렉트
+- Provider 에러 (`?error=`): `?error=oauth_failed` 리다이렉트
+- 토큰 교환 실패: `?error=token_exchange_failed` 리다이렉트
+- 사용자 정보 요청 실패: `?error=userinfo_failed` 리다이렉트
+- 각 HTTP 요청에 10초 타임아웃 설정
+- [accounts/views.py: KakaoCallbackView, GoogleCallbackView]
 
 ---
 
-#### [Medium] API Rate Limiting 없음
-**위치:** [accounts/urls.py](../backend/accounts/urls.py), [config/urls.py](../backend/config/urls.py)
+#### [Medium] API Rate Limiting 없음 ✅
 
-OAuth 콜백, 프로필 API, 토큰 갱신 엔드포인트에 Rate Limiting이 없다. 토큰 무차별 대입이나 스팸 계정 생성에 취약하다.
+**상태:** 수정 완료 (2026-06-22)
 
-**수정 방향:** `django-ratelimit` 또는 DRF throttling 적용.
-
----
-
-#### [Medium] JWT 설정 미정의 (기본값 의존)
-**위치:** [config/settings.py](../backend/config/settings.py)
-
-`SIMPLE_JWT` 설정 블록이 없어 simplejwt 기본값에 의존한다. 기본값은 Access 5분, Refresh 1일이고 Refresh 토큰 블랙리스트도 비활성화 상태다. 로그아웃 후에도 탈취된 Refresh 토큰을 재사용할 수 있다.
-
-**수정 방향:** `SIMPLE_JWT` 설정 명시, `'BLACKLIST_AFTER_ROTATION': True`, `'rest_framework_simplejwt.token_blacklist'` 앱 추가.
+**변경 사항:**
+- DRF throttling 전역 설정 추가 (장점: JWT 토큰 기반 사용자별 제한 가능)
+- 비인증 사용자: 20 요청/시간
+- 인증 사용자: 100 요청/시간
+- [config/settings.py: REST_FRAMEWORK['DEFAULT_THROTTLE_*']]
+- 429 Too Many Requests 에러 반환
 
 ---
 
-#### [Medium] SkinProfile JSONField 입력 검증 없음
-**위치:** [accounts/serializers.py:10](../backend/accounts/serializers.py#L10)
+#### [Medium] JWT 설정 미정의 (기본값 의존) ✅
 
-`concerns`와 `avoid_ingredients` 필드가 JSONField이지만 Serializer에서 형식 검증이 없다. 클라이언트가 배열 대신 임의의 JSON 객체나 중첩 구조를 전송해도 그대로 저장된다.
+**상태:** 수정 완료 (2026-06-22)
 
-**수정 방향:** `validate_concerns`, `validate_avoid_ingredients` 메서드로 리스트 타입 + 항목 길이 검증 추가.
+**변경 사항:**
+- `SIMPLE_JWT` 설정 블록 명시 추가
+  - Access 토큰: 30분 (기본값 5분에서 확대)
+  - Refresh 토큰: 7일
+  - `ROTATE_REFRESH_TOKENS=True`: 토큰 갱신 시 새 토큰 발급
+  - `BLACKLIST_AFTER_ROTATION=True`: 회전된 토큰 자동 블랙리스트
+- `rest_framework_simplejwt.token_blacklist` 앱 추가, 마이그레이션 실행
+- 로그아웃 시 RefreshToken.blacklist() 호출 → DB에 기록
+- [config/settings.py: SIMPLE_JWT 블록, accounts/views.py: LogoutView]
+
+---
+
+#### [Medium] SkinProfile JSONField 입력 검증 없음 ✅
+
+**상태:** 수정 완료 (2026-06-22)
+
+**변경 사항:**
+- `SkinProfileSerializer` 클래스에 검증 메서드 추가
+  - `validate_concerns()`: 리스트 타입 확인 + 각 항목 50자 이하 검증
+  - `validate_avoid_ingredients()`: 리스트 타입 확인 + 각 항목 50자 이하 검증
+- 검증 실패 시 400 Bad Request 반환
+- [accounts/serializers.py: SkinProfileSerializer.validate_*]
+- 테스트: test_rejects_non_list_concerns, test_accepts_valid_list
 
 ---
 
 #### [Low] SQLite 사용
-**위치:** [config/settings.py:101-106](../backend/config/settings.py#L101)
 
-프로덕션 배포 시 SQLite는 동시 쓰기 처리에 한계가 있고, Docker 재기동 시 볼륨 마운트 누락으로 데이터 유실 위험이 있다.
+**상태:** 개발 단계 유지, 배포 시 전환
 
-**수정 방향:** PostgreSQL로 전환.
+**현재:**
+- 로컬 개발: SQLite 사용 (간편함)
+- 배포 단계: PostgreSQL로 전환 계획
+- 추가 고려사항: pgvector를 함께 도입해 RAG 벡터 검색 구현
 
 ---
 
@@ -153,60 +148,72 @@ OAuth 콜백, 프로필 API, 토큰 갱신 엔드포인트에 Rate Limiting이 �
 ---
 
 #### [High] 사용량 제한이 클라이언트 사이드에서만 관리됨
-**위치:** [frontend/src/stores/usage.js](../frontend/src/stores/usage.js), [views/ChatView.vue:41-44](../frontend/src/views/ChatView.vue#L41)
 
-```js
-if (!usage.consume()) {
-  showPaywall.value = true
-  return
-}
-```
+**상태:** 부분 완료 (백엔드 Throttling 추가, 서버사이드 카운팅 미구현)
 
-하루 10회 무료 사용 제한(`bt_usage`)이 localStorage 기반으로만 관리된다. 브라우저 개발자 도구에서 `localStorage.removeItem('bt_usage')` 한 줄로 무한 사용이 가능하다. 과금 모델이 있다면 비즈니스 직접 피해로 이어진다.
+**현재:**
+- DRF Throttling 전역 설정으로 인증 사용자 100/시간 제한
+- 그러나 **사용자별 일별 사용 횟수 상세 카운팅은 아직 미구현**
+  - Chat API에서 사용 횟수 로깅 필요
+  - 별도 UsageLog 모델 추가 고려
+- 프론트 localStorage 검증: 여전히 클라이언트에서만 관리 (보조 용도)
 
-**수정 방향:** 서버 사이드에서 사용자별 일별 사용 횟수를 카운트하고 초과 시 429 반환.
+**수정 필요:**
+- Chat API (`POST /api/v1/chat`) 요청마다 사용 횟수 기록
+- 일일 한도(10회 예정) 초과 시 429 반환
 
 ---
 
 #### [Medium] 찜/추천 기록이 서버와 미연동
-**위치:** [frontend/src/stores/chat.js:15](../frontend/src/stores/chat.js#L15), [chat.js:17-18](../frontend/src/stores/chat.js#L17)
 
-```js
-const likedIds = ref(new Set(JSON.parse(localStorage.getItem('bt_liked') || '[]')))
-const recommendedProducts = ref(stored ? JSON.parse(stored) : SEED_RECOMMENDED)
-```
+**상태:** 미구현 (다음 단계)
 
-찜 목록과 추천 기록이 localStorage에만 저장된다. 브라우저 캐시 삭제나 기기 변경 시 데이터가 모두 사라진다. `Like`, `InUseProduct`, `Recommendation` 모델이 백엔드에 이미 정의되어 있으나 연동이 없다.
+**현재:** localStorage에서만 관리 (브라우저 캐시 삭제 시 초기화)
 
-**수정 방향:** Like, Recommendation 관련 API 엔드포인트 구현 및 프론트엔드 연동.
+**구현 필요:**
+- Like API: `POST /api/v1/likes/`, `DELETE /api/v1/likes/{product_id}/`
+- Recommendation API: `GET /api/v1/recommendations/`
+- 백엔드 모델 활성화: Like, InUseProduct, Recommendation (이미 models.py에 정의됨)
+- 프론트 연동: stores/chat.js → api.js로 교체
 
 ---
 
-#### [Medium] Access 토큰 자동 갱신 로직 없음
-**위치:** [frontend/src/services/api.js](../frontend/src/services/api.js)
+#### [Medium] Access 토큰 자동 갱신 로직 없음 ✅
 
-API 호출 래퍼에서 401 응답 시 Refresh 토큰으로 Access 토큰을 갱신하는 로직이 없다. Access 토큰 만료(기본 5분) 후 모든 API 호출이 401로 실패하고 사용자가 재로그인해야 한다.
+**상태:** 수정 완료 (2026-06-22)
 
-**수정 방향:** `api.js`의 `request` 함수에서 401 응답 시 `/api/v1/token/refresh/`를 호출하고 재시도하는 인터셉터 패턴 적용.
+**변경 사항:**
+- `api.js`에 401 자동 갱신 인터셉터 추가
+  - 401 응답 발생 시 `POST /api/v1/auth/token/refresh` 호출
+  - HttpOnly 쿠키로 refresh 토큰 자동 전송 (credentials: 'include')
+  - 새 access 토큰으로 auth store 갱신
+  - 원본 요청 자동 재시도
+  - 갱신 실패 시 로그아웃 처리
+- [frontend/src/services/api.js: tryRefresh, request 함수]
 
 ---
 
 #### [Low] Mock 데이터가 프로덕션 코드에 잔류
-**위치:** [frontend/src/views/ChatView.vue:30-34](../frontend/src/views/ChatView.vue#L30), [ChatView.vue:53-69](../frontend/src/views/ChatView.vue#L53)
 
-```js
-const MOCK_PRODUCTS = [ ... ]
-// setTimeout으로 Mock 응답 반환
-```
+**상태:** 미구현 (AI 백엔드 연동 단계에서 처리)
 
-실제 AI 응답 대신 하드코딩된 Mock 제품 목록을 반환하는 코드가 남아 있다. AI 백엔드 연동 전 임시 코드이나 배포 시 서비스 신뢰도를 해친다.
+**현재:** ChatView.vue에서 Mock 제품 목록 사용 (임시)
+
+**제거 필요:**
+- Chat API 구현 완료 후 Mock 제품 로직 삭제
+- 실제 AI 응답 처리 로직으로 교체
 
 ---
 
-#### [Low] `auth/callback` 라우트 CSRF 취약성
-**위치:** [frontend/src/router/index.js:42-46](../frontend/src/router/index.py#L42)
+#### [Low] `auth/callback` 라우트 CSRF 취약성 ✅
 
-콜백 라우트에 추가 검증이 없고, 백엔드에서 state 검증도 없으므로(앞서 언급) URL을 직접 조작해 임의의 토큰을 삽입하는 시도가 가능하다. 백엔드 state 검증 도입과 함께 해결된다.
+**상태:** 수정 완료 (2026-06-22)
+
+**변경 사항:**
+- 백엔드 OAuth CSRF 방어 (state 검증) 도입으로 자동 해결
+- 콜백 라우트는 `?error=` 파라미터로 백엔드 에러 감지
+- 프론트 측에서는 `/auth/exchange` 엔드포인트를 신뢰하고 토큰 교환
+- [frontend/src/views/AuthCallbackView.vue]
 
 ---
 

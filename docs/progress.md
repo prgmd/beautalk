@@ -30,8 +30,13 @@
 ### OAuth
 - [x] 카카오 OAuth 연동
 - [x] 구글 OAuth 연동
-- [x] JWT 토큰 발급 및 갱신
+- [x] JWT 토큰 발급 및 갱신 (SIMPLE_JWT 설정, Refresh 블랙리스트)
+- [x] OAuth CSRF 방어 (state 파라미터)
+- [x] OAuth 콜백 에러 처리 (code 누락, provider 에러, 토큰 교환 실패)
 - [x] Vue 라우터 가드
+- [x] JWT HttpOnly 쿠키 관리 (세션 교환 → access 바디 + refresh 쿠키)
+- [x] 401 자동 갱신 (api.js 인터셉터)
+- [x] 페이지 새로고침 시 토큰 복원 (startup refresh)
 - [ ] 온보딩 스킵 시 챗봇 진입 처리
 
 ### 온보딩 UI·API
@@ -42,12 +47,13 @@
 - [ ] 프로필 지정 → 챗봇 추천 자동 참조 연동
 
 ### 프로필 API·UI
-- [x] Serializer 작성 (SkinProfileSerializer, UserInfoSerializer)
+- [x] Serializer 작성 (SkinProfileSerializer + JSONField 검증, UserInfoSerializer)
 - [x] 프로필 조회/생성/수정 API (GET, POST, PATCH /api/v1/profile)
 - [x] URL 연결 (accounts/urls.py, config/urls.py)
+- [x] 로그아웃 (refresh 토큰 블랙리스트 + HttpOnly 쿠키 삭제)
 - [ ] 마이페이지 UI (피부 프로필 확인 및 수정)
 - [ ] 찜한 제품 리스트 확인 및 올리브영 링크 이동
-- [ ] 로그아웃 / 회원 탈퇴
+- [ ] 회원 탈퇴
 
 ### 챗봇 API
 > 아키텍처: GMS(SSAFY 제공 LLM) 직접 호출 방식. 프로필 + 제품 목록(ai_summary 포함) → LLM 컨텍스트 주입. 프론트엔드가 대화 기록(`history[]`) 관리, 백엔드는 stateless.
@@ -76,10 +82,19 @@
 - [ ] 피드백 (좋아요/별로예요)
 - [ ] 대시보드 차트
 
+### 보안 강화
+- [x] SECRET_KEY 환경변수 분리 (.env 로드, 새 키 발급)
+- [x] JWT 토큰 안전한 전달 (URL 쿼리스트링 제거 → 세션 임시 저장 → 교환 엔드포인트)
+- [x] 이메일 중복 가입 차단 (provider_id 기준 식별, 이메일 선점 시 명시적 오류)
+- [x] JWT 블랙리스트 활성화 (로그아웃 시 자동 폐기)
+- [x] DRF Throttling (비인증 20/h, 인증 100/h)
+- [x] 입력 검증 강화 (SkinProfile JSONField 타입 + 길이 검증)
+- [x] 자동 토큰 갱신 (401 발생 시 /auth/token/refresh → 재시도)
+- [x] 테스트 커버리지 (accounts 인증 플로우 7가지 단위 테스트)
+
 ### 배포·QA
 - [ ] Docker 컨테이너화
 - [ ] AWS 배포·Nginx 설정
-- [ ] **SECRET_KEY → 환경변수 이동** (배포 전 필수 — 현재 settings.py에 하드코딩됨. 노출 시 JWT 위조로 계정 탈취 가능)
-- [ ] **JWT 토큰 URL 쿼리스트링 전달 방식 개선** (현재 `/auth/callback?access=...&refresh=...` 형태 — 브라우저 히스토리·서버 로그 노출. 최소 대응: 토큰 읽은 후 `history.replaceState`로 URL 교체)
+- [ ] PostgreSQL 전환 (SQLite → 동시성, 데이터 안정성 개선)
 - [ ] 전체 QA·버그 수정
 - [ ] 발표 준비
