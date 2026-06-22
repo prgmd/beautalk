@@ -99,7 +99,7 @@ async function finishOnboarding() {
   try {
     await profile.saveProfile()
     auth.setProfileComplete()
-  } catch (e) {
+  } catch {
     saveError.value = '프로필 저장에 실패했어요. 잠시 후 다시 시도해 주세요.'
     saving.value = false
     return

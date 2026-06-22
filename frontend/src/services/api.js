@@ -58,7 +58,7 @@ async function request(path, { method = 'GET', body, auth = true } = {}) {
 
   if (res.status === 204) return { status: 204, data: null }
 
-  let data = null
+  let data
   try {
     data = await res.json()
   } catch {

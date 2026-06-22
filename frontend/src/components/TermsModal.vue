@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
   type: {
     type: String, // 'terms' | 'privacy'
     required: true,
@@ -63,21 +63,19 @@ const CONTENT = {
 </script>
 
 <template>
-  <Transition name="modal">
-    <div class="overlay" @click="emit('close')">
-      <div class="modal" @click.stop>
-        <button class="close-btn" @click="emit('close')">×</button>
-        <h2 class="title">{{ CONTENT[type].title }}</h2>
-        <div class="body">
-          <section v-for="sec in CONTENT[type].sections" :key="sec.heading" class="section">
-            <h3 class="section-title">{{ sec.heading }}</h3>
-            <p class="section-body">{{ sec.body }}</p>
-          </section>
-        </div>
-        <button class="confirm-btn" @click="emit('close')">확인</button>
+  <div class="overlay" @click="emit('close')">
+    <div class="modal" @click.stop>
+      <button class="close-btn" @click="emit('close')">×</button>
+      <h2 class="title">{{ CONTENT[type].title }}</h2>
+      <div class="body">
+        <section v-for="sec in CONTENT[type].sections" :key="sec.heading" class="section">
+          <h3 class="section-title">{{ sec.heading }}</h3>
+          <p class="section-body">{{ sec.body }}</p>
+        </section>
       </div>
+      <button class="confirm-btn" @click="emit('close')">확인</button>
     </div>
-  </Transition>
+  </div>
 </template>
 
 <style scoped>
@@ -142,10 +140,4 @@ const CONTENT = {
   font-weight: 600;
   cursor: pointer;
 }
-
-/* Transition */
-.modal-enter-active, .modal-leave-active { transition: opacity 0.2s; }
-.modal-enter-from, .modal-leave-to { opacity: 0; }
-.modal-enter-active .modal, .modal-leave-active .modal { transition: transform 0.2s; }
-.modal-enter-from .modal, .modal-leave-to .modal { transform: scale(0.96); }
 </style>
