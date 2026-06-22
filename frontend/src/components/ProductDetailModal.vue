@@ -21,8 +21,9 @@ function formatPrice(n) {
 }
 
 function stars(rating) {
-  const full = Math.floor(rating)
-  const half = rating - full >= 0.5
+  const r = Math.min(5, Math.max(0, Number(rating) || 0))
+  const full = Math.floor(r)
+  const half = r - full >= 0.5
   return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - (half ? 1 : 0))
 }
 </script>

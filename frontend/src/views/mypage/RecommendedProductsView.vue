@@ -36,6 +36,7 @@ function formatPrice(n) {
 
 function formatDate(dateStr) {
   const d = new Date(dateStr)
+  if (Number.isNaN(d.getTime())) return ''
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
 }
 </script>
