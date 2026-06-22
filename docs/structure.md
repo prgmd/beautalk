@@ -46,6 +46,16 @@ chat/
 ├── tests.py          # 챗봇(mock) + 추천 기록 테스트 10가지
 
 crawling.py           # 크롤링 스크립트
+
+.env                  # 환경변수 (git 제외)
+│   DJANGO_SECRET_KEY=...
+│   KAKAO_CLIENT_ID=...
+│   KAKAO_CLIENT_SECRET=...   # 카카오 앱 > 보안 > 클라이언트 시크릿 코드 (활성화 ON 필수)
+│   GOOGLE_CLIENT_ID=...
+│   GOOGLE_CLIENT_SECRET=...
+│   GMS_API_KEY=...
+│   GMS_API_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions
+│   GMS_MODEL=gpt-5-nano
 ```
 
 > 챗봇은 GMS(`gpt-5-nano`)를 `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions`로

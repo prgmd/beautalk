@@ -141,6 +141,7 @@ class KakaoCallbackView(APIView):
             data={
                 'grant_type': 'authorization_code',
                 'client_id': os.environ.get('KAKAO_CLIENT_ID'),
+                'client_secret': os.environ.get('KAKAO_CLIENT_SECRET'),
                 'redirect_uri': 'http://localhost:8000/api/v1/auth/kakao/callback/',
                 'code': code,
             },
