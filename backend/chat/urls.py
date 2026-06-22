@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns = [
     path('chat/', views.ChatView.as_view()),
-    path('recommendations/', views.RecommendationListCreateView.as_view()),
+    path('recommend/', views.RecommendView.as_view()),
+    path('recommendations/', views.RecommendationListView.as_view()),
 ]
