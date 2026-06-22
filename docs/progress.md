@@ -51,9 +51,11 @@
 - [x] 프로필 조회/생성/수정 API (GET, POST, PATCH /api/v1/profile)
 - [x] URL 연결 (accounts/urls.py, config/urls.py)
 - [x] 로그아웃 (refresh 토큰 블랙리스트 + HttpOnly 쿠키 삭제)
+- [x] 찜 API (GET/POST /api/v1/likes/, DELETE /api/v1/likes/{product_id}/, 제품정보 포함·IDOR 방어)
+- [x] 제품 조회 API (GET /api/v1/products/, /api/v1/products/{id}/ — 페이지네이션·카테고리 필터)
+- [x] 회원 탈퇴 API (DELETE /api/v1/account/ — 토큰 무효화 + CASCADE 삭제)
 - [ ] 마이페이지 UI (피부 프로필 확인 및 수정)
-- [ ] 찜한 제품 리스트 확인 및 올리브영 링크 이동
-- [ ] 회원 탈퇴
+- [ ] 찜한 제품 리스트 UI (백엔드 연동) 및 올리브영 링크 이동
 
 ### 챗봇 API
 > 아키텍처: GMS(SSAFY 제공 LLM) 직접 호출 방식. 프로필 + 제품 목록(ai_summary 포함) → LLM 컨텍스트 주입. 프론트엔드가 대화 기록(`history[]`) 관리, 백엔드는 stateless.
@@ -61,7 +63,8 @@
 > ⚠️ **토큰 한도 주의**: 전체 제품 ai_summary를 그대로 주입하면 제품 수 증가 시 토큰 한도 초과 가능.
 > → **RAG 방식 권장**: 유저 질문을 임베딩 → 벡터 DB에서 유사 제품 5~10개만 검색 → 해당 제품만 컨텍스트에 주입.
 > Gemini Embedding API + pgvector(PostgreSQL 확장) 또는 Chroma(로컬) 조합으로 구현 가능. 토큰 최대 95% 절감.
-- [ ] 챗봇 메시지 API (`POST /api/v1/chat`) — `content` + `history[]` 수신
+- [x] 추천 기록 API (GET/POST /api/v1/recommendations/ — 히스토리 저장·조회, LLM과 독립)
+- [ ] 챗봇 메시지 API (`POST /api/v1/chat`) — `content` + `history[]` 수신 *(GMS 크리덴셜·RAG 인프라 필요, Phase 2)*
 - [ ] GMS 연동 (프로필 + 전체 제품 ai_summary → LLM 컨텍스트 구성)
 - [ ] 자연어 질문 이해 → 피부 프로필 자동 참조 답변 생성
 - [ ] 기피 성분 필터링 로직

@@ -10,4 +10,5 @@ urlpatterns = [
     path('auth/exchange/', views.TokenExchangeView.as_view()),
     path('auth/token/refresh', views.CookieTokenRefreshView.as_view()),
     path('auth/logout/', views.LogoutView.as_view()),
+    path('account/', views.AccountView.as_view()),
 ]

@@ -31,6 +31,33 @@ class LogoutBlacklistTest(TestCase):
         self.assertEqual(res2.status_code, 401)
 
 
+class AccountDeleteTest(TestCase):
+    """회원 탈퇴 시 계정 + 연관 데이터가 삭제되고 토큰이 무효화되는지"""
+
+    def setUp(self):
+        self.user = User.objects.create(username='kakao_1')
+        UserInfo.objects.create(user=self.user, email='a@kakao.com', auth_provider='kakao')
+
+    def test_delete_removes_user_and_blacklists_token(self):
+        refresh = str(RefreshToken.for_user(self.user))
+
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        client.cookies[REFRESH_COOKIE_NAME] = refresh
+        res = client.delete('/api/v1/account/')
+        self.assertEqual(res.status_code, 204)
+
+        # 계정과 UserInfo가 CASCADE로 함께 사라져야 함
+        self.assertFalse(User.objects.filter(username='kakao_1').exists())
+        self.assertEqual(UserInfo.objects.count(), 0)
+
+        # 탈퇴 시 블랙리스트된 refresh 토큰으로는 갱신 불가
+        client2 = APIClient()
+        client2.cookies[REFRESH_COOKIE_NAME] = refresh
+        res2 = client2.post('/api/v1/auth/token/refresh')
+        self.assertEqual(res2.status_code, 401)
+
+
 class EmailDuplicateTest(TestCase):
     """동일 이메일을 가진 타 provider 가입 시 차단되는지 (프론트팀 지적 #2)"""
 

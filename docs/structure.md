@@ -19,18 +19,34 @@ accounts/
 │   ├── TokenExchangeView         # GET /api/v1/auth/exchange (세션 토큰 → HttpOnly 쿠키)
 │   ├── CookieTokenRefreshView    # POST /api/v1/auth/token/refresh (쿠키 갱신)
 │   ├── LogoutView                # POST /api/v1/auth/logout (블랙리스트 + 쿠키 삭제)
+│   ├── AccountView               # GET/DELETE /api/v1/account (계정 조회 + 회원 탈퇴)
 │   └── resolve_oauth_user()      # Helper: provider_id 기준 사용자 식별
 ├── urls.py           # accounts 앱 URL 라우팅
-├── tests.py          # OAuth/Token/SkinProfile 검증 테스트 7가지
+├── tests.py          # OAuth/Token/SkinProfile/회원탈퇴 검증 테스트 8가지
 
 products/
-├── models.py         # Product, Review 모델
+├── models.py         # Product, Review, Like, InUseProduct 모델
+├── serializers.py    # ProductSerializer, LikeSerializer (제품 중첩)
+├── views.py          # 제품 조회 + 찜 API
+│   ├── ProductListView          # GET /api/v1/products/ (페이지네이션, ?category 필터)
+│   ├── ProductDetailView        # GET /api/v1/products/<uuid>/
+│   ├── LikeListCreateView       # GET/POST /api/v1/likes/ (내 찜 목록 / 추가)
+│   └── LikeDeleteView           # DELETE /api/v1/likes/<uuid>/ (product_id 기준, IDOR 방어)
+├── urls.py           # products 앱 URL 라우팅
+├── tests.py          # 찜·제품 API 테스트 8가지
 
 chat/
-├── models.py         # Chat 관련 모델
+├── models.py         # Recommendation 모델
+├── serializers.py    # RecommendationSerializer
+├── views.py          # RecommendationListCreateView (GET/POST /api/v1/recommendations/)
+├── urls.py           # chat 앱 URL 라우팅
+├── tests.py          # 추천 기록 API 테스트 3가지
 
 crawling.py           # 크롤링 스크립트
 ```
+
+> 챗봇 메시지 API(`POST /api/v1/chat`)와 서버사이드 사용량 제한은 GMS(LLM) 크리덴셜과
+> RAG 인프라(pgvector)가 전제라 Phase 2로 보류. 상세 근거는 `docs/backend-api-report.md` 참고.
 
 ## Frontend (`frontend/src/`)
 

@@ -12,7 +12,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import SkinProfile, UserInfo
-from .serializers import SkinProfileSerializer
+from .serializers import SkinProfileSerializer, UserInfoSerializer
 
 
 # ──────────────────────────────────────────────
@@ -292,6 +292,13 @@ class CookieTokenRefreshView(APIView):
 
         try:
             refresh = RefreshToken(refresh_token)
+            # 토큰 서명/만료/블랙리스트 검증을 통과해도, 그 사이 계정이 탈퇴(삭제)
+            # 또는 비활성화됐을 수 있다. 회원 탈퇴 시 simplejwt 블랙리스트 레코드는
+            # User와 함께 CASCADE 삭제되므로, 사용자 존재 여부를 직접 확인해야
+            # 탈퇴 후 토큰으로 access를 재발급받는 구멍을 막을 수 있다.
+            user_id = refresh.payload.get('user_id')
+            if not User.objects.filter(pk=user_id, is_active=True).exists():
+                raise TokenError('user no longer exists')
             access = str(refresh.access_token)
         except TokenError:
             return Response({'error': 'invalid or expired refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -316,6 +323,42 @@ class LogoutView(APIView):
                 RefreshToken(refresh_token).blacklist()
             except TokenError:
                 pass  # 이미 만료/블랙리스트된 토큰이면 무시
+
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        response.delete_cookie(REFRESH_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
+        return response
+
+
+# ──────────────────────────────────────────────
+# 계정 (조회 + 회원 탈퇴)
+# ──────────────────────────────────────────────
+
+class AccountView(APIView):
+    """GET    /api/v1/account/  — 내 계정 정보 (이메일, 가입 경로, 가입일)
+    DELETE /api/v1/account/  — 회원 탈퇴
+
+    탈퇴는 되돌릴 수 없는 작업이므로 다음 순서를 지킨다:
+      1) 남아있는 refresh 토큰을 블랙리스트해 탈퇴 후 토큰 재사용을 막는다.
+      2) Django User를 삭제한다 → FK on_delete=CASCADE 연쇄로
+         UserInfo · SkinProfile · Like · InUseProduct · Recommendation 까지 함께 삭제된다.
+      3) refresh 쿠키를 제거해 클라이언트 상태도 깨끗하게 정리한다.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(UserInfoSerializer(request.user.userinfo).data)
+
+    def delete(self, request):
+        refresh_token = request.COOKIES.get(REFRESH_COOKIE_NAME)
+        if refresh_token:
+            try:
+                RefreshToken(refresh_token).blacklist()
+            except TokenError:
+                pass  # 이미 만료/블랙리스트된 토큰이면 무시
+
+        # Django User 삭제 → OneToOne/ForeignKey CASCADE로 관련 데이터 일괄 삭제
+        request.user.delete()
 
         response = Response(status=status.HTTP_204_NO_CONTENT)
         response.delete_cookie(REFRESH_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
