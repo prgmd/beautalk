@@ -24,10 +24,28 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = token
   }
 
+  // 로컬 상태만 정리 (api.js의 refresh 실패 등 세션이 이미 죽은 경우에 사용)
   function logout() {
     accessToken.value = null
     user.value = null
     localStorage.removeItem('bt_user')
+  }
+
+  // 사용자가 직접 로그아웃: 백엔드에 알려 refresh 토큰 블랙리스트 + HttpOnly 쿠키 삭제 후 로컬 정리
+  async function serverLogout() {
+    try {
+      await fetch('http://localhost:8000/api/v1/auth/logout/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {}),
+        },
+      })
+    } catch {
+      // 네트워크 오류여도 클라이언트 상태는 정리한다
+    }
+    logout()
   }
 
   function setProfileComplete() {
@@ -37,5 +55,5 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { user, accessToken, isLoggedIn, hasProfile, login, setAccessToken, logout, setProfileComplete }
+  return { user, accessToken, isLoggedIn, hasProfile, login, setAccessToken, logout, serverLogout, setProfileComplete }
 })

@@ -2,26 +2,31 @@ import { useAuthStore } from '@/stores/auth'
 
 const BASE_URL = 'http://localhost:8000/api/v1'
 
-let isRefreshing = false
+// 동시에 여러 요청이 401을 맞아도 refresh는 한 번만 수행한다.
+// (각 호출자는 같은 Promise를 공유해 결과를 함께 받는다 → 중복 갱신/오인 로그아웃 방지)
+let refreshPromise = null
 
-async function tryRefresh() {
-  if (isRefreshing) return false
-  isRefreshing = true
-  try {
-    const res = await fetch(`${BASE_URL}/auth/token/refresh`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-    })
-    if (!res.ok) return false
-    const data = await res.json()
-    useAuthStore().setAccessToken(data.access)
-    return true
-  } catch {
-    return false
-  } finally {
-    isRefreshing = false
+function tryRefresh() {
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/auth/token/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        if (!res.ok) return false
+        const data = await res.json()
+        useAuthStore().setAccessToken(data.access)
+        return true
+      } catch {
+        return false
+      } finally {
+        refreshPromise = null
+      }
+    })()
   }
+  return refreshPromise
 }
 
 async function request(path, { method = 'GET', body, auth = true } = {}) {
@@ -46,6 +51,11 @@ async function request(path, { method = 'GET', body, auth = true } = {}) {
     useAuthStore().logout()
     window.location.href = '/login'
     return { status: 401, data: null }
+  }
+
+  // Rate Limiting 초과 → 사용자에게 안내 (백엔드 throttle: anon 20/h, user 100/h)
+  if (res.status === 429) {
+    window.alert('요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.')
   }
 
   if (res.status === 204) return { status: 204, data: null }
