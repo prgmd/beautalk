@@ -1,23 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { api } from '@/services/api'
-
-// 백엔드 product(snake_case) → 프론트 UI가 쓰는 형태(camelCase)로 정규화.
-// ai_summary 등 상세 필드는 제품 상세 모달에서 재사용하므로 그대로 보존한다.
-function normalize(p) {
-  return {
-    id: p.id,
-    brand: p.brand,
-    name: p.name,
-    price: p.price,
-    image: p.image_url ?? p.image ?? null,
-    oliveyoungUrl: p.oliveyoung_url ?? p.oliveyoungUrl ?? '#',
-    ai_summary: p.ai_summary,
-    average_rating: p.average_rating,
-    review_count: p.review_count,
-    satisfaction_by_type: p.satisfaction_by_type,
-  }
-}
+import { normalizeProduct as normalize } from '@/utils/product'
 
 // 진짜 백엔드 제품(UUID)인지 판별. 챗봇이 아직 목업 제품(p1 등)을 내려주는 단계라,
 // UUID가 아닌 제품은 서버에 저장하지 않고 로컬에만 둔다(챗봇 Phase 2부터 완전 동작).
