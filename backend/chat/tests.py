@@ -65,11 +65,12 @@ class ChatApiTest(TestCase):
         self.assertFalse(res.data['ready'])
 
     @patch('chat.views.http.post')
-    def test_json_mode_requested(self, mock_post):
+    def test_responds_as_json_when_possible(self, mock_post):
+        # LLM은 프롬프트만으로 JSON을 지키도록 강제됨 (GMS가 json_mode 미지원 대비)
         mock_post.return_value = _mock_gms(json.dumps({'content': 'x', 'ready': False}))
-        self.client.post('/api/v1/chat/', {'content': '질문'}, format='json')
-        payload = mock_post.call_args.kwargs['json']
-        self.assertEqual(payload['response_format'], {'type': 'json_object'})
+        res = self.client.post('/api/v1/chat/', {'content': '질문'}, format='json')
+        self.assertIn('content', res.data)
+        self.assertIn('ready', res.data)
 
     @patch('chat.views.http.post')
     def test_history_is_forwarded_to_gms(self, mock_post):

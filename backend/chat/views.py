@@ -45,14 +45,12 @@ def _skin_block(user) -> str:
     )
 
 
-def _call_gms(messages, *, json_mode=False, timeout=30):
+def _call_gms(messages, *, timeout=30):
     """GMS Chat Completions 호출. 성공 시 message content 문자열을 반환한다.
 
     실패는 (None, error_response) 형태로 돌려준다. 호출 측에서 그대로 return.
     """
     payload = {'model': GMS_MODEL, 'messages': messages}
-    if json_mode:
-        payload['response_format'] = {'type': 'json_object'}
 
     try:
         res = http.post(
@@ -93,8 +91,8 @@ def _clean_history(raw_history):
 # ──────────────────────────────────────────────
 
 def _build_chat_prompt(user) -> str:
-    """대화 단계 시스템 프롬프트. 제품을 직접 나열하지 않고, 추천에 필요한
-    정보(원하는 제품군·향/가격대 선호 등)를 묻는 상담사 역할 + ready 판단.
+    """대화 단계 시스템 프롬프트. 한두 문장씩 짧게 답하면서 추천에 필요한
+    정보(원하는 제품군·향/가격대 선호 등)를 하나씩 물어본다.
     """
     categories = list(
         Product.objects.values_list('category', flat=True).distinct()
@@ -102,7 +100,7 @@ def _build_chat_prompt(user) -> str:
     category_block = ', '.join(c for c in categories if c) or '(제품 정보 없음)'
 
     return f"""당신은 화장품 추천 상담 AI 'Beautalk'입니다.
-사용자와 자연스럽게 대화하며 추천에 필요한 정보를 모으는 것이 목표입니다.
+사용자 질문에 최대 2문장으로 짧게 답하고, 필요한 정보는 하나씩 물어보세요.
 
 [사용자 피부 프로필]
 {_skin_block(user)}
@@ -111,15 +109,16 @@ def _build_chat_prompt(user) -> str:
 {category_block}
 
 [대화 규칙]
+- 답변은 최대 2문장 (2-3줄)으로 짧게.
+- 한 번에 한 가지만 물어보세요.
 - 제품을 직접 나열/추천하지 마세요. 추천은 별도 단계에서 처리됩니다.
-- 원하는 제품군, 향·가격대 선호 등 추천에 필요한 정보를 자연스럽게 물어보세요.
 - 화장품·스킨케어와 무관한 질문은 정중히 거절하고 다시 유도하세요.
 - 반드시 한국어로 답하세요.
 
 [출력 형식]
 반드시 아래 JSON 형식으로만 답하세요:
-{{"content": "사용자에게 보여줄 자연어 답변", "ready": true 또는 false}}
-- content: 채팅에 표시할 대화 답변 (제품 나열 금지)
+{{"content": "2문장 이내의 짧은 답변", "ready": true 또는 false}}
+- content: 채팅에 표시할 대화 답변 (2문장 이내, 제품 나열 금지)
 - ready: 추천을 의미 있게 할 만큼 정보(특히 원하는 제품군)가 모였으면 true, 아니면 false"""
 
 
@@ -145,7 +144,7 @@ class ChatView(APIView):
         messages.extend(history)
         messages.append({'role': 'user', 'content': content})
 
-        raw, error = _call_gms(messages, json_mode=True)
+        raw, error = _call_gms(messages)
         if error:
             return error
 
@@ -217,7 +216,7 @@ class RecommendView(APIView):
         messages.extend(history)
         messages.append({'role': 'user', 'content': '지금까지의 대화를 바탕으로 제품을 추천해줘.'})
 
-        raw, error = _call_gms(messages, json_mode=True)
+        raw, error = _call_gms(messages)
         if error:
             return error
 
@@ -227,7 +226,10 @@ class RecommendView(APIView):
             picks = parsed.get('products', [])
             if not isinstance(picks, list):
                 raise ValueError
-        except (json.JSONDecodeError, TypeError, AttributeError, ValueError):
+        except (json.JSONDecodeError, TypeError, AttributeError, ValueError) as e:
+            import sys
+            print(f'[RECOMMEND DEBUG] JSON 파싱 실패: {type(e).__name__}: {e}', file=sys.stderr)
+            print(f'[RECOMMEND DEBUG] 원본 응답: {raw[:200]}', file=sys.stderr)
             return Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
         # LLM이 고른 id를 DB로 검증 (환각/오타 제거). LLM 순서를 유지하고 중복은 제거한다.

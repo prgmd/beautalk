@@ -57,20 +57,24 @@
 - [ ] 마이페이지 UI (피부 프로필 확인 및 수정)
 - [ ] 찜한 제품 리스트 UI (백엔드 연동) 및 올리브영 링크 이동
 
-### 챗봇 API
-> 아키텍처: GMS(SSAFY 제공 LLM) 직접 호출 방식. 프로필 + 제품 목록(ai_summary 포함) → LLM 컨텍스트 주입. 프론트엔드가 대화 기록(`history[]`) 관리, 백엔드는 stateless.
+### 챗봇 API (대화 → 추천 분리 아키텍처)
+> 설계: [docs/chat-recommend-plan.md](./chat-recommend-plan.md) 참고
+> - 대화 단계: 자연어만 주고받으며 추천에 필요한 정보 수집 (content/ready JSON)
+> - 추천 단계: history 기반 배치 생성 (LLM이 제품 id 추출 → DB 검증 → 배치 저장)
+> - 히스토리: 배치 단위 타임라인 (products = ProductSerializer 전체 + reason)
+> - 토큰 효율: Phase 2에서 RAG 벡터 검색으로 개선 예정
 >
-> ⚠️ **토큰 한도 주의**: 전체 제품 ai_summary를 그대로 주입하면 제품 수 증가 시 토큰 한도 초과 가능.
-> → **RAG 방식 권장**: 유저 질문을 임베딩 → 벡터 DB에서 유사 제품 5~10개만 검색 → 해당 제품만 컨텍스트에 주입.
-> Gemini Embedding API + pgvector(PostgreSQL 확장) 또는 Chroma(로컬) 조합으로 구현 가능. 토큰 최대 95% 절감.
-- [x] 추천 기록 API (GET/POST /api/v1/recommendations/ — 히스토리 저장·조회, LLM과 독립)
-- [x] 챗봇 메시지 API (`POST /api/v1/chat/`) — `content` + `history[]` 수신, Stateless
-- [x] GMS 연동 (피부 프로필 + 전체 제품 ai_summary → LLM 시스템 프롬프트 주입)
-- [x] 자연어 질문 이해 → 피부 프로필 자동 참조 답변 생성
-- [x] 기피 성분 필터링 로직 (시스템 프롬프트에 기피 성분 강조 주입)
-- [x] 화장품 외 질문 범위 제한 (시스템 프롬프트 규칙으로 처리)
-- [x] 후속 질문 처리 (history[] 기반 대화 맥락 유지, Stateless)
+> ⚠️ **기피 성분 필터는 이번 범위 제외** (제품 성분 데이터 부재, Phase 2)
+- [x] 추천 배치 기록 모델 (Recommendation 부모 + RecommendedProduct 자식, 이벤트 로그)
+- [x] 마이그레이션: chat/0002_recommendedproduct 생성·적용
+- [x] 챗봇 메시지 API (`POST /api/v1/chat/`) — `content` + `ready` JSON, 정보 하나씩 물어보기
+- [x] 추천 배치 API (`POST /api/v1/recommend/` 신설) — history 기반 배치 생성, LLM id 검증
+- [x] 추천 히스토리 API (`GET /api/v1/recommendations/`) — 배치 중첩, ProductSerializer + reason
+- [x] GMS 연동 (json_mode 미지원 대비, 프롬프트 강제 JSON)
+- [x] 짧은 답변 + 한 번에 한 가지만 물어보기 (프롬프트 개선)
+- [x] 사용량 제한 (하루 100번, Throttling 100/day)
 - [x] 챗봇 응답 실패 에러 핸들링 (Timeout→504, ConnectionError→502)
+- [x] 테스트 18개 (chat·recommend·history, mock 기반)
 
 ### UI 완성
 - [ ] 챗봇 UI (말풍선, 로딩 인디케이터)
