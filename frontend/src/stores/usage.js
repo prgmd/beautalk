@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 // 무료 사용자가 하루에 보낼 수 있는 대화(메시지) 횟수
-const FREE_DAILY_LIMIT = 10
+const FREE_DAILY_LIMIT = 500
 
 function today() {
   return new Date().toISOString().slice(0, 10) // 'YYYY-MM-DD'

@@ -38,6 +38,13 @@ async function sendMessage(text) {
   await chat.sendChat(msg)
 }
 
+// 한글 등 IME 조합 중의 Enter는 무시한다.
+// (조합 확정 Enter로 전송하면 마지막 글자가 입력칸에 다시 남는 버그 방지)
+function onEnterKey(e) {
+  if (e.isComposing) return
+  sendMessage()
+}
+
 function getRecommendations() {
   chat.requestRecommend()
 }
@@ -193,7 +200,7 @@ function formatPrice(n) {
               v-model="inputText"
               :placeholder="usage.remaining === 0 ? '내일 다시 이용하거나 프리미엄으로 업그레이드하세요' : '메시지를 입력하세요'"
               :disabled="usage.remaining === 0 || chat.isLoading"
-              @keyup.enter="sendMessage()"
+              @keydown.enter="onEnterKey"
             />
             <button class="send-btn" :disabled="!inputText.trim() || usage.remaining === 0 || chat.isLoading" @click="sendMessage()">
               ↑
