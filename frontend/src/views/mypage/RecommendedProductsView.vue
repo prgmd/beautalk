@@ -48,7 +48,7 @@ function relativeTime(dateStr) {
               <button
                 class="action-btn"
                 :class="{ liked: chat.isLiked(product.id) }"
-                @click="chat.toggleLike(product.id)"
+                @click="chat.toggleLike(product)"
                 title="찜하기"
               >{{ chat.isLiked(product.id) ? '♥' : '♡' }}</button>
               <a :href="product.oliveyoungUrl" target="_blank" class="action-btn" title="올리브영">↗</a>

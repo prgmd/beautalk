@@ -6,21 +6,14 @@ import { useProductDetailStore } from '@/stores/productDetail'
 const chat = useChatStore()
 const productDetail = useProductDetailStore()
 
-const MOCK_LIKED = [
-  { id: 'p1', brand: '코스알엑스', name: 'AHA/BHA 클래리파잉 토너', price: 12000, image: null, oliveyoungUrl: '#' },
-  { id: 'p2', brand: '아누아', name: '어성초 77 토너', price: 15000, image: null, oliveyoungUrl: '#' },
-  { id: 'p3', brand: '라로슈포제', name: '시카플라스트 밤 B5', price: 22000, image: null, oliveyoungUrl: '#' },
-  { id: 'p4', brand: '에스트라', name: '아토베리어 365 크림', price: 35000, image: null, oliveyoungUrl: '#' },
-]
-
-const likedProducts = computed(() => MOCK_LIKED.filter(() => true))
+const likedProducts = computed(() => chat.likedProducts)
 
 function formatPrice(n) {
   return n.toLocaleString('ko-KR') + '원'
 }
 
-function unlike(id) {
-  chat.toggleLike(id)
+function unlike(product) {
+  chat.toggleLike(product)
 }
 </script>
 
@@ -44,7 +37,7 @@ function unlike(id) {
           <div class="row">
             <p class="price">{{ formatPrice(product.price) }}</p>
             <div class="actions">
-              <button class="action-btn" @click="unlike(product.id)" title="찜 해제">♥</button>
+              <button class="action-btn" @click="unlike(product)" title="찜 해제">♥</button>
               <a :href="product.oliveyoungUrl" target="_blank" class="action-btn" title="올리브영">↗</a>
             </div>
           </div>
