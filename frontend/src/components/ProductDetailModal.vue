@@ -61,6 +61,12 @@ function stars(rating) {
         </div>
 
         <div class="body" v-if="detail">
+          <!-- 추천 이유 (추천/히스토리 카드에서 열었을 때만) -->
+          <section v-if="product?.reason" class="section reason-section">
+            <h3 class="section-title">💡 추천 이유</h3>
+            <p class="reason-text">{{ product.reason }}</p>
+          </section>
+
           <!-- AI 요약 -->
           <section class="section ai-section">
             <h3 class="section-title">✨ AI 리뷰 요약</h3>
@@ -208,6 +214,16 @@ function stars(rating) {
   font-size: 13px;
   line-height: 1.7;
   color: #3A3A4A;
+}
+
+.reason-section .reason-text {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
 }
 
 .satisfaction-list { display: flex; flex-direction: column; gap: 10px; }

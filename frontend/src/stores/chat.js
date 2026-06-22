@@ -17,6 +17,8 @@ export const useChatStore = defineStore('chat', () => {
   const recommendBatch = ref(null) // { id, content, products: [정규화된 product] }
   const recommendError = ref('')
 
+  const lastUserContent = ref('') // 대화 에러 시 재시도용
+
   let seq = 0
   function nextId() {
     seq += 1
@@ -36,6 +38,7 @@ export const useChatStore = defineStore('chat', () => {
 
   // POST /chat/ — 사용자 메시지 전송 → AI 답변/ready 수신
   async function sendChat(content) {
+    lastUserContent.value = content
     const priorHistory = history.value // 새 user 메시지를 넣기 전 내역(백엔드가 content를 따로 붙임)
     push('user', content)
     isLoading.value = true
@@ -48,6 +51,14 @@ export const useChatStore = defineStore('chat', () => {
     } finally {
       isLoading.value = false
     }
+  }
+
+  // 대화 에러 후 재시도 — 마지막 에러 말풍선과 직전 user 메시지를 걷어내고 다시 전송한다.
+  async function retryChat() {
+    if (isLoading.value || !lastUserContent.value) return
+    if (messages.value.at(-1)?.error) messages.value.pop()
+    if (messages.value.at(-1)?.role === 'user') messages.value.pop()
+    await sendChat(lastUserContent.value)
   }
 
   // POST /recommend/ — 지금까지의 대화로 제품 추천(배치 저장은 서버가 처리)
@@ -90,6 +101,6 @@ export const useChatStore = defineStore('chat', () => {
 
   return {
     messages, isLoading, ready, mode, isRecommending, recommendBatch, recommendError,
-    history, sendChat, requestRecommend, backToChat, clearMessages,
+    history, sendChat, retryChat, requestRecommend, backToChat, clearMessages,
   }
 })
