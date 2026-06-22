@@ -22,7 +22,7 @@ onMounted(async () => {
 })
 
 function formatPrice(n) {
-  return n.toLocaleString('ko-KR') + '원'
+  return n?.toLocaleString('ko-KR') + '원'
 }
 
 function unlike(product) {
@@ -42,7 +42,8 @@ function unlike(product) {
     <div v-if="likedProducts.length" class="product-grid">
       <div v-for="product in likedProducts" :key="product.id" class="product-card">
         <div class="product-image clickable" @click="productDetail.open(product)">
-          <div class="img-placeholder">🧴</div>
+          <img v-if="product.image" :src="product.image" :alt="product.name" />
+          <div v-else class="img-placeholder">🧴</div>
         </div>
         <div class="product-body">
           <div class="clickable" @click="productDetail.open(product)">
@@ -103,7 +104,9 @@ function unlike(product) {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
+.product-image img { width: 100%; height: 100%; object-fit: cover; }
 .clickable { cursor: pointer; }
 .product-body .clickable:hover .name { text-decoration: underline; }
 .img-placeholder { font-size: 48px; }
