@@ -17,7 +17,19 @@ function newChat() {
   router.push('/chat')
 }
 
-function logout() {
+async function logout() {
+  try {
+    await fetch('http://localhost:8000/api/v1/auth/logout/', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(auth.accessToken ? { Authorization: `Bearer ${auth.accessToken}` } : {}),
+      },
+    })
+  } catch {
+    // 네트워크 오류여도 클라이언트 상태는 정리한다
+  }
   auth.logout()
   router.push('/login')
 }

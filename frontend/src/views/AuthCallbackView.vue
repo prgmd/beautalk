@@ -9,27 +9,37 @@ import { useAuthStore } from '@/stores/auth'
 import { useProfileStore } from '@/stores/profile'
 
 const router = useRouter()
-const route = useRoute()   // 현재 URL 정보 접근용 (쿼리스트링 포함)
+const route = useRoute()
 const auth = useAuthStore()
 const profile = useProfileStore()
 
 onMounted(async () => {
-  // 카카오 콜백 URL: /auth/callback?access=eyJ...&refresh=eyJ...
-  // route.query로 쿼리스트링 파라미터를 객체로 접근 가능
-  const access = route.query.access
-  const refresh = route.query.refresh
-
-  // 토큰이 없으면 비정상 접근 → 로그인 페이지로 튕겨냄
-  if (!access || !refresh) {
+  // 백엔드가 OAuth 에러 발생 시 ?error= 를 붙여 리다이렉트한다.
+  if (route.query.error) {
     router.push('/login')
     return
   }
 
-  // 먼저 토큰을 store에 저장해야 이후 API 호출에 자동 첨부됨 (api.js 참고)
-  auth.login({ access, refresh, hasProfile: false })
+  // 백엔드가 세션에 저장한 JWT를 교환한다.
+  // - access 토큰 → 응답 바디
+  // - refresh 토큰 → HttpOnly 쿠키 (브라우저가 자동 관리)
+  let access
+  try {
+    const res = await fetch('http://localhost:8000/api/v1/auth/exchange/', {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!res.ok) throw new Error('exchange failed')
+    const data = await res.json()
+    access = data.access
+  } catch {
+    router.push('/login')
+    return
+  }
 
-  // 프로필 조회로 온보딩 완료 여부 확인 (없으면 204 → null)
-  // 동시에 profile store에 채워둬서 마이페이지에서 재호출 안 하도록 함
+  // access 토큰은 메모리(Pinia)에만 저장
+  auth.login({}, access)
+
   let data = null
   try {
     data = await profile.fetchProfile()
@@ -39,7 +49,6 @@ onMounted(async () => {
 
   if (data) auth.setProfileComplete()
 
-  // 프로필 존재 여부로 이동 경로 분기
   router.push(data ? '/chat' : '/onboarding')
 })
 </script>

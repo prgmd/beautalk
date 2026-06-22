@@ -2,24 +2,52 @@ import { useAuthStore } from '@/stores/auth'
 
 const BASE_URL = 'http://localhost:8000/api/v1'
 
-// JWT 토큰을 자동으로 첨부하는 fetch 래퍼
-// path 예: '/profile' → http://localhost:8000/api/v1/profile
+let isRefreshing = false
+
+async function tryRefresh() {
+  if (isRefreshing) return false
+  isRefreshing = true
+  try {
+    const res = await fetch(`${BASE_URL}/auth/token/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    if (!res.ok) return false
+    const data = await res.json()
+    useAuthStore().setAccessToken(data.access)
+    return true
+  } catch {
+    return false
+  } finally {
+    isRefreshing = false
+  }
+}
+
 async function request(path, { method = 'GET', body, auth = true } = {}) {
   const headers = { 'Content-Type': 'application/json' }
 
   if (auth) {
-    const authStore = useAuthStore()
-    const token = authStore.user?.access
+    const token = useAuthStore().accessToken
     if (token) headers.Authorization = `Bearer ${token}`
   }
 
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     headers,
+    credentials: 'include',
     body: body !== undefined ? JSON.stringify(body) : undefined,
   })
 
-  // 204 No Content → 본문 없음
+  // access 토큰 만료 → refresh 시도 후 재요청 (무한 루프 방지: refresh 경로 제외)
+  if (res.status === 401 && path !== '/auth/token/refresh') {
+    const refreshed = await tryRefresh()
+    if (refreshed) return request(path, { method, body, auth })
+    useAuthStore().logout()
+    window.location.href = '/login'
+    return { status: 401, data: null }
+  }
+
   if (res.status === 204) return { status: 204, data: null }
 
   let data = null
