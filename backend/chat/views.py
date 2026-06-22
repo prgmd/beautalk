@@ -50,23 +50,35 @@ def _call_gms(messages, *, timeout=30):
 
     실패는 (None, error_response) 형태로 돌려준다. 호출 측에서 그대로 return.
     """
+    import sys
+    import json
+
     payload = {'model': GMS_MODEL, 'messages': messages}
+
+    # JSON을 명시적으로 UTF-8로 인코딩
+    payload_json = json.dumps(payload, ensure_ascii=False).encode('utf-8')
 
     try:
         res = http.post(
             GMS_API_URL,
             headers={
                 'Authorization': f'Bearer {GMS_API_KEY}',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
             },
-            json=payload,
-            timeout=timeout,
+            data=payload_json,
+            timeout=60,
         )
+        print(f'[GMS DEBUG] Response status: {res.status_code}', file=sys.stderr)
         res.raise_for_status()
-    except http.exceptions.Timeout:
+    except http.exceptions.Timeout as e:
+        import sys
+        print(f'[GMS DEBUG] Timeout: {e}', file=sys.stderr)
         return None, Response({'error': ERR_TIMEOUT}, status=status.HTTP_504_GATEWAY_TIMEOUT)
-    except http.exceptions.RequestException:
-        # 내부 URL/키 유출 방지를 위해 상세 오류는 노출하지 않는다
+    except http.exceptions.RequestException as e:
+        import sys
+        print(f'[GMS DEBUG] RequestException: {type(e).__name__}: {e}', file=sys.stderr)
+        print(f'[GMS DEBUG] URL: {GMS_API_URL}', file=sys.stderr)
+        print(f'[GMS DEBUG] Model: {GMS_MODEL}', file=sys.stderr)
         return None, Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
     return res.json()['choices'][0]['message']['content'], None
@@ -210,39 +222,58 @@ class RecommendView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        import sys
+        print('[RECOMMEND] 시작', file=sys.stderr)
         history = _clean_history(request.data.get('history', []))
+        print(f'[RECOMMEND] history 정제 완료: {len(history)} 항목', file=sys.stderr)
 
-        messages = [{'role': 'system', 'content': _build_recommend_prompt(request.user)}]
-        messages.extend(history)
-        messages.append({'role': 'user', 'content': '지금까지의 대화를 바탕으로 제품을 추천해줘.'})
+        try:
+            print('[RECOMMEND] 프롬프트 구성 중...', file=sys.stderr)
+            messages = [{'role': 'system', 'content': _build_recommend_prompt(request.user)}]
+            messages.extend(history)
+            messages.append({'role': 'user', 'content': '지금까지의 대화를 바탕으로 제품을 추천해줘.'})
+            print(f'[RECOMMEND] 메시지 {len(messages)}개 준비 완료', file=sys.stderr)
 
-        raw, error = _call_gms(messages)
+            print('[RECOMMEND] GMS 호출 중...', file=sys.stderr)
+            raw, error = _call_gms(messages)
+            print(f'[RECOMMEND] GMS 응답: error={error is not None}', file=sys.stderr)
+        except Exception as e:
+            print(f'[RECOMMEND ERROR] {type(e).__name__}: {e}', file=sys.stderr)
+            import traceback
+            traceback.print_exc(file=sys.stderr)
+            raise
         if error:
             return error
 
+        import sys
+        print(f'[RECOMMEND] GMS 원본: {raw[:100]}...', file=sys.stderr)
         try:
             parsed = json.loads(raw)
             summary = (parsed.get('content') or '').strip()
             picks = parsed.get('products', [])
             if not isinstance(picks, list):
                 raise ValueError
+            print(f'[RECOMMEND] JSON 파싱 성공: 제품 {len(picks)}개', file=sys.stderr)
         except (json.JSONDecodeError, TypeError, AttributeError, ValueError) as e:
-            import sys
             print(f'[RECOMMEND DEBUG] JSON 파싱 실패: {type(e).__name__}: {e}', file=sys.stderr)
             print(f'[RECOMMEND DEBUG] 원본 응답: {raw[:200]}', file=sys.stderr)
             return Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
         # LLM이 고른 id를 DB로 검증 (환각/오타 제거). LLM 순서를 유지하고 중복은 제거한다.
+        print('[RECOMMEND] ID 검증 중...', file=sys.stderr)
         id_to_reason = {}
         for p in picks:
             if isinstance(p, dict) and p.get('id') and p['id'] not in id_to_reason:
                 id_to_reason[str(p['id'])] = (p.get('reason') or '').strip()
+        print(f'[RECOMMEND] 추출된 ID: {list(id_to_reason.keys())}', file=sys.stderr)
 
         product_map = {str(prod.id): prod for prod in Product.objects.filter(id__in=id_to_reason.keys())}
         matched = [(product_map[pid], reason) for pid, reason in id_to_reason.items() if pid in product_map]
+        print(f'[RECOMMEND] 일치하는 제품: {len(matched)}개', file=sys.stderr)
 
         if not matched:
             # 유효한 제품을 하나도 못 골랐으면 빈 배치를 남기지 않고 재시도를 유도한다
+            print('[RECOMMEND] 일치하는 제품 없음 → 502', file=sys.stderr)
             return Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
         with transaction.atomic():
