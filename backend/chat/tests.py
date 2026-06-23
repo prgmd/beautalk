@@ -22,6 +22,18 @@ def _mock_gms(content):
     return mock
 
 
+def _sent_payload(mock_post):
+    """_call_gms가 GMS로 보낸 payload를 복원한다.
+
+    UTF-8 인코딩 대응으로 요청을 json= 대신 data=(bytes)로 보내므로,
+    bytes를 디코드해 다시 파싱한다.
+    """
+    data = mock_post.call_args.kwargs['data']
+    if isinstance(data, (bytes, bytearray)):
+        data = data.decode('utf-8')
+    return json.loads(data)
+
+
 def _make_product(**overrides):
     defaults = dict(
         brand='코스알엑스', name='AHA/BHA 토너', price=12000,
@@ -80,7 +92,7 @@ class ChatApiTest(TestCase):
             {'role': 'assistant', 'content': '이전 답변'},
         ]
         self.client.post('/api/v1/chat/', {'content': '이번 질문', 'history': history}, format='json')
-        roles = [m['role'] for m in mock_post.call_args.kwargs['json']['messages']]
+        roles = [m['role'] for m in _sent_payload(mock_post)['messages']]
         self.assertEqual(roles, ['system', 'user', 'assistant', 'user'])
 
     @patch('chat.views.http.post')
@@ -93,7 +105,7 @@ class ChatApiTest(TestCase):
         ]
         self.client.post('/api/v1/chat/', {'content': '질문', 'history': bad_history}, format='json')
         # system + user(정상) + user(현재) = 3개
-        self.assertEqual(len(mock_post.call_args.kwargs['json']['messages']), 3)
+        self.assertEqual(len(_sent_payload(mock_post)['messages']), 3)
 
     def test_missing_content_returns_400(self):
         res = self.client.post('/api/v1/chat/', {}, format='json')
@@ -117,7 +129,7 @@ class ChatApiTest(TestCase):
             concerns=['여드름'], avoid_ingredients=['알코올'],
         )
         self.client.post('/api/v1/chat/', {'content': '추천해줘'}, format='json')
-        system_content = mock_post.call_args.kwargs['json']['messages'][0]['content']
+        system_content = _sent_payload(mock_post)['messages'][0]['content']
         self.assertIn('민감성', system_content)
         self.assertIn('알코올', system_content)
 

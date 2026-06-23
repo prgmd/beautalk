@@ -6,8 +6,10 @@ class Product(models.Model):
     brand = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     price = models.IntegerField()
-    oliveyoung_url = models.URLField()
-    image_url = models.URLField()
+    # URLField 기본 max_length=200. 올리브영 추적 파라미터가 붙은 URL은
+    # 200자를 초과하므로 넉넉히 확장 (SQLite는 미강제, PostgreSQL은 강제).
+    oliveyoung_url = models.URLField(max_length=500)
+    image_url = models.URLField(max_length=500)
     category = models.CharField(max_length=50)
     ai_summary = models.TextField(blank=True)
     average_rating = models.FloatField(null=True, blank=True)
