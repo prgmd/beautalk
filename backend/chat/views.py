@@ -181,11 +181,17 @@ def _build_recommend_prompt(user) -> str:
     """추천 단계 시스템 프롬프트. 제품 목록을 id와 함께 제시하고,
     LLM이 그 목록의 '정확한 id 3개'를 고르도록 강제한다(환각 방지).
     """
-    products = Product.objects.exclude(ai_summary='').values(
-        'id', 'brand', 'name', 'category', 'ai_summary',
+    # GMS는 과대 요청을 거부한다: 전 제품 ai_summary를 모두 주입하면 프롬프트가
+    # ~27k자가 되어 "Model not found" 형태의 400으로 실패한다(요청 본문 과대).
+    # 인기 상위 제품으로 후보를 좁히고 ai_summary도 잘라 프롬프트 크기를 안정 범위로 유지한다.
+    # (검증: 후보 40개·요약 컷 시 ~10k자 → 200 OK / 전체 69개 → 27k자 → 400)
+    products = (
+        Product.objects.exclude(ai_summary='')
+        .order_by('-review_count', 'name')
+        .values('id', 'brand', 'name', 'category', 'ai_summary')[:40]
     )
     product_lines = [
-        f"id={p['id']} | [{p['category']}] {p['brand']} {p['name']}: {p['ai_summary']}"
+        f"id={p['id']} | [{p['category']}] {p['brand']} {p['name']}: {p['ai_summary'][:180]}"
         for p in products
     ]
     product_block = '\n'.join(product_lines) if product_lines else '(제품 정보 없음)'
