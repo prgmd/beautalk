@@ -76,7 +76,7 @@ requirements.txt      # 의존성 (psycopg2-binary 포함 — PostgreSQL 드라�
 
 > 챗봇은 GMS(`gpt-5-nano`)를 `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions`로
 > 직접 호출하는 Stateless 구조. 프론트가 `history[]`를 관리해 매 요청마다 전송한다.
-> 서버사이드 사용량 제한 / RAG(pgvector)는 Phase 2. 근거: `docs/backend-api-report.md`
+> 서버사이드 사용량 제한 / RAG(pgvector)는 Phase 2.
 
 ## Frontend (`frontend/src/`)
 

@@ -20,6 +20,8 @@ env/
 *.log
 local_settings.py
 db.sqlite3
+*.sqlite3.old
+old_db/
 media/
 
 # 임시 스크립트

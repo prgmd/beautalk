@@ -102,7 +102,7 @@
   - 현재는 DRF Throttling(100/day)만 적용. Chat 요청별 기록·일일 한도(10회 예정) 초과 시 429는 미구현
 
 ### 배포·QA
-> DB 전환 상세: [docs/postgresql-migration.md](./postgresql-migration.md) 참고
+> DB 전환 상세 문서는 Notion 참고 (SQLite→PostgreSQL 전환·Docker 도입·트러블슈팅)
 - [x] PostgreSQL 전환 (SQLite → 동시성·데이터 안정성 개선)
   - docker-compose로 PostgreSQL 16 구동 (UTF-8 인코딩 고정, healthcheck, 데이터 볼륨)
   - settings DATABASES 환경변수화 (DB_ENGINE 미설정 시 SQLite 폴백 → 점진적 전환)
