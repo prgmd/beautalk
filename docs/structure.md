@@ -3,9 +3,9 @@
 ## 인프라 (프로젝트 루트)
 
 ```
-docker-compose.yml    # 로컬 개발 인프라 (PostgreSQL 16 컨테이너)
-│   └── db 서비스: postgres:16, UTF-8 인코딩 고정, healthcheck, 데이터 볼륨(postgres_data)
-│       사용법: docker compose up -d  →  migrate  →  loaddata
+docker-compose.yml    # 로컬 개발 인프라 (PostgreSQL 16 + pgvector 컨테이너)
+│   └── db 서비스: pgvector/pgvector:pg16, UTF-8 인코딩 고정, healthcheck, 데이터 볼륨(postgres_data)
+│       사용법: docker compose up -d  →  migrate  →  loaddata  →  backfill_embeddings
 ```
 
 > DB를 SQLite → PostgreSQL로 전환하며 컨테이너로 구동. 접속정보는 `backend/.env`의 `DB_*` 값과 일치.
@@ -38,28 +38,34 @@ accounts/
 
 products/
 ├── models.py         # Product, Review, Like, InUseProduct 모델
+│   └── Product.embedding: VectorField(1536) — RAG 벡터 검색용 (pgvector)
 ├── serializers.py    # ProductSerializer, LikeSerializer (제품 중첩)
 ├── views.py          # 제품 조회 + 찜 API
 │   ├── ProductListView          # GET /api/v1/products/ (페이지네이션, ?category 필터)
 │   ├── ProductDetailView        # GET /api/v1/products/<uuid>/
 │   ├── LikeListCreateView       # GET/POST /api/v1/likes/ (내 찜 목록 / 추가)
 │   └── LikeDeleteView           # DELETE /api/v1/likes/<uuid>/ (product_id 기준, IDOR 방어)
+├── management/commands/
+│   └── backfill_embeddings.py   # 제품 → 임베딩 일괄 적재 (seed 미포함, 재생성)
 ├── urls.py           # products 앱 URL 라우팅
 ├── tests.py          # 찜·제품 API 테스트 8가지
 
 chat/
 ├── models.py         # Recommendation 모델
 ├── serializers.py    # RecommendationSerializer
-├── views.py          # 챗봇 + 추천 기록 API
+├── embeddings.py     # GMS 임베딩 호출 (text-embedding-3-small) — 백필·검색 공용
+├── views.py          # 챗봇 + 추천 + 추천 기록 API
 │   ├── ChatView                     # POST /api/v1/chat/ (GMS LLM 호출, Stateless)
-│   │   └── _build_system_prompt()   # 피부 프로필 + 전체 제품 ai_summary → 시스템 프롬프트 조립
-│   └── RecommendationListCreateView # GET/POST /api/v1/recommendations/
+│   ├── RecommendView                # POST /api/v1/recommend/ (배치 생성)
+│   │   ├── _recommend_candidates()  # 대화 임베딩 → pgvector 코사인 top-N (RAG, 실패 시 리뷰순 폴백)
+│   │   └── _build_recommend_prompt()# 검색된 후보 제품 → 시스템 프롬프트 조립
+│   └── RecommendationListView       # GET /api/v1/recommendations/
 ├── urls.py           # chat 앱 URL 라우팅
-├── tests.py          # 챗봇(mock) + 추천 기록 테스트 10가지
+├── tests.py          # 챗봇·추천(RAG 포함)·기록 테스트 (chat 22가지)
 
 crawling.py           # 크롤링 스크립트
 products_seed.json    # Product 156건 시드 (SQLite→PG 이관용 fixture, loaddata로 적재)
-requirements.txt      # 의존성 (psycopg2-binary 포함 — PostgreSQL 드라이버)
+requirements.txt      # 의존성 (psycopg2-binary, pgvector — PostgreSQL + 벡터 검색)
 
 .env                  # 환경변수 (git 제외)
 │   DJANGO_SECRET_KEY=...
@@ -70,6 +76,7 @@ requirements.txt      # 의존성 (psycopg2-binary 포함 — PostgreSQL 드라�
 │   GMS_API_KEY=...
 │   GMS_API_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions
 │   GMS_MODEL=gpt-5-nano
+│   GMS_EMBED_MODEL=text-embedding-3-small   # RAG 임베딩 모델 (미설정 시 기본값)
 │   DB_ENGINE=django.db.backends.postgresql   # 미설정 시 SQLite 폴백
 │   DB_NAME / DB_USER / DB_PASSWORD / DB_HOST / DB_PORT
 ```
