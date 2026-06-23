@@ -6,26 +6,31 @@ import GlobalSidebar from '@/components/GlobalSidebar.vue'
 const route = useRoute()
 const router = useRouter()
 
-// 마이(설정) 영역 서브탭 — 프로필/계정만.
-// 찜·추천은 글로벌 내비(상담/추천/찜/MY)에 있으므로 여기서 중복으로 넣지 않는다.
-const tabs = [
-  { label: '피부 프로필', path: '/mypage/profile' },
-  { label: '계정', path: '/mypage/account' },
-]
-
-// 프로필/계정에서만 서브탭(섹션 내비)을 보여준다.
-// 찜/추천은 글로벌 내비로 진입하는 독립 화면이라 서브탭 없이 콘텐츠만 보인다.
-const isSettings = computed(
-  () => route.path === '/mypage/profile' || route.path === '/mypage/account' || route.path === '/mypage',
+// 마이페이지는 두 허브로 나뉜다:
+//  · 나의 화장대 = 찜한 제품 + 추천받은 제품
+//  · 내 정보     = 피부 프로필 + 계정
+const VANITY = ['/mypage/liked', '/mypage/recommended']
+const group = computed(() => (VANITY.includes(route.path) ? 'vanity' : 'info'))
+const title = computed(() => (group.value === 'vanity' ? '나의 화장대' : '내 정보'))
+const tabs = computed(() =>
+  group.value === 'vanity'
+    ? [
+        { label: '찜한 제품', path: '/mypage/liked' },
+        { label: '추천받은 제품', path: '/mypage/recommended' },
+      ]
+    : [
+        { label: '피부 프로필', path: '/mypage/profile' },
+        { label: '계정', path: '/mypage/account' },
+      ],
 )
 </script>
 
 <template>
   <div class="screen">
     <div class="main">
-      <div v-if="isSettings" class="subnav">
+      <div class="subnav">
         <header class="appbar">
-          <span class="ab-title serif">마이페이지</span>
+          <span class="ab-title serif">{{ title }}</span>
         </header>
         <nav class="tabstrip">
           <button
@@ -72,7 +77,7 @@ const isSettings = computed(
 
 .content { flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 24px; }
 
-/* ── 데스크탑(≥900px): 글로벌 사이드바 + (설정일 때) 세로 서브 사이드바 ── */
+/* ── 데스크탑(≥900px): 글로벌 사이드바 + 세로 서브 사이드바 ── */
 @media (min-width: 900px) {
   .screen { flex-direction: row; }
   .main { flex-direction: row; }
