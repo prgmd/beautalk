@@ -1,16 +1,13 @@
 @import './base.css';
 
-/* 모바일 프레임: 데스크탑에선 가운데 폰 모양, 실제 모바일에선 꽉 참 */
+/* 반응형: 뷰포트를 꽉 채운다. 레이아웃 분기는 각 화면의 미디어쿼리(≥900px)에서 처리 */
 #app {
   position: relative;
   width: 100%;
-  max-width: var(--app-w);
   height: 100vh;
   height: 100dvh;
-  margin: 0 auto;
   overflow: hidden;
   background: var(--canvas);
-  box-shadow: 0 0 0 1px rgba(60,48,30,.04), 0 30px 80px rgba(40,30,18,.16);
 }
 
 /* 캔버스 그레인 (프레임 안쪽) */

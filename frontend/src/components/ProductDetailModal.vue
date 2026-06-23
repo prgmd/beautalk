@@ -294,4 +294,20 @@ function stars(rating) {
 .modal-enter-from, .modal-leave-to { opacity: 0; }
 .modal-enter-active .sheet, .modal-leave-active .sheet { transition: transform var(--t) var(--ease); }
 .modal-enter-from .sheet, .modal-leave-to .sheet { transform: translateY(100%); }
+
+/* Desktop — centered dialog */
+@media (min-width: 900px) {
+  .overlay { align-items: center; }
+  .sheet {
+    max-width: 520px;
+    margin: 0 auto;
+    border-radius: var(--radius-xl);
+    max-height: 86vh;
+    overflow-y: auto;
+    box-shadow: var(--sh-lg);
+    padding-bottom: 24px;
+  }
+  .grab { display: none; }
+  .modal-enter-from .sheet, .modal-leave-to .sheet { transform: scale(0.96); }
+}
 </style>

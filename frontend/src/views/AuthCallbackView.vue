@@ -74,4 +74,12 @@ onMounted(async () => {
   background: var(--canvas);
   animation: bt-rise var(--t-slow) var(--ease) both;
 }
+
+/* ── 데스크톱 ≥900px ── */
+@media (min-width: 900px) {
+  .callback {
+    padding: 48px 24px;
+    gap: 8px;
+  }
+}
 </style>

@@ -155,4 +155,19 @@ const CONTENT = {
   transition: transform var(--t-fast) var(--ease);
 }
 .confirm-btn:hover { transform: translateY(-1px); }
+
+/* Desktop — centered dialog */
+@media (min-width: 900px) {
+  .overlay { align-items: center; }
+  .sheet {
+    max-width: 520px;
+    margin: 0 auto;
+    border-radius: var(--radius-xl);
+    max-height: 86vh;
+    overflow-y: auto;
+    box-shadow: var(--sh-lg);
+    padding-bottom: 24px;
+  }
+  .grab { display: none; }
+}
 </style>

@@ -205,4 +205,31 @@ function handleOAuth(provider) {
 }
 .terms-notice a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; }
 .terms-notice a:hover { color: var(--ink); }
+
+/* ── 데스크톱 ≥900px ── */
+@media (min-width: 900px) {
+  .page {
+    padding: 48px 24px;
+  }
+
+  /* 식물 장식을 넓은 화면에 맞춰 확대 */
+  .sprig {
+    width: 88px;
+    height: 132px;
+    opacity: 0.55;
+  }
+  .sprig-top { top: 40px; left: 56px; }
+  .sprig-bottom { bottom: 40px; right: 56px; }
+
+  .card {
+    max-width: 420px;
+    gap: 24px;
+  }
+
+  .logo { font-size: 40px; }
+
+  .title { font-size: 32px; }
+
+  .subtitle { font-size: 14.5px; }
+}
 </style>

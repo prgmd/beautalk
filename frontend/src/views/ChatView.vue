@@ -61,6 +61,7 @@ function formatPrice(n) {
 
 <template>
   <div class="screen">
+    <div class="main">
     <!-- 앱바 -->
     <header class="appbar">
       <span class="ab-brand serif">beau<span class="it">talk</span></span>
@@ -182,6 +183,7 @@ function formatPrice(n) {
         <button class="go" :disabled="!inputText.trim() || chat.isLoading" @click="sendMessage()">↑</button>
       </div>
     </template>
+    </div>
 
     <GlobalSidebar />
   </div>
@@ -189,6 +191,7 @@ function formatPrice(n) {
 
 <style scoped>
 .screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
 /* 앱바 */
 .appbar {
@@ -347,4 +350,19 @@ function formatPrice(n) {
 }
 .ghost-btn { padding: 10px 18px; border-radius: 99px; border: 1px solid var(--line); background: var(--sheet); font-size: 13px; }
 .primary-btn { padding: 10px 18px; border-radius: 99px; border: none; background: var(--ink); color: var(--canvas); font-size: 13px; font-weight: 600; box-shadow: var(--sh-ink); }
+
+/* ── 데스크탑(≥900px) ── */
+@media (min-width: 900px) {
+  .screen { flex-direction: row; }
+  .appbar { max-width: 900px; width: 100%; margin: 0 auto; padding: 22px 40px 10px; }
+  .ab-brand { display: none; }
+  .ab-new { margin-left: auto; }
+  .chat, .result { max-width: 900px; width: 100%; margin: 0 auto; padding-left: 40px; padding-right: 40px; }
+  .reco-bar, .composer { max-width: 900px; width: 100%; margin: 0 auto; padding-left: 40px; padding-right: 40px; }
+  .composer { padding-bottom: 22px; }
+  .empty-title { font-size: 32px; }
+  .empty-desc { max-width: 400px; }
+  .rec-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .more-chat-btn { grid-column: 1 / -1; }
+}
 </style>

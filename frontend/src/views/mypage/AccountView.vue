@@ -289,4 +289,25 @@ function getInitials(email) {
   transition: transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
 .modal-confirm:active:not(:disabled) { transform: scale(.98); filter: brightness(1.05); }
+
+/* ===== Desktop polish (≥900px) ===== */
+@media (min-width: 900px) {
+  .view { max-width: 640px; }
+
+  .page-title { font-size: 32px; }
+
+  .account-card { padding: 24px 26px; }
+  .avatar { width: 60px; height: 60px; font-size: 17px; }
+  .email { font-size: 19px; }
+
+  /* Withdraw modal: centered dialog instead of bottom sheet */
+  .modal-overlay { align-items: center; }
+  .modal {
+    max-width: 420px;
+    border-radius: var(--radius-xl);
+    padding: 30px 30px 30px;
+    animation: bt-pop 0.3s var(--ease-back) both;
+  }
+  .grab-handle { display: none; }
+}
 </style>

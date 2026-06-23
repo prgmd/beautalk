@@ -3,7 +3,6 @@ import { ref, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProfileStore } from '@/stores/profile'
 import { useAuthStore } from '@/stores/auth'
-import GlobalSidebar from '@/components/GlobalSidebar.vue'
 
 const router = useRouter()
 const profile = useProfileStore()
@@ -131,8 +130,6 @@ function goChat() {
 
 <template>
   <div class="screen">
-    <GlobalSidebar />
-
     <!-- 앱바 + 진행 -->
     <header class="appbar">
       <div class="ab-top">
@@ -514,4 +511,30 @@ function goChat() {
   transition: transform var(--t-fast) var(--ease);
 }
 .go-chat-btn:active { transform: scale(.98); }
+
+/* ── 데스크톱 ≥900px ── */
+@media (min-width: 900px) {
+  /* 앱바·본문·하단바를 중앙 정렬된 한 컬럼으로 모은다 */
+  .appbar {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 32px 32px 18px;
+  }
+  .ab-title { font-size: 28px; }
+
+  .chat-body {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 28px 32px 12px;
+  }
+
+  .input-bar {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 12px 32px 24px;
+  }
+}
 </style>

@@ -377,4 +377,30 @@ function removeAvoid(item) {
   transition: transform var(--t-fast) var(--ease);
 }
 .add-btn:active { transform: scale(.98); }
+
+/* ===== Desktop polish (≥900px) ===== */
+@media (min-width: 900px) {
+  .view { max-width: 860px; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-title { font-size: 32px; }
+  .page-desc { font-size: 14px; }
+
+  /* View-mode cards: roomier 2-column grid, full-width concerns/avoid */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .profile-card { padding: 26px 28px; }
+  .profile-card:nth-child(2),
+  .profile-card:nth-child(3) { grid-column: 1 / -1; }
+  .card-value { font-size: 26px; }
+
+  /* Edit form: constrain reading width, roomier chip rows */
+  .edit-form { max-width: 680px; gap: 30px; }
+  .type-btns, .tags-row { gap: 10px; }
+  .type-btn, .tag-btn { padding: 10px 20px; }
+  .tag-btn { padding: 9px 18px; }
+}
 </style>

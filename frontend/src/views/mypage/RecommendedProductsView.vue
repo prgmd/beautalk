@@ -345,4 +345,28 @@ function formatDate(dateStr) {
 .empty-icon { font-size: 42px; }
 .empty-text { font-size: 18px; font-weight: 600; color: var(--ink); }
 .empty-sub { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+/* ===== Desktop (≥900px) ===== */
+@media (min-width: 900px) {
+  .view { max-width: 900px; }
+
+  .page-header { margin-bottom: 32px; }
+  .page-title { font-size: 30px; }
+  .page-desc { font-size: 14px; }
+
+  /* roomier timeline + batch headers */
+  .timeline { gap: 40px; padding-left: 22px; }
+  .batch { gap: 18px; }
+  .batch-head { padding-bottom: 16px; }
+  .batch-node { left: -22px; }
+  .batch-summary { font-size: 18px; }
+
+  /* 3-column arch-card grid per batch */
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .empty { padding: 88px 24px; }
+}
 </style>
