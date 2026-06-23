@@ -41,6 +41,30 @@ class ProductDetailView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
 
+class ProductPostsView(generics.ListAPIView):
+    """GET /api/v1/products/<uuid:pk>/posts/  — 이 제품이 태그된 게시글 목록.
+
+    게시글 → 제품(Post.product) 정참조의 역방향. URL이 '제품에 속한 글들'이라는
+    데이터 관계를 그대로 표현한다(RESTful). board를 함수 안에서 import해
+    products → board 단방향 의존만 두고 순환 import를 피한다.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        from board.serializers import PostListSerializer
+        return PostListSerializer
+
+    def get_queryset(self):
+        product = get_object_or_404(Product, pk=self.kwargs['pk'])
+        return (
+            product.tagged_posts
+            .select_related('user')
+            .prefetch_related('comments', 'likes')
+            .order_by('-created_at')
+        )
+
+
 # ──────────────────────────────────────────────
 # 찜 (Like)
 # ──────────────────────────────────────────────

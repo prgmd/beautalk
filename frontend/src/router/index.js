@@ -33,6 +33,30 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/community',
+      name: 'community',
+      component: () => import('@/views/community/CommunityView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/community/new',
+      name: 'community-new',
+      component: () => import('@/views/community/PostEditorView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/community/:id',
+      name: 'community-detail',
+      component: () => import('@/views/community/PostDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/community/:id/edit',
+      name: 'community-edit',
+      component: () => import('@/views/community/PostEditorView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/mypage',
       component: () => import('@/views/mypage/MyPageLayout.vue'),
       meta: { requiresAuth: true },

@@ -14,6 +14,7 @@ async function logout() {
 // 반응형 내비: 모바일=하단 탭바 / 데스크탑=왼쪽 사이드바. (파일명은 기존 import 호환을 위해 유지)
 const TABS = [
   { key: 'chat', label: '상담', icon: '🌿', path: '/chat' },
+  { key: 'community', label: '커뮤니티', icon: '💬', path: '/community' },
   { key: 'catalog', label: '둘러보기', icon: '🔎', path: '/catalog' },
   { key: 'vanity', label: '나의 화장대', icon: '💄', path: '/mypage/liked' },
   { key: 'info', label: '내 정보', icon: '👤', path: '/mypage/profile' },
@@ -22,6 +23,7 @@ const TABS = [
 function isActive(tab) {
   const p = route.path
   if (tab.key === 'chat') return p === '/chat'
+  if (tab.key === 'community') return p.startsWith('/community')
   if (tab.key === 'catalog') return p.startsWith('/catalog')
   // 나의 화장대 = 찜한 제품 + 추천받은 제품
   if (tab.key === 'vanity') return p.startsWith('/mypage/liked') || p.startsWith('/mypage/recommended')
