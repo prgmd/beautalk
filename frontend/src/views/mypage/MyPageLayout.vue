@@ -14,79 +14,58 @@ const tabs = [
 </script>
 
 <template>
-  <div class="layout">
-    <GlobalSidebar />
+  <div class="screen">
+    <header class="appbar">
+      <span class="ab-title serif">마이페이지</span>
+    </header>
 
-    <nav class="sub-sidebar">
+    <nav class="tabstrip">
       <button
         v-for="tab in tabs"
         :key="tab.path"
-        class="sub-tab"
+        class="tab"
         :class="{ active: route.path === tab.path }"
         @click="router.push(tab.path)"
-      >
-        {{ tab.label }}
-      </button>
+      >{{ tab.label }}</button>
     </nav>
 
     <main class="content">
       <RouterView />
     </main>
+
+    <GlobalSidebar />
   </div>
 </template>
 
 <style scoped>
-.layout { display: flex; height: 100vh; background: var(--bg); }
+.screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 
-.sub-sidebar {
-  width: 200px;
-  min-width: 200px;
-  border-right: 1px solid var(--border);
-  padding: 24px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.appbar {
+  flex-shrink: 0;
+  padding: calc(12px + env(safe-area-inset-top)) 20px 8px;
 }
+.ab-title { font-size: 24px; font-weight: 500; letter-spacing: -.3px; }
 
-.sub-tab {
-  position: relative;
-  width: 100%;
-  padding: 10px 14px;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: 14px;
-  color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
-  overflow: hidden;
+.tabstrip {
+  flex-shrink: 0;
+  display: flex; gap: 8px; overflow-x: auto;
+  padding: 8px 20px 12px;
+  -ms-overflow-style: none; scrollbar-width: none;
 }
-.sub-tab::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%) scaleY(0);
-  width: 3px;
-  height: 56%;
-  border-radius: 0 3px 3px 0;
-  background: var(--gradient-brand);
-  transition: transform var(--t) var(--ease-back);
+.tabstrip::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;
+  color: var(--ink-soft); background: var(--sheet); border: 1px solid var(--line);
+  transition: all var(--t-fast);
 }
-.sub-tab:hover { background: var(--surface-hover); color: var(--text-primary); }
-.sub-tab.active {
-  background: var(--brand-soft);
-  color: var(--brand);
-  font-weight: 700;
-  box-shadow: var(--shadow-sm);
+.tab:active { transform: scale(.97); }
+.tab.active {
+  background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-sm);
 }
-.sub-tab.active::before { transform: translateY(-50%) scaleY(1); }
 
 .content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 40px 48px;
-  background: var(--surface);
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 8px 20px 24px;
 }
 </style>

@@ -35,14 +35,15 @@ function selectPlan(plan) {
 <template>
   <Transition name="modal" appear>
     <div class="overlay" @click="emit('close')">
-      <div class="modal" @click.stop>
+      <div class="sheet" @click.stop>
+        <div class="grab" />
         <button class="close-btn" @click="emit('close')">×</button>
 
         <!-- 요금제 선택 -->
         <template v-if="step === 'plans'">
           <div class="head">
             <div class="head-icon">✨</div>
-            <h2 class="title">오늘의 무료 대화를 모두 사용했어요</h2>
+            <h2 class="title serif">오늘의 무료 대화를 모두 사용했어요</h2>
             <p class="subtitle">프리미엄으로 업그레이드하면 무제한으로 대화할 수 있어요.</p>
           </div>
 
@@ -57,7 +58,7 @@ function selectPlan(plan) {
                 <span class="plan-name">{{ plan.name }}</span>
                 <span v-if="plan.highlight" class="badge">추천</span>
               </div>
-              <div class="plan-price">
+              <div class="plan-price serif">
                 {{ plan.price }}<span class="plan-period">{{ plan.period }}</span>
               </div>
               <ul class="plan-features">
@@ -81,7 +82,7 @@ function selectPlan(plan) {
         <template v-else>
           <div class="pending">
             <div class="head-icon">🚧</div>
-            <h2 class="title">결제 기능 준비 중</h2>
+            <h2 class="title serif">결제 기능 준비 중</h2>
             <p class="subtitle">
               결제 연동은 현재 준비 중이에요.<br />
               정식 오픈 시 프리미엄 플랜을 이용하실 수 있습니다.
@@ -98,28 +99,39 @@ function selectPlan(plan) {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(40, 28, 22, 0.42);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 200;
-  padding: 24px;
+  background: rgba(34, 28, 22, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
-.modal {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  width: 100%;
-  max-width: 460px;
+.sheet {
   position: relative;
-  padding: 32px 28px 28px;
-  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--card);
+  border-radius: 26px 26px 0 0;
+  box-shadow: var(--sh-lg);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 8px 24px calc(20px + env(safe-area-inset-bottom));
 }
+
+.grab {
+  width: 36px;
+  height: 4px;
+  margin: 4px auto 8px;
+  border-radius: 999px;
+  background: var(--line-strong);
+}
+
 .head-icon {
   display: inline-block;
-  animation: bt-float 5s var(--ease) infinite;
+  animation: bt-pop var(--t) var(--ease-back);
 }
 
 .close-btn {
@@ -128,61 +140,57 @@ function selectPlan(plan) {
   right: 16px;
   width: 32px;
   height: 32px;
-  border: none;
-  background: rgba(0, 0, 0, 0.04);
   border-radius: 50%;
+  background: var(--panel);
   font-size: 20px;
-  color: var(--text-secondary);
+  color: var(--ink-soft);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background var(--t-fast) var(--ease);
 }
-.close-btn:hover { background: rgba(0, 0, 0, 0.08); }
+.close-btn:hover { background: var(--line); }
 
-.head { text-align: center; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.head { text-align: center; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; padding-top: 12px; }
 .head-icon { font-size: 40px; }
-.title { font-size: 18px; font-weight: 700; }
-.subtitle { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.title { font-size: 20px; font-weight: 600; color: var(--ink); }
+.subtitle { font-size: 13px; color: var(--ink-soft); line-height: 1.65; }
 
 .plans { display: flex; gap: 12px; }
 
 .plan-card {
   flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   padding: 18px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-.plan-card {
+  background: var(--sheet);
   transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 .plan-card.highlight {
-  border-color: transparent;
-  background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
-    var(--gradient-brand) border-box;
-  border: 1.5px solid transparent;
-  box-shadow: var(--shadow-glow);
+  border-color: var(--sage);
+  background: var(--card);
+  box-shadow: var(--sh-md);
 }
 .plan-card.highlight:hover { transform: translateY(-3px); }
-.plan-card.current { background: var(--bg); }
+.plan-card.current { background: var(--panel); }
 
 .plan-head { display: flex; align-items: center; gap: 6px; }
-.plan-name { font-size: 14px; font-weight: 700; }
+.plan-name { font-size: 14px; font-weight: 700; color: var(--ink); }
 .badge {
   font-size: 10px;
   font-weight: 700;
-  background: var(--gradient-brand);
-  color: #fff;
-  border-radius: 10px;
+  background: var(--sage);
+  color: var(--card);
+  border-radius: 999px;
   padding: 3px 9px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--sh-sm);
 }
 
-.plan-price { font-size: 20px; font-weight: 700; }
-.plan-period { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+.plan-price { font-size: 22px; font-weight: 600; color: var(--ink); }
+.plan-period { font-size: 12px; font-weight: 400; color: var(--ink-faint); }
 
 .plan-features {
   list-style: none;
@@ -190,32 +198,33 @@ function selectPlan(plan) {
   flex-direction: column;
   gap: 6px;
   font-size: 12px;
-  color: var(--text-secondary);
+  color: var(--ink-soft);
   flex: 1;
 }
 
 .plan-btn {
   width: 100%;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s, background 0.15s;
+  transition: transform var(--t-fast) var(--ease), background var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
-.plan-btn:hover:not(:disabled) { background: var(--bg); }
+.plan-btn:hover:not(:disabled) { background: var(--panel); }
 .plan-btn.primary {
-  background: var(--gradient-brand);
-  color: #fff;
+  background: var(--ink);
+  color: var(--canvas);
   border-color: transparent;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--sh-ink);
 }
-.plan-btn.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+.plan-btn.primary:hover:not(:disabled) { transform: translateY(-1px); }
 .plan-btn:disabled { opacity: 0.5; cursor: default; }
 
-.footnote { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 16px; }
+.footnote { text-align: center; font-size: 11px; color: var(--ink-faint); margin-top: 16px; }
 
 .pending {
   text-align: center;
@@ -227,9 +236,9 @@ function selectPlan(plan) {
 }
 .pending .plan-btn { max-width: 160px; margin-top: 8px; }
 
-/* Transition */
-.modal-enter-active, .modal-leave-active { transition: opacity 0.2s; }
+/* Transition — slide up from bottom */
+.modal-enter-active, .modal-leave-active { transition: opacity var(--t) var(--ease); }
 .modal-enter-from, .modal-leave-to { opacity: 0; }
-.modal-enter-active .modal, .modal-leave-active .modal { transition: transform 0.2s; }
-.modal-enter-from .modal, .modal-leave-to .modal { transform: scale(0.96); }
+.modal-enter-active .sheet, .modal-leave-active .sheet { transition: transform var(--t) var(--ease); }
+.modal-enter-from .sheet, .modal-leave-to .sheet { transform: translateY(100%); }
 </style>

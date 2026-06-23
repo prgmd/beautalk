@@ -4,6 +4,7 @@ import { useChatStore } from '@/stores/chat'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
+import DewyLoader from '@/components/DewyLoader.vue'
 
 const chat = useChatStore()
 const likes = useLikesStore()
@@ -31,7 +32,6 @@ async function sendMessage(text) {
 }
 
 // 한글 등 IME 조합 중의 Enter는 무시한다.
-// (조합 확정 Enter로 전송하면 마지막 글자가 입력칸에 다시 남는 버그 방지)
 function onEnterKey(e) {
   if (e.isComposing) return
   sendMessage()
@@ -41,11 +41,14 @@ function getRecommendations() {
   chat.requestRecommend()
 }
 
+function newChat() {
+  chat.clearMessages()
+}
+
 function scrollToBottom() {
   if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight
 }
 
-// 메시지/로딩이 바뀔 때마다 맨 아래로 스크롤
 watch(
   () => [chat.messages.length, chat.isLoading],
   () => nextTick(scrollToBottom),
@@ -57,502 +60,291 @@ function formatPrice(n) {
 </script>
 
 <template>
-  <div class="layout">
-    <GlobalSidebar />
+  <div class="screen">
+    <!-- 앱바 -->
+    <header class="appbar">
+      <span class="ab-brand serif">beau<span class="it">talk</span></span>
+      <button class="ab-new" title="새 대화" @click="newChat">⟲</button>
+    </header>
 
-    <div class="main">
-      <!-- 헤더 -->
-      <div v-if="!isEmpty || chat.mode === 'result'" class="chat-header">
-        <span class="chat-title">챗봇 추천</span>
+    <!-- 추천 결과 화면 -->
+    <div v-if="chat.mode === 'result'" class="body result">
+      <!-- 로딩 -->
+      <div v-if="chat.isRecommending" class="result-loading">
+        <DewyLoader
+          text="대화 내역으로 고르는 중"
+          subtitle="맑은 피부에 어울리는 제품을 찾고 있어요"
+          :size="150"
+        />
       </div>
 
-      <!-- 추천 결과 화면 -->
-      <div v-if="chat.mode === 'result'" class="result-body">
-        <div class="result-inner">
-          <!-- 로딩 -->
-          <div v-if="chat.isRecommending" class="result-loading">
-            <div class="spinner" />
-            <p>대화 내역을 기반으로 화장품을 추천 중입니다...</p>
-          </div>
-
-          <!-- 에러 -->
-          <div v-else-if="chat.recommendError" class="result-error">
-            <p class="err-icon">⚠️</p>
-            <p class="err-text">{{ chat.recommendError }}</p>
-            <div class="err-actions">
-              <button class="ghost-btn" @click="chat.backToChat()">대화로 돌아가기</button>
-              <button class="primary-btn" @click="getRecommendations()">다시 시도</button>
-            </div>
-          </div>
-
-          <!-- 결과 -->
-          <template v-else-if="chat.recommendBatch">
-            <p class="result-summary">{{ chat.recommendBatch.content }}</p>
-
-            <div class="rec-list">
-              <div v-for="product in chat.recommendBatch.products" :key="product.id" class="rec-card">
-                <div class="rec-clickable" @click="productDetail.open(product)">
-                  <div class="rec-image">
-                    <img v-if="product.image" :src="product.image" :alt="product.name" />
-                    <div v-else class="rec-img-placeholder">🧴</div>
-                  </div>
-                  <div class="rec-info">
-                    <p class="rec-brand">{{ product.brand }}</p>
-                    <p class="rec-name">{{ product.name }}</p>
-                    <p class="rec-price">{{ formatPrice(product.price) }}</p>
-                  </div>
-                </div>
-                <p v-if="product.reason" class="rec-reason">💡 {{ product.reason }}</p>
-                <div class="rec-actions">
-                  <button
-                    class="action-btn"
-                    :class="{ liked: likes.isLiked(product.id) }"
-                    @click="likes.toggleLike(product)"
-                  >{{ likes.isLiked(product.id) ? '♥ 찜함' : '♡ 찜하기' }}</button>
-                  <a :href="product.oliveyoungUrl" target="_blank" class="action-btn link">올리브영에서 보기 ↗</a>
-                </div>
-              </div>
-            </div>
-
-            <button class="more-chat-btn" @click="chat.backToChat()">← 조금 더 대화할래요</button>
-          </template>
+      <!-- 에러 -->
+      <div v-else-if="chat.recommendError" class="result-error">
+        <p class="err-icon">🌿</p>
+        <p class="err-text">{{ chat.recommendError }}</p>
+        <div class="err-actions">
+          <button class="ghost-btn" @click="chat.backToChat()">대화로 돌아가기</button>
+          <button class="primary-btn" @click="getRecommendations()">다시 시도</button>
         </div>
       </div>
 
-      <!-- 대화 화면 -->
-      <template v-else>
-        <div ref="chatBody" class="chat-body">
-          <div class="chat-inner">
-            <!-- 빈 상태 -->
-            <div v-if="isEmpty" class="empty-state">
-              <div class="empty-avatar">💄</div>
-              <h2 class="empty-title">어떤 화장품을 찾고 계세요?</h2>
-              <p class="empty-desc">자연어로 자유롭게 물어보세요. 저장된 피부 프로필을 참고해 맞춤 추천을 드려요.</p>
-              <div class="example-prompts">
-                <button
-                  v-for="p in EXAMPLE_PROMPTS" :key="p"
-                  class="example-btn"
-                  @click="sendMessage(p)"
-                >{{ p }}</button>
-              </div>
+      <!-- 결과 -->
+      <template v-else-if="chat.recommendBatch">
+        <div class="result-head">
+          <span class="eyebrow">your edit</span>
+          <p class="result-summary serif">{{ chat.recommendBatch.content }}</p>
+        </div>
+
+        <div class="rec-list">
+          <article v-for="product in chat.recommendBatch.products" :key="product.id" class="rec-card">
+            <div class="rec-arch" @click="productDetail.open(product)">
+              <img v-if="product.image" :src="product.image" :alt="product.name" />
+              <span v-else class="rec-ph">🧴</span>
+              <button
+                class="rec-heart"
+                :class="{ liked: likes.isLiked(product.id) }"
+                @click.stop="likes.toggleLike(product)"
+              >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
             </div>
-
-            <!-- 메시지 목록 -->
-            <template v-else>
-              <div
-                v-for="msg in chat.messages"
-                :key="msg.id"
-                class="msg-row"
-                :class="msg.role"
-              >
-                <div v-if="msg.role === 'assistant'" class="ai-avatar">B</div>
-                <div class="bubble-wrap">
-                  <div class="bubble" :class="[msg.role, { error: msg.error }]">{{ msg.text }}</div>
-                  <button
-                    v-if="msg.error && msg.id === chat.messages.at(-1)?.id"
-                    class="retry-btn"
-                    @click="chat.retryChat()"
-                  >다시 시도</button>
-                </div>
-              </div>
-
-              <!-- 로딩 -->
-              <div v-if="chat.isLoading" class="msg-row assistant">
-                <div class="ai-avatar">B</div>
-                <div class="bubble assistant loading">
-                  <span class="dot" /><span class="dot" /><span class="dot" />
-                </div>
-              </div>
-            </template>
-          </div>
+            <div class="rec-meta" @click="productDetail.open(product)">
+              <p class="rec-brand">{{ product.brand }}</p>
+              <p class="rec-name">{{ product.name }}</p>
+              <p class="rec-price serif">{{ formatPrice(product.price) }}</p>
+            </div>
+            <p v-if="product.reason" class="rec-reason">{{ product.reason }}</p>
+            <a :href="product.oliveyoungUrl" target="_blank" class="rec-link">올리브영에서 보기 ↗</a>
+          </article>
         </div>
 
-        <!-- 추천받기 바 -->
-        <div v-if="!isEmpty" class="recommend-bar">
-          <button
-            class="recommend-btn"
-            :class="{ ready: chat.ready }"
-            @click="getRecommendations()"
-          >
-            ✨ 추천받기{{ chat.ready ? ' (준비됐어요!)' : '' }}
-          </button>
-        </div>
-
-        <!-- 입력 영역 -->
-        <div class="input-bar">
-          <div class="input-inner">
-            <input
-              v-model="inputText"
-              placeholder="메시지를 입력하세요"
-              :disabled="chat.isLoading"
-              @keydown.enter="onEnterKey"
-            />
-            <button class="send-btn" :disabled="!inputText.trim() || chat.isLoading" @click="sendMessage()">
-              ↑
-            </button>
-          </div>
-        </div>
+        <button class="more-chat-btn" @click="chat.backToChat()">← 조금 더 대화할래요</button>
       </template>
     </div>
+
+    <!-- 대화 화면 -->
+    <template v-else>
+      <div ref="chatBody" class="body chat">
+        <!-- 빈 상태 -->
+        <div v-if="isEmpty" class="empty">
+          <div class="empty-orb">
+            <DewyLoader :size="96" />
+          </div>
+          <span class="eyebrow">consultation</span>
+          <h1 class="empty-title serif">맑게 비치는<br><em>당신의 피부</em></h1>
+          <p class="empty-desc">피부 고민을 편하게 적어주세요. 저장된 프로필을 참고해 맞춤 추천을 드려요.</p>
+          <div class="examples">
+            <button
+              v-for="p in EXAMPLE_PROMPTS" :key="p"
+              class="example"
+              @click="sendMessage(p)"
+            >{{ p }}</button>
+          </div>
+        </div>
+
+        <!-- 메시지 -->
+        <template v-else>
+          <div v-for="msg in chat.messages" :key="msg.id" class="msg" :class="msg.role">
+            <div v-if="msg.role === 'assistant'" class="av">🌿</div>
+            <div class="bubble-wrap">
+              <div class="bubble" :class="[msg.role, { error: msg.error }]">{{ msg.text }}</div>
+              <button
+                v-if="msg.error && msg.id === chat.messages.at(-1)?.id"
+                class="retry-btn"
+                @click="chat.retryChat()"
+              >다시 시도</button>
+            </div>
+          </div>
+
+          <!-- 로딩 -->
+          <div v-if="chat.isLoading" class="msg assistant">
+            <div class="av">🌿</div>
+            <div class="bubble assistant loading">
+              <span class="dot" /><span class="dot" /><span class="dot" />
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- 추천받기 -->
+      <div v-if="!isEmpty" class="reco-bar">
+        <button class="reco-btn" :class="{ ready: chat.ready }" @click="getRecommendations()">
+          <span class="lf">✦</span> 추천 3개 받기{{ chat.ready ? ' · 준비됐어요' : '' }}
+        </button>
+      </div>
+
+      <!-- 입력 -->
+      <div class="composer">
+        <input
+          v-model="inputText"
+          placeholder="피부 고민을 적어주세요"
+          :disabled="chat.isLoading"
+          @keydown.enter="onEnterKey"
+        />
+        <button class="go" :disabled="!inputText.trim() || chat.isLoading" @click="sendMessage()">↑</button>
+      </div>
+    </template>
+
+    <GlobalSidebar />
   </div>
 </template>
 
 <style scoped>
-.layout { display: flex; height: 100vh; background: var(--bg); }
+.screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--surface);
-}
-
-.chat-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
-  font-size: 16px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.chat-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-inner {
-  width: 100%;
-  max-width: 820px;
-  margin: 0 auto;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* Empty state */
-.empty-state {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 40px 24px;
-  text-align: center;
-}
-.empty-state > * { animation: bt-rise 0.5s var(--ease) both; }
-.empty-state > *:nth-child(2) { animation-delay: 0.05s; }
-.empty-state > *:nth-child(3) { animation-delay: 0.1s; }
-.empty-state > *:nth-child(4) { animation-delay: 0.15s; }
-.empty-avatar {
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
-  background: var(--gradient-brand-rich);
-  box-shadow: var(--shadow-glow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  animation: bt-float 6s var(--ease) infinite !important;
-}
-.empty-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
-.empty-desc { font-size: 14px; color: var(--text-secondary); max-width: 360px; line-height: 1.7; }
-.example-prompts { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 420px; }
-.example-btn {
-  padding: 13px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), border-color var(--t-fast);
-}
-.example-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--brand-1); }
-
-/* Messages */
-.msg-row { display: flex; gap: 10px; align-items: flex-start; }
-.msg-row.user { flex-direction: row-reverse; }
-
-.ai-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--gradient-brand);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
+/* 앱바 */
+.appbar {
   flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: calc(10px + env(safe-area-inset-top)) 20px 12px;
 }
+.ab-brand { font-size: 21px; font-weight: 500; letter-spacing: -.3px; }
+.ab-brand .it { font-style: italic; color: var(--sage); }
+.ab-new {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--sheet); color: var(--ink-soft);
+  font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: var(--sh-sm);
+  transition: transform var(--t) var(--ease);
+}
+.ab-new:active { transform: rotate(-180deg); }
 
-.bubble-wrap { display: flex; flex-direction: column; gap: 8px; max-width: 560px; }
+.body { flex: 1; min-height: 0; overflow-y: auto; }
 
+/* ── 빈 상태 ── */
+.chat { padding: 4px 20px 12px; }
+.empty {
+  min-height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 20px 8px 40px; gap: 14px;
+}
+.empty-orb { margin-bottom: 4px; }
+.eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--sage); }
+.empty-title { font-size: 26px; font-weight: 400; line-height: 1.25; letter-spacing: -.3px; }
+.empty-title em { font-style: italic; }
+.empty-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; max-width: 300px; }
+.examples { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 8px; }
+.example {
+  padding: 13px 16px; background: var(--card); border: 1px solid var(--line-soft);
+  border-radius: var(--radius); font-size: 14px; text-align: left; box-shadow: var(--sh-sm);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.example:active { transform: scale(.98); box-shadow: var(--sh-sm); }
+
+/* ── 메시지 ── */
+.msg { display: flex; gap: 9px; margin-bottom: 14px; align-items: flex-end; animation: bt-rise .35s var(--ease) both; }
+.msg.user { flex-direction: row-reverse; }
+.av {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  background: var(--sage-soft); border: 1px solid var(--line); box-shadow: var(--sh-sm);
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.bubble-wrap { display: flex; flex-direction: column; gap: 7px; max-width: 80%; }
+.msg.user .bubble-wrap { align-items: flex-end; }
 .bubble {
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 14px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  animation: bt-rise 0.4s var(--ease) both;
+  font-size: 14.5px; line-height: 1.6; padding: 11px 15px; border-radius: 17px; white-space: pre-wrap;
 }
-.bubble.assistant { background: var(--ai-bubble); border-top-left-radius: 5px; box-shadow: var(--shadow-sm); }
-.bubble.user { background: var(--gradient-ink); color: #fff; border-top-right-radius: 5px; box-shadow: var(--shadow-sm); }
-.bubble.error { background: var(--danger-bg); color: var(--danger); }
+.bubble.assistant { background: var(--card); border: 1px solid var(--line-soft); border-bottom-left-radius: 5px; box-shadow: var(--sh-bub); }
+.bubble.user { background: var(--ink); color: var(--canvas); border-bottom-right-radius: 5px; box-shadow: var(--sh-ink); }
+.bubble.error { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
 .retry-btn {
-  align-self: flex-start;
-  padding: 6px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.15s;
+  align-self: flex-start; padding: 6px 14px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--sheet); font-size: 12.5px; box-shadow: var(--sh-sm);
 }
-.retry-btn:hover { background: var(--bg); }
+.bubble.loading { display: flex; gap: 4px; align-items: center; padding: 13px 16px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); opacity: .5; animation: bt-bounce 1.2s infinite; }
+.dot:nth-child(2) { animation-delay: .2s; }
+.dot:nth-child(3) { animation-delay: .4s; }
 
-.bubble.loading { display: flex; gap: 4px; align-items: center; padding: 14px 18px; }
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  animation: bounce 1.2s infinite;
+/* ── 추천받기 ── */
+.reco-bar { flex-shrink: 0; padding: 8px 20px 4px; }
+.reco-btn {
+  width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink); background: var(--card); color: var(--ink);
+  font-weight: 600; font-size: 14px; padding: 13px; border-radius: 99px; box-shadow: var(--sh-sm);
+  transition: transform var(--t) var(--ease), background var(--t-fast), color var(--t-fast);
 }
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce {
-  0%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-6px); }
+.reco-btn .lf { color: var(--sage); }
+.reco-btn:active { transform: scale(.99); }
+.reco-btn.ready {
+  background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-ink);
 }
+.reco-btn.ready .lf { color: var(--sage-soft); }
 
-/* 추천받기 바 */
-.recommend-bar {
-  padding: 12px 24px;
-  display: flex;
-  justify-content: center;
-  border-top: 1px solid var(--border);
+/* ── 입력 ── */
+.composer {
+  flex-shrink: 0; display: flex; align-items: center; gap: 9px;
+  padding: 8px 16px 10px;
 }
-.recommend-btn {
-  width: 100%;
-  max-width: 820px;
-  padding: 14px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), background var(--t-fast);
+.composer input {
+  flex: 1; border: 1px solid var(--line); background: var(--card); border-radius: 16px;
+  padding: 12px 16px; font-size: 14.5px; outline: none; color: var(--ink); box-shadow: var(--sh-sm);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
-.recommend-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.recommend-btn:active { transform: translateY(0) scale(0.99); }
-.recommend-btn.ready {
-  color: #fff;
-  border-color: transparent;
-  background: linear-gradient(120deg, #FF8FB1, #C9A2FF, #FFC6A3, #FF8FB1);
-  background-size: 280% 100%;
-  box-shadow: var(--shadow-glow);
-  animation: bt-shimmer 3s linear infinite;
+.composer input:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(126,139,109,.15); }
+.composer input:disabled { opacity: .6; }
+.composer input::placeholder { color: var(--ink-faint); }
+.composer .go {
+  width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px;
+  background: var(--ink); color: var(--canvas); font-size: 18px; box-shadow: var(--sh-ink);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform var(--t) var(--ease), opacity var(--t-fast);
 }
-.recommend-btn.ready:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(232, 104, 143, 0.4); }
+.composer .go:disabled { opacity: .3; background: var(--ink-faint); box-shadow: none; }
+.composer .go:not(:disabled):active { transform: scale(.94); }
 
-/* 추천 결과 화면 */
-.result-body { flex: 1; overflow-y: auto; padding: 24px; }
-.result-inner { width: 100%; max-width: 720px; margin: 0 auto; }
-
-.result-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 80px 0;
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--brand-soft);
-  border-top-color: var(--brand);
-  border-right-color: var(--brand-2);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
+/* ── 추천 결과 ── */
+.result { padding: 8px 20px 24px; }
+.result-loading { min-height: 70%; display: flex; align-items: center; justify-content: center; }
 .result-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 64px 0;
-  text-align: center;
+  min-height: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 10px;
 }
-.err-icon { font-size: 32px; }
-.err-text { font-size: 14px; color: var(--text-secondary); }
+.err-icon { font-size: 34px; }
+.err-text { font-size: 14px; color: var(--ink-soft); }
 .err-actions { display: flex; gap: 8px; margin-top: 8px; }
 
-.result-inner { animation: bt-rise 0.45s var(--ease) both; }
-.result-summary {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  padding: 16px 18px;
-  background: linear-gradient(120deg, #FCEEF3 0%, #F0ECFC 100%);
-  border: 1px solid rgba(201, 162, 255, 0.25);
-  border-radius: var(--radius);
-  color: #4A3A48;
-}
+.result-head { margin: 6px 2px 18px; animation: bt-rise .4s var(--ease) both; }
+.result-summary { font-size: 19px; font-weight: 400; line-height: 1.4; margin-top: 8px; }
 
-.rec-list { display: flex; flex-direction: column; gap: 14px; }
+.rec-list { display: flex; flex-direction: column; gap: 16px; }
 .rec-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
-  animation: bt-rise 0.5s var(--ease) both;
+  background: var(--card); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
+  padding: 12px; box-shadow: var(--sh-sm); animation: bt-rise .5s var(--ease) both;
 }
-.rec-card:nth-child(2) { animation-delay: 0.07s; }
-.rec-card:nth-child(3) { animation-delay: 0.14s; }
-.rec-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-.rec-clickable { display: flex; gap: 14px; cursor: pointer; }
-.rec-clickable:hover .rec-name { text-decoration: underline; }
-.rec-card:hover .rec-image img { transform: scale(1.06); }
-.rec-image img { transition: transform var(--t-slow) var(--ease); }
-.rec-image {
-  width: 64px;
-  height: 64px;
-  border-radius: 10px;
-  background: var(--surface-hover);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
+.rec-card:nth-child(2) { animation-delay: .07s; }
+.rec-card:nth-child(3) { animation-delay: .14s; }
+.rec-arch {
+  position: relative; aspect-ratio: 16/10; border-radius: 90px 90px 12px 12px; overflow: hidden;
+  background: linear-gradient(170deg,#EFE7DB,#E6E3D0 60%,#DEE7DF); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
 }
-.rec-image img { width: 100%; height: 100%; object-fit: cover; }
-.rec-img-placeholder { font-size: 28px; }
-.rec-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.rec-brand { font-size: 12px; color: var(--text-muted); }
-.rec-name { font-size: 15px; font-weight: 600; line-height: 1.4; }
-.rec-price { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
-
+.rec-arch::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 46%;
+  background: repeating-linear-gradient(180deg, transparent 0 9px, rgba(34,42,46,.05) 9px 10px);
+}
+.rec-arch img { width: 100%; height: 100%; object-fit: cover; }
+.rec-ph { font-size: 40px; position: relative; }
+.rec-heart {
+  position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.9); box-shadow: var(--sh-sm); font-size: 14px; color: var(--rose);
+  display: flex; align-items: center; justify-content: center;
+}
+.rec-heart.liked { background: var(--rose); color: #fff; }
+.rec-meta { padding: 12px 6px 0; cursor: pointer; }
+.rec-brand { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-faint); }
+.rec-name { font-size: 15px; font-weight: 600; line-height: 1.35; margin: 4px 0 6px; }
+.rec-price { font-size: 16px; }
 .rec-reason {
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  background: var(--surface);
-  border-radius: 10px;
-  padding: 10px 12px;
+  font-size: 12.5px; line-height: 1.6; color: var(--ink-soft);
+  background: var(--panel); border-radius: 12px; padding: 11px 13px; margin: 12px 6px 0;
 }
-
-.rec-actions { display: flex; gap: 8px; }
-.action-btn {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-decoration: none;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
+.rec-link {
+  display: block; text-align: center; margin: 12px 6px 4px; padding: 10px;
+  border: 1px solid var(--line); border-radius: 12px; font-size: 13px; font-weight: 500; color: var(--ink);
 }
-.action-btn:hover { background: var(--bg); color: var(--text-primary); }
-.action-btn.liked { color: #E53935; border-color: #FECACA; background: #FFF5F5; }
-.action-btn.link { color: var(--text-primary); }
 
 .more-chat-btn {
-  margin: 24px auto 8px;
-  display: block;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.15s;
+  display: block; margin: 24px auto 8px; padding: 11px 22px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--sheet); font-size: 13.5px; box-shadow: var(--sh-sm);
 }
-.more-chat-btn:hover { background: var(--bg); }
-
-.ghost-btn {
-  padding: 9px 18px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 13px;
-  cursor: pointer;
-}
-.primary-btn {
-  padding: 9px 18px;
-  border-radius: 8px;
-  border: none;
-  background: var(--text-primary);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Input */
-.input-bar { padding: 16px 24px; border-top: 1px solid var(--border); background: var(--surface); }
-.input-inner { display: flex; gap: 10px; width: 100%; max-width: 820px; margin: 0 auto; }
-.input-bar input {
-  flex: 1;
-  padding: 13px 18px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 14px;
-  outline: none;
-  background: var(--bg);
-  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
-}
-.input-bar input:focus {
-  border-color: var(--brand-1);
-  background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(255, 143, 177, 0.15);
-}
-.input-bar input:disabled { opacity: 0.6; cursor: not-allowed; }
-.send-btn {
-  width: 46px;
-  height: 46px;
-  flex-shrink: 0;
-  border-radius: var(--radius);
-  border: none;
-  background: var(--gradient-brand);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), opacity var(--t-fast);
-}
-.send-btn:not(:disabled):hover { transform: translateY(-2px) scale(1.04); box-shadow: var(--shadow-glow); }
-.send-btn:not(:disabled):active { transform: scale(0.96); }
-.send-btn:disabled { opacity: 0.35; cursor: default; background: var(--text-muted); }
+.ghost-btn { padding: 10px 18px; border-radius: 99px; border: 1px solid var(--line); background: var(--sheet); font-size: 13px; }
+.primary-btn { padding: 10px 18px; border-radius: 99px; border: none; background: var(--ink); color: var(--canvas); font-size: 13px; font-weight: 600; box-shadow: var(--sh-ink); }
 </style>

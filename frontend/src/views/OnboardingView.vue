@@ -130,400 +130,388 @@ function goChat() {
 </script>
 
 <template>
-  <div class="layout">
+  <div class="screen">
     <GlobalSidebar />
 
-    <div class="main">
-      <div class="header">
-        <span class="header-title">프로필 설정</span>
-        <div class="progress-wrap">
-          <span class="progress-label">{{ Math.min(step, 3) }}/3 완료</span>
-          <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: Math.min(progress, 100) + '%' }" />
-          </div>
-        </div>
+    <!-- 앱바 + 진행 -->
+    <header class="appbar">
+      <div class="ab-top">
+        <span class="eyebrow">your profile</span>
+        <span class="ab-step">{{ Math.min(step, 3) }} <span class="ab-of">/ 3</span></span>
       </div>
+      <h1 class="ab-title serif">맞춤 추천을 위한<br><em>몇 가지 질문</em></h1>
+      <div class="progress-bar">
+        <div class="progress-fill" :style="{ width: Math.min(progress, 100) + '%' }" />
+      </div>
+    </header>
 
-      <div class="chat-body">
-        <div v-for="msg in messages" :key="msg.id" class="msg-row" :class="msg.role">
+    <div class="chat-body">
+      <!-- 장식 새싹 -->
+      <svg class="sprig" viewBox="0 0 60 120" fill="none" aria-hidden="true">
+        <path d="M30 118 C30 80 30 50 30 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M30 70 C18 64 10 52 10 38 C24 42 30 56 30 70Z" fill="currentColor" opacity=".5"/>
+        <path d="M30 52 C42 46 50 34 50 20 C36 24 30 38 30 52Z" fill="currentColor" opacity=".5"/>
+        <path d="M30 32 C20 28 14 18 14 8 C26 11 30 22 30 32Z" fill="currentColor" opacity=".5"/>
+      </svg>
 
-          <div v-if="msg.role === 'ai'" class="ai-avatar">B</div>
+      <div v-for="msg in messages" :key="msg.id" class="msg-row" :class="msg.role">
 
-          <div class="bubble-wrap">
-            <div class="bubble" :class="[msg.role, msg.type === 'complete' ? 'complete' : '']">
-              {{ msg.text }}
-            </div>
+        <div v-if="msg.role === 'ai'" class="ai-avatar">🌿</div>
 
-            <!-- 피부 타입 선택 버튼 (step 1) -->
-            <div v-if="msg.type === 'text' && msg.role === 'ai' && step === 1" class="skin-type-btns">
+        <div class="bubble-wrap">
+          <div class="bubble" :class="[msg.role, msg.type === 'complete' ? 'complete' : '']">
+            {{ msg.text }}
+          </div>
+
+          <!-- 피부 타입 선택 버튼 (step 1) -->
+          <div v-if="msg.type === 'text' && msg.role === 'ai' && step === 1" class="skin-type-btns">
+            <button
+              v-for="t in SKIN_TYPES" :key="t"
+              class="type-btn"
+              :class="{ selected: selectedSkinType === t }"
+              @click="selectSkinType(t)"
+            >{{ t }}</button>
+          </div>
+
+          <!-- 피부 고민 다중 선택 (step 2) -->
+          <div v-if="msg.type === 'concerns'" class="concerns-wrap">
+            <span class="field-label">고민 (복수 선택)</span>
+            <div class="tags-row">
               <button
-                v-for="t in SKIN_TYPES" :key="t"
-                class="type-btn"
-                :class="{ selected: selectedSkinType === t }"
-                @click="selectSkinType(t)"
-              >{{ t }}</button>
+                v-for="c in CONCERNS" :key="c"
+                class="tag-btn"
+                :class="{ selected: selectedConcerns.includes(c) }"
+                @click="toggleConcern(c)"
+              >{{ c }}</button>
             </div>
+            <button class="cta" :disabled="!selectedConcerns.length" @click="confirmConcerns">확인</button>
+          </div>
 
-            <!-- 피부 고민 다중 선택 (step 2) -->
-            <div v-if="msg.type === 'concerns'" class="concerns-wrap">
-              <div class="tags-row">
-                <button
-                  v-for="c in CONCERNS" :key="c"
-                  class="tag-btn"
-                  :class="{ selected: selectedConcerns.includes(c) }"
-                  @click="toggleConcern(c)"
-                >{{ c }}</button>
-              </div>
-              <button class="confirm-btn" :disabled="!selectedConcerns.length" @click="confirmConcerns">확인</button>
+          <!-- 기피 성분 입력 (step 3) -->
+          <div v-if="msg.type === 'avoid'" class="avoid-wrap">
+            <div v-if="avoidList.length" class="avoid-tags">
+              <span v-for="item in avoidList" :key="item" class="avoid-tag">
+                {{ item }}
+                <button class="remove-tag" @click="removeAvoid(item)" aria-label="삭제">×</button>
+              </span>
             </div>
-
-            <!-- 기피 성분 입력 (step 3) -->
-            <div v-if="msg.type === 'avoid'" class="avoid-wrap">
-              <div class="avoid-tags">
-                <span v-for="item in avoidList" :key="item" class="avoid-tag">
-                  {{ item }}
-                  <button class="remove-tag" @click="removeAvoid(item)">×</button>
-                </span>
-              </div>
-              <div class="avoid-input-row">
-                <input
-                  v-model="avoidInput"
-                  placeholder="성분 입력 (예: 알코올)"
-                  @keyup.enter="addAvoid"
-                />
-                <button class="add-btn" @click="addAvoid">추가</button>
-              </div>
-              <button class="confirm-btn" :disabled="saving" @click="finishOnboarding">
-                {{ saving ? '저장 중...' : '완료' }}
-              </button>
-              <p v-if="saveError" class="save-error">{{ saveError }}</p>
+            <div class="avoid-input-row">
+              <input
+                v-model="avoidInput"
+                placeholder="성분 입력 (예: 알코올)"
+                @keyup.enter="addAvoid"
+              />
+              <button class="add-btn" @click="addAvoid">추가</button>
             </div>
+            <button class="cta" :disabled="saving" @click="finishOnboarding">
+              {{ saving ? '저장 중…' : '완료' }}
+            </button>
+            <p v-if="saveError" class="save-error">{{ saveError }}</p>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 완료 후 채팅 이동 버튼 -->
-      <div class="input-bar">
-        <button v-if="step === 4" class="go-chat-btn" @click="goChat">
-          추천 받으러 가기 →
-        </button>
-        <div v-else class="input-placeholder">
-          <input type="text" placeholder="메시지를 입력하세요" disabled />
-        </div>
+    <!-- 하단 바: 완료 후 채팅 이동 -->
+    <div class="input-bar">
+      <button v-if="step === 4" class="go-chat-btn" @click="goChat">
+        추천 받으러 가기 →
+      </button>
+      <div v-else class="input-placeholder">
+        <input type="text" placeholder="질문에 답하면 다음으로 넘어가요" disabled />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.layout { display: flex; height: 100vh; background: var(--bg); }
-
-.main {
-  flex: 1;
+.screen {
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  position: relative;
 }
 
-/* subtle brand glow behind the conversation */
-.main::before {
-  content: "";
-  position: absolute;
-  top: -120px;
-  right: -100px;
-  width: 360px;
-  height: 360px;
-  background: var(--gradient-brand);
-  opacity: 0.10;
-  filter: blur(80px);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
+/* ── 앱바 + 진행 ── */
+.appbar {
+  flex-shrink: 0;
+  padding: calc(14px + env(safe-area-inset-top)) 20px 14px;
 }
-
-.header {
+.ab-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 80%, transparent);
-  backdrop-filter: blur(8px);
-  position: relative;
-  z-index: 1;
+  margin-bottom: 8px;
 }
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+.ab-step {
+  font-family: 'Fraunces', 'Noto Serif KR', serif;
+  font-size: 17px;
+  color: var(--ink);
+  letter-spacing: -.3px;
+}
+.ab-of { color: var(--ink-faint); font-size: 13px; }
+.ab-title {
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -.3px;
+  margin-bottom: 14px;
+}
+.ab-title em { font-style: italic; }
 
-.header-title {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.progress-wrap { display: flex; align-items: center; gap: 12px; }
-.progress-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
 .progress-bar {
-  width: 140px;
-  height: 6px;
-  background: var(--border);
+  height: 5px;
+  background: var(--line-soft);
   border-radius: 999px;
   overflow: hidden;
 }
 .progress-fill {
   height: 100%;
-  background: var(--gradient-brand);
+  background: linear-gradient(90deg, var(--sage), var(--rose));
   border-radius: 999px;
-  box-shadow: var(--shadow-glow);
   transition: width var(--t-slow) var(--ease);
 }
 
+/* ── 대화 본문 ── */
 .chat-body {
+  position: relative;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 28px 24px;
+  padding: 22px 20px 8px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  position: relative;
-  z-index: 1;
+}
+
+/* 장식 새싹 */
+.sprig {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  width: 38px;
+  height: 76px;
+  color: var(--sage);
+  opacity: .22;
+  pointer-events: none;
 }
 
 .msg-row {
   display: flex;
-  gap: 10px;
+  gap: 9px;
   align-items: flex-start;
-  animation: bt-rise 0.4s var(--ease) both;
+  animation: bt-rise .35s var(--ease) both;
 }
 .msg-row.user { flex-direction: row-reverse; }
 
 .ai-avatar {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--gradient-brand);
-  color: #fff;
+  flex-shrink: 0;
+  background: var(--sage-soft);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
+  font-size: 15px;
 }
 
-.bubble-wrap { display: flex; flex-direction: column; gap: 12px; max-width: 480px; }
+.bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 82%;
+}
+.msg-row.user .bubble-wrap { align-items: flex-end; }
 
 .bubble {
-  padding: 13px 17px;
-  border-radius: var(--radius-lg);
-  font-size: 14px;
+  padding: 12px 15px;
+  border-radius: 17px;
+  font-size: 14.5px;
   line-height: 1.6;
   white-space: pre-line;
-  box-shadow: var(--shadow-sm);
 }
 .bubble.ai {
-  background: var(--ai-bubble);
-  color: var(--ai-bubble-fg);
-  border-top-left-radius: 6px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line-soft);
+  border-bottom-left-radius: 5px;
+  box-shadow: var(--sh-bub);
 }
 .bubble.user {
-  background: var(--gradient-ink);
-  color: #fff;
-  border-top-right-radius: 6px;
+  background: var(--ink);
+  color: var(--canvas);
+  border-bottom-right-radius: 5px;
+  box-shadow: var(--sh-ink);
 }
 .bubble.complete {
-  background: var(--gradient-brand);
-  color: #fff;
-  box-shadow: var(--shadow-glow);
-}
-
-.skin-type-btns { display: flex; flex-wrap: wrap; gap: 8px; }
-.type-btn {
-  padding: 9px 18px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t-fast) var(--ease),
-    box-shadow var(--t-fast) var(--ease),
-    border-color var(--t-fast) var(--ease),
-    background var(--t-fast) var(--ease);
-}
-.type-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--brand-1);
-}
-.type-btn.selected {
-  background: var(--gradient-brand);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: var(--shadow-glow);
-}
-
-.concerns-wrap, .avoid-wrap { display: flex; flex-direction: column; gap: 12px; }
-
-.tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.tag-btn {
-  padding: 7px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t-fast) var(--ease),
-    box-shadow var(--t-fast) var(--ease),
-    border-color var(--t-fast) var(--ease),
-    background var(--t-fast) var(--ease);
-}
-.tag-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--brand-1);
-}
-.tag-btn.selected {
-  background: var(--gradient-brand);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: var(--shadow-glow);
-}
-
-.confirm-btn {
-  align-self: flex-start;
-  padding: 10px 24px;
-  background: var(--gradient-brand);
-  color: #fff;
+  background: var(--sage);
+  color: var(--canvas);
   border: none;
-  border-radius: var(--radius);
+  box-shadow: var(--sh-md);
+}
+
+/* ── 옵션 칩 공통 ── */
+.field-label {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.skin-type-btns,
+.tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.concerns-wrap,
+.avoid-wrap { display: flex; flex-direction: column; gap: 12px; }
+
+.type-btn,
+.tag-btn {
+  padding: 10px 18px;
+  min-height: 40px;
+  border-radius: 99px;
+  border: 1px solid var(--line-soft);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease),
+    background var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease),
+    box-shadow var(--t-fast) var(--ease);
+}
+.type-btn:active,
+.tag-btn:active { transform: scale(.98); }
+.type-btn.selected,
+.tag-btn.selected {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: transparent;
+  box-shadow: var(--sh-ink);
+}
+
+/* ── 1차 CTA ── */
+.cta {
+  align-self: flex-start;
+  padding: 12px 26px;
+  min-height: 44px;
+  background: var(--ink);
+  color: var(--canvas);
+  border-radius: 99px;
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t-fast) var(--ease),
-    box-shadow var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
+  box-shadow: var(--sh-ink);
+  transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
 }
-.confirm-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
-}
-.confirm-btn:active:not(:disabled) { transform: scale(0.98); }
-.confirm-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
+.cta:not(:disabled):active { transform: scale(.98); }
+.cta:disabled {
+  opacity: .35;
+  background: var(--ink-faint);
   box-shadow: none;
+  cursor: default;
 }
 
 .save-error { font-size: 13px; color: var(--danger); }
 
+/* ── 기피 성분 ── */
 .avoid-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .avoid-tag {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 12px;
-  background: var(--brand-soft);
-  color: var(--brand);
-  border-radius: 999px;
+  gap: 5px;
+  padding: 6px 8px 6px 13px;
+  background: var(--rose-soft);
+  color: var(--rose-ink);
+  border-radius: 99px;
   font-size: 13px;
-  font-weight: 600;
-  animation: bt-pop 0.3s var(--ease-back) both;
+  font-weight: 500;
+  animation: bt-pop .3s var(--ease-back) both;
 }
 .remove-tag {
-  border: none;
-  background: none;
-  color: var(--brand);
-  font-size: 15px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(168,106,130,.16);
+  color: var(--rose-ink);
+  font-size: 14px;
   line-height: 1;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: opacity var(--t-fast) var(--ease);
 }
-.remove-tag:hover { opacity: 1; }
+.remove-tag:active { transform: scale(.9); }
 
 .avoid-input-row { display: flex; gap: 8px; }
 .avoid-input-row input {
   flex: 1;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  min-width: 0;
+  padding: 12px 15px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
   font-size: 14px;
-  background: var(--surface);
+  background: var(--card);
+  color: var(--ink);
   outline: none;
+  box-shadow: var(--sh-sm);
   transition: border-color var(--t-fast) var(--ease),
     box-shadow var(--t-fast) var(--ease);
 }
+.avoid-input-row input::placeholder { color: var(--ink-faint); }
 .avoid-input-row input:focus {
-  border-color: var(--brand-1);
-  box-shadow: 0 0 0 3px rgba(255, 143, 177, 0.15);
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(126, 139, 109, .15);
 }
 .add-btn {
-  padding: 10px 18px;
-  background: var(--surface);
-  color: var(--brand);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  flex-shrink: 0;
+  padding: 0 18px;
+  min-height: 44px;
+  background: var(--sheet);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 16px;
   font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform var(--t-fast) var(--ease),
-    box-shadow var(--t-fast) var(--ease),
-    border-color var(--t-fast) var(--ease);
+  font-weight: 500;
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease);
 }
-.add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--brand-1);
-}
-.add-btn:active { transform: scale(0.98); }
+.add-btn:active { transform: scale(.98); }
 
+/* ── 하단 바 ── */
 .input-bar {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  position: relative;
-  z-index: 1;
+  flex-shrink: 0;
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
 }
 
 .input-placeholder input {
   width: 100%;
   padding: 13px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  border-radius: 16px;
   font-size: 14px;
-  background: var(--bg);
-  color: var(--text-muted);
+  background: var(--sheet);
+  color: var(--ink-faint);
   outline: none;
 }
 
 .go-chat-btn {
   width: 100%;
   padding: 15px;
-  background: var(--gradient-brand);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--canvas);
+  border-radius: 99px;
   font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  animation: bt-pop 0.4s var(--ease-back) both;
-  transition: transform var(--t-fast) var(--ease),
-    box-shadow var(--t-fast) var(--ease);
+  font-weight: 600;
+  box-shadow: var(--sh-ink);
+  animation: bt-pop .4s var(--ease-back) both;
+  transition: transform var(--t-fast) var(--ease);
 }
-.go-chat-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
-}
-.go-chat-btn:active { transform: scale(0.98); }
+.go-chat-btn:active { transform: scale(.98); }
 </style>

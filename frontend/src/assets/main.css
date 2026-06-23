@@ -1,13 +1,33 @@
 @import './base.css';
 
+/* 모바일 프레임: 데스크탑에선 가운데 폰 모양, 실제 모바일에선 꽉 참 */
 #app {
-  height: 100vh;
+  position: relative;
   width: 100%;
-  display: flex;
+  max-width: var(--app-w);
+  height: 100vh;
+  height: 100dvh;
+  margin: 0 auto;
   overflow: hidden;
+  background: var(--canvas);
+  box-shadow: 0 0 0 1px rgba(60,48,30,.04), 0 30px 80px rgba(40,30,18,.16);
 }
 
+/* 캔버스 그레인 (프레임 안쪽) */
+#app::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* 라우트로 렌더되는 화면이 프레임을 꽉 채우도록 */
 #app > * {
-  flex: 1;
-  min-width: 0;
+  position: relative;
+  z-index: 1;
+  height: 100%;
 }
