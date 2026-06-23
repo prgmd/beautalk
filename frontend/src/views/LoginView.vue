@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import TermsModal from '@/components/TermsModal.vue'
-import LeafParallax from '@/components/LeafParallax.vue'
 
 const route = useRoute()
 const activeModal = ref(null) // null | 'terms' | 'privacy'
@@ -38,9 +37,6 @@ function handleOAuth(provider) {
 
 <template>
   <div class="page">
-    <!-- 마우스 따라 밀리는 나뭇잎 배경 -->
-    <LeafParallax />
-
     <div class="card">
       <header class="masthead">
         <p class="eyebrow">Botanical Beauty Lab</p>
@@ -90,6 +86,7 @@ function handleOAuth(provider) {
     calc(env(safe-area-inset-top) + 32px) 24px
     calc(env(safe-area-inset-bottom) + 32px);
   overflow: hidden;
+  background: url('/background_leaves.jpg') center center / cover no-repeat;
 }
 
 .card {
