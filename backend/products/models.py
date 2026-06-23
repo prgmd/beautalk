@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from pgvector.django import VectorField
 
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -15,6 +16,9 @@ class Product(models.Model):
     average_rating = models.FloatField(null=True, blank=True)
     review_count = models.IntegerField(default=0)
     satisfaction_by_type = models.JSONField(default=dict, blank=True)
+    # RAG 벡터 검색용 임베딩 (text-embedding-3-small, 1536차원).
+    # 제품 원본에서 파생되는 재생성 가능 데이터라 seed에는 넣지 않고 backfill 명령으로 채운다.
+    embedding = VectorField(dimensions=1536, null=True, blank=True)
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')

@@ -153,7 +153,7 @@ class ChatView(APIView):
 
     permission_classes = [IsAuthenticated]
     throttle_classes = [ScopedRateThrottle]
-    throttle_scope = 'llm'  # 유료 GMS 호출 전용 한도 (운영 10/day, DEBUG 무제한)
+    throttle_scope = 'chat'  # 대화는 다발성 → 넉넉한 한도 (운영 100/day, DEBUG 무제한)
 
     def post(self, request):
         content = request.data.get('content', '').strip()
@@ -237,7 +237,7 @@ class RecommendView(APIView):
 
     permission_classes = [IsAuthenticated]
     throttle_classes = [ScopedRateThrottle]
-    throttle_scope = 'llm'  # 유료 GMS 호출 전용 한도 (운영 10/day, DEBUG 무제한)
+    throttle_scope = 'recommend'  # 배치 생성은 드물고 무거움 → 빡빡한 한도 (운영 20/day, DEBUG 무제한)
 
     def post(self, request):
         history = _clean_history(request.data.get('history', []))

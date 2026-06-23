@@ -86,8 +86,8 @@
 - [x] 제품 상세 UI
 
 ### Should 기능
-- [ ] 피드백 (좋아요/별로예요)
-- ❌ ~~대시보드 차트~~ — 포기 (스펙 미정의, 어필 약함. 필요 시 피드백 데이터로 후속)
+- ❌ ~~피드백 (좋아요/별로예요)~~ — 포기
+- ❌ ~~대시보드 차트~~ — 포기
 
 ### 보안 강화
 - [x] SECRET_KEY 환경변수 분리 (.env 로드, 새 키 발급)
@@ -98,8 +98,27 @@
 - [x] 입력 검증 강화 (SkinProfile JSONField 타입 + 길이 검증)
 - [x] 자동 토큰 갱신 (401 발생 시 /auth/token/refresh → 재시도)
 - [x] 테스트 커버리지 (accounts 인증 플로우 7가지 단위 테스트)
+- [x] 배포 전 보안·안정성 보강 (docs/backend-hardening.md)
+  - DEBUG/ALLOWED_HOSTS 환경변수 분리 (fail-safe 기본값 False)
+  - refresh 쿠키 Secure 적용 (`secure=not DEBUG`, 운영 HTTPS 전용)
+  - LLM 엔드포인트 전용 throttle (ScopedRateThrottle — 대화 `chat` 100/day, 추천 `recommend` 20/day로 분리)
+  - GMS 응답 파싱 502 방어, 추천 3개 상한, UserInfo 예외 가드, print→logging
 - ❌ ~~서버사이드 사용량 정밀 카운팅 (UsageLog 모델)~~ — 포기
-  - LLM 전용 ScopedRateThrottle(`llm` 10/day)로 일일 한도 목적 달성. UsageLog는 분석용이라 후순위
+  - LLM 전용 ScopedRateThrottle(chat 100/day·recommend 20/day)로 일일 한도 목적 달성. UsageLog는 분석용이라 후순위
+
+### AI 고도화 — RAG · LangChain · 관측 (Phase 2 핵심)
+> 목표: 추천 레이어를 **"전 제품 프롬프트 주입" → "의미 기반 벡터 검색(RAG)"** 으로 전환.
+> 현재는 임시로 추천 후보를 리뷰순 30개로 컷(`backend-hardening.md` H3) — RAG가 이를 대체한다.
+> 인프라 기반은 PostgreSQL 전환으로 이미 마련됨.
+- [x] GMS 임베딩 엔드포인트 검증 (`text-embedding-3-small`, dim 1536, 200 OK)
+- [ ] pgvector 도입 (docker 이미지 `pgvector/pgvector:pg16`, `CREATE EXTENSION vector`)
+- [ ] `Product.embedding` 필드(1536d) + 마이그레이션
+- [ ] 임베딩 서비스 모듈 (GMS embeddings 호출)
+- [ ] 임베딩 백필 관리 명령 (seed엔 미포함 — 재생성 가능한 파생 데이터로 관리)
+- [ ] **추천 검색 교체** (대화 임베딩 → 코사인 top-N → 그 N개만 프롬프트)
+- [ ] LangChain 파이프라인화 (ChatOpenAI+GMS, PGVector retriever, 체인 구성)
+- [ ] LLM 관측/추적 도입 (LangSmith 또는 Langfuse — 프롬프트·토큰·지연·검색결과 추적)
+- [ ] RAG 검색 품질 테스트 (임베딩 mock 기반)
 
 ### 배포·QA
 > DB 전환 상세 문서는 Notion 참고 (SQLite→PostgreSQL 전환·Docker 도입·트러블슈팅)
@@ -110,6 +129,6 @@
   - URLField max_length 200→500 (PG 길이 강제 대응, 올리브영 URL 최대 298자)
 - [~] Docker 컨테이너화 (DB만 컨테이너로 구동 / 앱 컨테이너화는 배포 단계)
 - [ ] AWS 배포·Nginx 설정
-- [ ] DEBUG=False·ALLOWED_HOSTS 설정 (프로덕션 환경 분기)
+- [x] DEBUG/ALLOWED_HOSTS 환경변수 분리 (배포 시 `.env`만 주입하면 운영 전환 — backend-hardening.md)
 - [ ] 전체 QA·버그 수정
 - [ ] 발표 준비
