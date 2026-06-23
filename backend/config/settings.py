@@ -64,9 +64,12 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '20/hour',
         'user': '100/day',
-        # LLM(유료 GMS) 호출 전용 한도. DEBUG에선 None으로 비활성화해
-        # 로컬·테스트가 429에 막히지 않도록 한다 (rate=None이면 throttle 통과).
-        'llm': None if DEBUG else '10/day',
+        # LLM(유료 GMS) 호출 한도. 빈도 특성이 달라 분리한다:
+        #  - chat: 한 상담에 메시지가 여러 개 오가므로 넉넉히
+        #  - recommend: 배치 생성이라 호출이 드물고 프롬프트가 무거우므로 빡빡하게
+        # DEBUG에선 None으로 비활성화(rate=None이면 throttle 통과 → 로컬·테스트 보호).
+        'chat': None if DEBUG else '100/day',
+        'recommend': None if DEBUG else '20/day',
     },
 }
 

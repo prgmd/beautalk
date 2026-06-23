@@ -206,9 +206,61 @@ class RecommendApiTest(TestCase):
         res = self.client.post('/api/v1/recommend/', {'history': self._history()}, format='json')
         self.assertEqual(res.status_code, 502)
 
+    @patch('chat.views.embed_text')
+    @patch('chat.views.http.post')
+    def test_uses_vector_search_when_embeddings_present(self, mock_post, mock_embed):
+        # 후보 제품에 임베딩을 채우면 RAG(벡터 검색) 경로를 탄다 → embed_text 호출됨
+        for p in (self.p1, self.p2, self.p3):
+            p.embedding = [0.1] * 1536
+            p.save(update_fields=['embedding'])
+        mock_embed.return_value = [0.1] * 1536
+        payload = {'content': '요약', 'products': [{'id': str(self.p1.id), 'reason': 'r'}]}
+        mock_post.return_value = _mock_gms(json.dumps(payload))
+
+        res = self.client.post('/api/v1/recommend/', {'history': self._history()}, format='json')
+        self.assertEqual(res.status_code, 201)
+        mock_embed.assert_called_once()  # 대화를 쿼리 벡터로 변환했다
+
+    @patch('chat.views.embed_text')
+    @patch('chat.views.http.post')
+    def test_falls_back_to_review_order_without_embeddings(self, mock_post, mock_embed):
+        # 임베딩이 없으면 GMS 임베딩을 부르지 않고 리뷰순으로 폴백한다 (비용·네트워크 절약)
+        payload = {'content': '요약', 'products': [{'id': str(self.p1.id), 'reason': 'r'}]}
+        mock_post.return_value = _mock_gms(json.dumps(payload))
+
+        res = self.client.post('/api/v1/recommend/', {'history': self._history()}, format='json')
+        self.assertEqual(res.status_code, 201)
+        mock_embed.assert_not_called()
+
     def test_requires_auth(self):
         res = APIClient().post('/api/v1/recommend/', {'history': []}, format='json')
         self.assertIn(res.status_code, (401, 403))
+
+
+# ──────────────────────────────────────────────
+# 임베딩 모듈 — chat/embeddings.py (GMS는 mock)
+# ──────────────────────────────────────────────
+
+class EmbeddingsTest(TestCase):
+    @patch('chat.embeddings.http.post')
+    def test_embed_texts_returns_vectors_in_input_order(self, mock_post):
+        # GMS가 순서를 뒤섞어 줘도 index 기준으로 정렬해 입력 순서와 맞춘다
+        mock = MagicMock()
+        mock.raise_for_status.return_value = None
+        mock.json.return_value = {'data': [
+            {'index': 1, 'embedding': [2.0]},
+            {'index': 0, 'embedding': [1.0]},
+        ]}
+        mock_post.return_value = mock
+
+        from chat.embeddings import embed_texts
+        self.assertEqual(embed_texts(['a', 'b']), [[1.0], [2.0]])
+
+    @patch('chat.embeddings.http.post')
+    def test_embed_texts_empty_skips_call(self, mock_post):
+        from chat.embeddings import embed_texts
+        self.assertEqual(embed_texts([]), [])
+        mock_post.assert_not_called()
 
 
 # ──────────────────────────────────────────────
