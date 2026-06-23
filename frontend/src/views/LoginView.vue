@@ -102,9 +102,9 @@ function handleOAuth(provider) {
   gap: 20px;
   padding: 36px 28px;
   border-radius: var(--radius-xl);
-  background: rgba(251, 248, 241, 0.74);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: rgba(251, 248, 241, 0.88);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: var(--sh-lg);
   animation: bt-rise var(--t-slow) var(--ease) both;

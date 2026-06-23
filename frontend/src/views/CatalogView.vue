@@ -36,7 +36,14 @@ async function fetchAll() {
       )
       rest.forEach((r) => { items = items.concat((r.data?.results || []).map(normalizeProduct)) })
     }
-    all.value = items
+    // 시드에 같은 제품(브랜드+이름)이 중복 수집돼 있어 화면에선 1개만 보이도록 정리한다.
+    const seen = new Set()
+    all.value = items.filter((p) => {
+      const k = `${p.brand}__${p.name}`
+      if (seen.has(k)) return false
+      seen.add(k)
+      return true
+    })
   } catch {
     errorMsg.value = '제품을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'
   } finally {
