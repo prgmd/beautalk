@@ -44,7 +44,8 @@ products/
 │   ├── ProductListView          # GET /api/v1/products/ (페이지네이션, ?category 필터)
 │   ├── ProductDetailView        # GET /api/v1/products/<uuid>/
 │   ├── LikeListCreateView       # GET/POST /api/v1/likes/ (내 찜 목록 / 추가)
-│   └── LikeDeleteView           # DELETE /api/v1/likes/<uuid>/ (product_id 기준, IDOR 방어)
+│   ├── LikeDeleteView           # DELETE /api/v1/likes/<uuid>/ (product_id 기준, IDOR 방어)
+│   └── ProductPostsView         # GET /api/v1/products/<uuid>/posts/ (역참조: 제품 태그된 글)
 ├── management/commands/
 │   └── backfill_embeddings.py   # 제품 → 임베딩 일괄 적재 (seed 미포함, 재생성)
 ├── urls.py           # products 앱 URL 라우팅
@@ -63,8 +64,23 @@ chat/
 ├── urls.py           # chat 앱 URL 라우팅
 ├── tests.py          # 챗봇·추천(RAG 포함)·기록 테스트 (chat 22가지)
 
+board/                # 커뮤니티 게시판 (F1303 필수 — 용도별: 자유/Q&A·팁/세일, 제품 태그)
+│                     #   ※ 앱명 community는 파이썬 모듈명과 충돌해 board로 명명
+├── models.py         # Post(카테고리·제목·본문 + 제품 정참조 FK, UUID PK), Comment, PostLike
+│   └── Post.product: products.Product FK(SET_NULL) — 게시글↔제품 태그, related_name='tagged_posts'
+├── serializers.py    # PostList/PostDetail/PostWrite(제품 product_id 입력) + CommentSerializer
+├── views.py          # 게시판 + 댓글 + 좋아요 API (IsAuthorOrReadOnly로 작성자 검증)
+│   ├── PostListCreateView       # GET/POST /api/v1/posts/ (?category= 필터, 페이지네이션)
+│   ├── PostDetailView           # GET/PATCH/DELETE /api/v1/posts/<uuid>/ (수정·삭제 작성자만)
+│   ├── CommentCreateView        # POST /api/v1/posts/<uuid>/comments/
+│   ├── CommentDeleteView        # DELETE /api/v1/comments/<id>/ (작성자만, IDOR 방어)
+│   └── PostLikeView             # POST/DELETE /api/v1/posts/<uuid>/like/ (좋아요 토글, 멱등)
+├── urls.py           # board 앱 URL 라우팅
+├── tests.py          # 게시판 CRUD·댓글·좋아요·IDOR·역참조 테스트 (board 20가지)
+
 crawling.py           # 크롤링 스크립트
 products_seed.json    # Product 156건 시드 (SQLite→PG 이관용 fixture, loaddata로 적재)
+board_seed.json       # 게시판 데모 fixture (유저·글 7·댓글 5·좋아요 3, 제품 태그 2건, loaddata)
 requirements.txt      # 의존성 (psycopg2-binary, pgvector — PostgreSQL + 벡터 검색)
 
 .env                  # 환경변수 (git 제외)

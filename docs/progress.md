@@ -119,6 +119,21 @@
 - [ ] LangChain 파이프라인화 (ChatOpenAI+GMS, PGVector retriever, 체인 구성)
 - [ ] LLM 관측/추적 도입 (LangSmith 또는 Langfuse — 프롬프트·토큰·지연·검색결과 추적)
 
+### 커뮤니티 — 용도별 게시판 (F1303 필수 요건) ✅ 백엔드 완료
+> 명세서 F1303(유저 소통)·F1304(RESTful)·NF1304(5페이지+) 충족용.
+> 앱 이름은 `board` (`community`가 파이썬 모듈명과 충돌해 변경). 컨셉: 용도별 게시판(자유 `free` / Q&A·팁 `qna` / 세일 정보 `sale`) + 제품 태그(게시글↔제품 양방향 연결).
+> - 정참조: 게시글 → 태그된 제품 (`Post.product`)
+> - 역참조: 제품 상세 → 그 제품 태그된 글 목록 (`Product.tagged_posts`, `GET /products/{id}/posts/`)
+- [x] `board` 앱 생성 + 모델 3종 (`Post`(UUID PK)/`Comment`/`PostLike`)
+- [x] 마이그레이션 (board 0001)
+- [x] 게시판 CRUD API (목록 `?category=` 필터·상세·작성·수정/삭제 작성자 검증)
+- [x] 댓글 API (작성·삭제, 작성자 검증)
+- [x] 좋아요 토글 API (`PostLike` — 기존 찜 `Like` 패턴 재사용, 멱등)
+- [x] **제품 역참조 API** (`GET /api/v1/products/{id}/posts/` — 제품 태그된 글, RESTful 관계 표현)
+- [x] `board_seed.json` fixture (데모 유저·글 7·댓글 5·좋아요 3, 제품 태그 2건)
+- [x] 테스트 (글 CRUD·댓글·좋아요·IDOR·역참조 — board 20개, 전체 58개 통과)
+- [ ] 프론트: 게시판 5개 페이지 (목록/상세/작성/수정/내 글) + 제품 상세 "관련 글 N개" 섹션 + 네비 진입점
+
 ### 배포·QA
 > DB 전환 상세 문서는 Notion 참고 (SQLite→PostgreSQL 전환·Docker 도입·트러블슈팅)
 - [x] PostgreSQL 전환 (SQLite → 동시성·데이터 안정성 개선)
