@@ -14,12 +14,14 @@ class Recommendation(models.Model):
     title = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # CASCADE 설정으로 연쇄 삭제 설정 (데이터 무결성)
+
 
 class RecommendedProduct(models.Model):
     """배치에 묶인 제품(자식).
 
-    UniqueConstraint를 두지 않는다 — 같은 제품이 다른 날 또 추천되면
-    배치(부모)가 다르므로 각각 별도 행으로 남는 '이벤트 로그' 성격이다.
+    UniqueConstraint를 두지 않음으로써, 같은 제품이 또 추천될 수 있도록 설정.
+    배치(부모)가 다르므로 각 별도 행으로 남는 이벤트 로그 성격 고려.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     recommendation = models.ForeignKey(
