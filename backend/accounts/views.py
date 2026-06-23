@@ -2,6 +2,7 @@ import os
 import secrets
 
 import requests as http
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework import status
@@ -34,6 +35,9 @@ def set_refresh_cookie(response, token):
         REFRESH_COOKIE_NAME,
         token,
         httponly=True,
+        # 운영(HTTPS)에서만 쿠키를 전송하도록 Secure를 켠다. 로컬은 HTTP라 DEBUG=True일 때
+        # 꺼야 쿠키가 동작하므로 DEBUG에 연동(=배포 시 자동으로 Secure 활성).
+        secure=not settings.DEBUG,
         samesite='Lax',
         path=REFRESH_COOKIE_PATH,
         max_age=REFRESH_COOKIE_MAX_AGE,

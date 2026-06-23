@@ -87,7 +87,7 @@
 
 ### Should 기능
 - [ ] 피드백 (좋아요/별로예요)
-- [ ] 대시보드 차트
+- ❌ ~~대시보드 차트~~ — 포기 (스펙 미정의, 어필 약함. 필요 시 피드백 데이터로 후속)
 
 ### 보안 강화
 - [x] SECRET_KEY 환경변수 분리 (.env 로드, 새 키 발급)
@@ -98,8 +98,8 @@
 - [x] 입력 검증 강화 (SkinProfile JSONField 타입 + 길이 검증)
 - [x] 자동 토큰 갱신 (401 발생 시 /auth/token/refresh → 재시도)
 - [x] 테스트 커버리지 (accounts 인증 플로우 7가지 단위 테스트)
-- [ ] 서버사이드 사용량 정밀 카운팅 (UsageLog 모델 — 사용자별 일일 한도 집계, plan.md [High])
-  - 현재는 DRF Throttling(100/day)만 적용. Chat 요청별 기록·일일 한도(10회 예정) 초과 시 429는 미구현
+- ❌ ~~서버사이드 사용량 정밀 카운팅 (UsageLog 모델)~~ — 포기
+  - LLM 전용 ScopedRateThrottle(`llm` 10/day)로 일일 한도 목적 달성. UsageLog는 분석용이라 후순위
 
 ### 배포·QA
 > DB 전환 상세 문서는 Notion 참고 (SQLite→PostgreSQL 전환·Docker 도입·트러블슈팅)
