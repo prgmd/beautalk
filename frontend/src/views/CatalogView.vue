@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { api } from '@/services/api'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
@@ -9,72 +9,87 @@ import GlobalSidebar from '@/components/GlobalSidebar.vue'
 const likes = useLikesStore()
 const productDetail = useProductDetailStore()
 
-const products = ref([]) // 정규화된 product 목록(누적)
-const page = ref(1)
-const hasMore = ref(false)
+const all = ref([]) // 전체 제품(정규화)
 const loading = ref(false)
-const loadingMore = ref(false)
 const errorMsg = ref('')
+const search = ref('')
 const activeCategory = ref('') // '' = 전체
+const page = ref(1)
+const PAGE_SIZE = 12
 
-// 불러온 제품에서 카테고리를 모아 필터 칩으로 제공한다(별도 카테고리 API가 없어서).
-const categories = ref([])
+const bodyEl = ref(null)
 
-function rememberCategories(items) {
-  const set = new Set(categories.value)
-  items.forEach((p) => { if (p.category) set.add(p.category) })
-  categories.value = [...set]
-}
-
-// GET /products/ (페이지네이션: { count, next, previous, results })
-async function fetchPage(reset = false) {
-  if (reset) {
-    page.value = 1
-    products.value = []
-    loading.value = true
-  } else {
-    loadingMore.value = true
-  }
+// 전체를 한 번에 받는다: 1페이지로 count 파악 → 나머지 페이지 병렬 조회 → 합침.
+// (검색·카테고리·페이지네이션을 모두 클라이언트에서 처리해 동선이 깔끔해짐)
+async function fetchAll() {
+  loading.value = true
   errorMsg.value = ''
   try {
-    const params = new URLSearchParams({ page: String(page.value) })
-    if (activeCategory.value) params.set('category', activeCategory.value)
-    const { data } = await api.get(`/products/?${params.toString()}`)
-    const results = (data?.results || []).map(normalizeProduct)
-    products.value = reset ? results : [...products.value, ...results]
-    hasMore.value = !!data?.next
-    rememberCategories(results)
+    const first = await api.get('/products/?page=1')
+    const count = first.data?.count || 0
+    let items = (first.data?.results || []).map(normalizeProduct)
+    const per = first.data?.results?.length || 10
+    const totalPages = per ? Math.ceil(count / per) : 1
+    if (totalPages > 1) {
+      const rest = await Promise.all(
+        Array.from({ length: totalPages - 1 }, (_, i) => api.get(`/products/?page=${i + 2}`)),
+      )
+      rest.forEach((r) => { items = items.concat((r.data?.results || []).map(normalizeProduct)) })
+    }
+    all.value = items
   } catch {
     errorMsg.value = '제품을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'
   } finally {
     loading.value = false
-    loadingMore.value = false
   }
 }
 
-function loadMore() {
-  if (loadingMore.value || !hasMore.value) return
-  page.value += 1
-  fetchPage(false)
-}
-
-function selectCategory(cat) {
-  if (activeCategory.value === cat) return
-  activeCategory.value = cat
-  fetchPage(true)
-}
-
-// 검색 — 불러온 제품에서 이름/브랜드로 필터(클라이언트). '더 보기'로 더 불러올수록 범위 넓어짐.
-const search = ref('')
-const displayed = computed(() => {
-  const q = search.value.trim().toLowerCase()
-  if (!q) return products.value
-  return products.value.filter((p) => `${p.name} ${p.brand}`.toLowerCase().includes(q))
+const categories = computed(() => {
+  const set = new Set()
+  all.value.forEach((p) => { if (p.category) set.add(p.category) })
+  return [...set]
 })
 
-const isEmpty = computed(() => !loading.value && displayed.value.length === 0)
+const filtered = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  return all.value.filter((p) => {
+    if (activeCategory.value && p.category !== activeCategory.value) return false
+    if (q && !`${p.name} ${p.brand}`.toLowerCase().includes(q)) return false
+    return true
+  })
+})
 
-onMounted(() => fetchPage(true))
+const pageCount = computed(() => Math.max(1, Math.ceil(filtered.value.length / PAGE_SIZE)))
+const pageItems = computed(() => filtered.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE))
+
+// 표시할 페이지 번호(윈도우 + 생략)
+const pages = computed(() => {
+  const n = pageCount.value
+  const c = page.value
+  if (n <= 7) return Array.from({ length: n }, (_, i) => i + 1)
+  const out = [1]
+  const lo = Math.max(2, c - 1)
+  const hi = Math.min(n - 1, c + 1)
+  if (lo > 2) out.push('…')
+  for (let i = lo; i <= hi; i++) out.push(i)
+  if (hi < n - 1) out.push('…')
+  out.push(n)
+  return out
+})
+
+// 필터/검색 바뀌면 1페이지로
+watch([activeCategory, search], () => { page.value = 1 })
+
+function goPage(p) {
+  if (p === '…' || p === page.value) return
+  page.value = p
+  if (bodyEl.value) bodyEl.value.scrollTop = 0
+}
+function selectCategory(cat) { activeCategory.value = cat }
+
+const isEmpty = computed(() => !loading.value && filtered.value.length === 0)
+
+onMounted(fetchAll)
 
 function formatPrice(n) {
   return n?.toLocaleString('ko-KR') + '원'
@@ -110,12 +125,12 @@ function formatPrice(n) {
         >{{ cat }}</button>
       </nav>
 
-      <div class="body">
+      <div ref="bodyEl" class="body">
         <p v-if="errorMsg" class="msg err">{{ errorMsg }}</p>
         <p v-if="loading" class="msg">제품을 불러오는 중...</p>
 
-        <div v-if="displayed.length" class="grid">
-          <article v-for="product in displayed" :key="product.id" class="card">
+        <div v-if="pageItems.length" class="grid">
+          <article v-for="product in pageItems" :key="product.id" class="card">
             <div class="arch" @click="productDetail.open(product)">
               <img v-if="product.image" :src="product.image" :alt="product.name" />
               <span v-else class="ph">🧴</span>
@@ -138,9 +153,19 @@ function formatPrice(n) {
           <p class="empty-text">표시할 제품이 없어요.</p>
         </div>
 
-        <button v-if="hasMore && !loading" class="more-btn" :disabled="loadingMore" @click="loadMore">
-          {{ loadingMore ? '불러오는 중...' : '더 보기' }}
-        </button>
+        <!-- 숫자 페이지네이션 -->
+        <div v-if="!loading && pageCount > 1" class="pager">
+          <button class="pg arrow" :disabled="page === 1" @click="goPage(page - 1)" aria-label="이전">‹</button>
+          <button
+            v-for="(p, i) in pages"
+            :key="i"
+            class="pg"
+            :class="{ on: p === page, gap: p === '…' }"
+            :disabled="p === '…'"
+            @click="goPage(p)"
+          >{{ p }}</button>
+          <button class="pg arrow" :disabled="page === pageCount" @click="goPage(page + 1)" aria-label="다음">›</button>
+        </div>
       </div>
     </div>
 
@@ -217,11 +242,18 @@ function formatPrice(n) {
 .empty-icon { font-size: 38px; }
 .empty-text { font-size: 14px; color: var(--ink-soft); }
 
-.more-btn {
-  display: block; margin: 22px auto 8px; padding: 12px 26px; border-radius: 99px;
-  border: 1px solid var(--line); background: var(--sheet); font-size: 14px; font-weight: 600; box-shadow: var(--sh-sm);
+/* 숫자 페이지네이션 */
+.pager { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; flex-wrap: wrap; }
+.pg {
+  min-width: 36px; height: 36px; padding: 0 8px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--sheet); font-size: 13px; font-weight: 600; color: var(--ink-soft);
+  display: inline-flex; align-items: center; justify-content: center; transition: all var(--t-fast);
 }
-.more-btn:disabled { opacity: .6; }
+.pg:hover:not(:disabled):not(.on) { background: var(--card); color: var(--ink); }
+.pg.on { background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-sm); }
+.pg.arrow { font-size: 16px; }
+.pg.gap { border: none; background: none; min-width: 20px; color: var(--ink-faint); }
+.pg:disabled { opacity: .4; cursor: default; }
 
 /* ── 데스크탑(≥900px) ── */
 @media (min-width: 900px) {
