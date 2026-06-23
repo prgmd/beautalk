@@ -8,18 +8,18 @@ const route = useRoute()
 const TABS = [
   { key: 'chat', label: '상담', icon: '🌿', path: '/chat' },
   { key: 'catalog', label: '둘러보기', icon: '🔎', path: '/catalog' },
-  { key: 'recommended', label: '추천', icon: '✦', path: '/mypage/recommended' },
-  { key: 'liked', label: '찜', icon: '💧', path: '/mypage/liked' },
-  { key: 'my', label: 'MY', icon: '🪞', path: '/mypage/profile' },
+  { key: 'vanity', label: '나의 화장대', icon: '💄', path: '/mypage/liked' },
+  { key: 'info', label: '내 정보', icon: '👤', path: '/mypage/profile' },
 ]
 
 function isActive(tab) {
   const p = route.path
   if (tab.key === 'chat') return p === '/chat'
   if (tab.key === 'catalog') return p.startsWith('/catalog')
-  if (tab.key === 'recommended') return p.startsWith('/mypage/recommended')
-  if (tab.key === 'liked') return p.startsWith('/mypage/liked')
-  if (tab.key === 'my') return p === '/mypage/profile' || p === '/mypage/account' || p === '/mypage'
+  // 나의 화장대 = 찜한 제품 + 추천받은 제품
+  if (tab.key === 'vanity') return p.startsWith('/mypage/liked') || p.startsWith('/mypage/recommended')
+  // 내 정보 = 피부 프로필 + 계정
+  if (tab.key === 'info') return p === '/mypage/profile' || p === '/mypage/account' || p === '/mypage'
   return false
 }
 
