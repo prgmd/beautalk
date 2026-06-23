@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import TermsModal from '@/components/TermsModal.vue'
+import LeafParallax from '@/components/LeafParallax.vue'
 
 const route = useRoute()
 const activeModal = ref(null) // null | 'terms' | 'privacy'
@@ -37,18 +38,8 @@ function handleOAuth(provider) {
 
 <template>
   <div class="page">
-    <!-- 식물 라인 장식 -->
-    <svg class="sprig sprig-top" viewBox="0 0 80 120" fill="none" aria-hidden="true">
-      <path d="M40 118 C40 80 40 40 40 6" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M40 30 C24 24 16 30 12 18" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M40 52 C56 46 64 52 68 40" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M40 74 C24 68 16 74 12 62" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
-    </svg>
-    <svg class="sprig sprig-bottom" viewBox="0 0 80 120" fill="none" aria-hidden="true">
-      <path d="M40 2 C40 40 40 80 40 114" stroke="var(--rose)" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M40 44 C56 38 64 44 68 32" stroke="var(--rose)" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M40 70 C24 64 16 70 12 58" stroke="var(--rose)" stroke-width="1.2" stroke-linecap="round"/>
-    </svg>
+    <!-- 마우스 따라 밀리는 나뭇잎 배경 -->
+    <LeafParallax />
 
     <div class="card">
       <header class="masthead">
@@ -101,17 +92,6 @@ function handleOAuth(provider) {
   overflow: hidden;
 }
 
-/* 식물 라인 장식 — 모서리에 은은하게 */
-.sprig {
-  position: absolute;
-  width: 56px;
-  height: 84px;
-  opacity: 0.5;
-  pointer-events: none;
-}
-.sprig-top { top: calc(env(safe-area-inset-top) + 8px); left: 14px; transform: rotate(-12deg); }
-.sprig-bottom { bottom: calc(env(safe-area-inset-bottom) + 8px); right: 14px; transform: rotate(8deg); }
-
 .card {
   position: relative;
   z-index: 1;
@@ -120,6 +100,13 @@ function handleOAuth(provider) {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 36px 28px;
+  border-radius: var(--radius-xl);
+  background: rgba(251, 248, 241, 0.88);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--sh-lg);
   animation: bt-rise var(--t-slow) var(--ease) both;
 }
 

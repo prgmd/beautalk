@@ -1,23 +1,32 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const auth = useAuthStore()
+
+async function logout() {
+  await auth.serverLogout()
+  router.push('/login')
+}
 
 // 반응형 내비: 모바일=하단 탭바 / 데스크탑=왼쪽 사이드바. (파일명은 기존 import 호환을 위해 유지)
 const TABS = [
   { key: 'chat', label: '상담', icon: '🌿', path: '/chat' },
-  { key: 'recommended', label: '추천', icon: '✦', path: '/mypage/recommended' },
-  { key: 'liked', label: '찜', icon: '💧', path: '/mypage/liked' },
-  { key: 'my', label: 'MY', icon: '🪞', path: '/mypage/profile' },
+  { key: 'catalog', label: '둘러보기', icon: '🔎', path: '/catalog' },
+  { key: 'vanity', label: '나의 화장대', icon: '💄', path: '/mypage/liked' },
+  { key: 'info', label: '내 정보', icon: '👤', path: '/mypage/profile' },
 ]
 
 function isActive(tab) {
   const p = route.path
   if (tab.key === 'chat') return p === '/chat'
-  if (tab.key === 'recommended') return p.startsWith('/mypage/recommended')
-  if (tab.key === 'liked') return p.startsWith('/mypage/liked')
-  if (tab.key === 'my') return p === '/mypage/profile' || p === '/mypage/account' || p === '/mypage'
+  if (tab.key === 'catalog') return p.startsWith('/catalog')
+  // 나의 화장대 = 찜한 제품 + 추천받은 제품
+  if (tab.key === 'vanity') return p.startsWith('/mypage/liked') || p.startsWith('/mypage/recommended')
+  // 내 정보 = 피부 프로필 + 계정
+  if (tab.key === 'info') return p === '/mypage/profile' || p === '/mypage/account' || p === '/mypage'
   return false
 }
 
@@ -42,8 +51,21 @@ function go(tab) {
         <span class="dot" />
       </button>
     </div>
+    <div class="navfoot">
+      <svg class="sprig" width="64" height="96" viewBox="0 0 80 120" fill="none" aria-hidden="true">
+        <g stroke="#7E8B6D" stroke-width="1.1">
+          <path d="M40 118 C40 88 36 64 46 26" />
+          <ellipse cx="31" cy="92" rx="5.5" ry="14" transform="rotate(38 31 92)" />
+          <ellipse cx="52" cy="70" rx="5.5" ry="14" transform="rotate(-38 52 70)" />
+          <ellipse cx="33" cy="52" rx="5" ry="12" transform="rotate(34 33 52)" />
+          <ellipse cx="49" cy="36" rx="5" ry="11" transform="rotate(-34 49 36)" />
+        </g>
+      </svg>
+      <button class="logout" @click="logout"><span class="lg-ic">→</span> 로그아웃</button>
+    </div>
   </nav>
 </template>
+
 
 <style scoped>
 /* ── 모바일 기본: 하단 탭바 ── */
@@ -55,6 +77,7 @@ function go(tab) {
   z-index: 5;
 }
 .appnav .brand { display: none; }
+.navfoot { display: none; }
 .tabs {
   display: flex;
   justify-content: space-around;
@@ -84,17 +107,27 @@ function go(tab) {
 @media (min-width: 900px) {
   .appnav {
     order: -1;
-    width: 232px;
+    width: 240px;
     height: 100%;
     display: flex;
     flex-direction: column;
     gap: 28px;
     padding: 32px 18px;
-    background: transparent;
+    background: var(--sheet);
     border-top: none;
     border-right: 1px solid var(--line);
-    box-shadow: none;
+    box-shadow: 8px 0 30px rgba(50, 40, 24, .07);
   }
+  .navfoot { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: auto; }
+  .sprig { opacity: .55; }
+  .logout {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 11px 14px; border-radius: var(--radius); font-size: 13.5px; font-weight: 600;
+    color: var(--ink-soft); background: var(--card); border: 1px solid var(--line); box-shadow: var(--sh-sm);
+    transition: all var(--t-fast);
+  }
+  .logout:hover { color: var(--danger); border-color: var(--danger-border); background: var(--danger-bg); }
+  .logout .lg-ic { font-size: 15px; }
   .appnav .brand {
     display: block;
     font-size: 25px;

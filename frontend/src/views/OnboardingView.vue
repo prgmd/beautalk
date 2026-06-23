@@ -26,6 +26,17 @@ const progress = computed(() => (step.value / 3) * 100)
 async function selectSkinType(type) {
   selectedSkinType.value = type
   messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: `${type}이에요` })
+  await advanceToConcerns()
+}
+
+// "잘 모르겠어요" — 피부 타입을 비워둔 채 다음 단계로 넘어간다.
+async function unknownSkinType() {
+  selectedSkinType.value = ''
+  messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: '아직 잘 모르겠어요' })
+  await advanceToConcerns()
+}
+
+async function advanceToConcerns() {
   await nextTick()
   scrollToBottom()
 
@@ -40,6 +51,11 @@ async function selectSkinType(type) {
     await nextTick()
     scrollToBottom()
   }, 400)
+}
+
+// 온보딩 전체 건너뛰기 — 프로필 없이 바로 상담으로. (백엔드는 프로필 미입력을 정상 처리)
+function skipOnboarding() {
+  router.push('/chat')
 }
 
 function toggleConcern(c) {
@@ -82,15 +98,23 @@ const saveError = ref('')
 
 async function finishOnboarding() {
   if (saving.value) return
+
+  messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: avoidList.value.length ? avoidList.value.join(', ') : '없어요' })
+  await nextTick()
+  scrollToBottom()
+
+  // 피부 타입을 '잘 모르겠어요'로 건너뛴 경우 백엔드 skin_type이 필수라 저장 없이 진행한다.
+  // (프로필은 나중에 '내 정보 > 피부 프로필'에서 채울 수 있다.)
+  if (!selectedSkinType.value) {
+    showComplete()
+    return
+  }
+
   profile.update({
     skinType: selectedSkinType.value,
     concerns: selectedConcerns.value,
     avoidIngredients: avoidList.value,
   })
-
-  messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: avoidList.value.length ? avoidList.value.join(', ') : '없어요' })
-  await nextTick()
-  scrollToBottom()
 
   // 백엔드에 프로필 저장
   saving.value = true
@@ -104,7 +128,10 @@ async function finishOnboarding() {
     return
   }
   saving.value = false
+  showComplete()
+}
 
+function showComplete() {
   setTimeout(async () => {
     messages.value.push({
       id: Date.now(),
@@ -134,7 +161,10 @@ function goChat() {
     <header class="appbar">
       <div class="ab-top">
         <span class="eyebrow">your profile</span>
-        <span class="ab-step">{{ Math.min(step, 3) }} <span class="ab-of">/ 3</span></span>
+        <div class="ab-right">
+          <span class="ab-step">{{ Math.min(step, 3) }} <span class="ab-of">/ 3</span></span>
+          <button v-if="step < 4" class="skip-btn" @click="skipOnboarding">건너뛰기 ›</button>
+        </div>
       </div>
       <h1 class="ab-title serif">맞춤 추천을 위한<br><em>몇 가지 질문</em></h1>
       <div class="progress-bar">
@@ -168,6 +198,7 @@ function goChat() {
               :class="{ selected: selectedSkinType === t }"
               @click="selectSkinType(t)"
             >{{ t }}</button>
+            <button class="type-btn unsure" @click="unknownSkinType">잘 모르겠어요</button>
           </div>
 
           <!-- 피부 고민 다중 선택 (step 2) -->
@@ -246,6 +277,7 @@ function goChat() {
   text-transform: uppercase;
   color: var(--sage);
 }
+.ab-right { display: flex; align-items: center; gap: 14px; }
 .ab-step {
   font-family: 'Fraunces', 'Noto Serif KR', serif;
   font-size: 17px;
@@ -253,6 +285,16 @@ function goChat() {
   letter-spacing: -.3px;
 }
 .ab-of { color: var(--ink-faint); font-size: 13px; }
+.skip-btn {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  padding: 6px 4px;
+  letter-spacing: -.2px;
+  transition: color var(--t-fast) var(--ease);
+}
+.skip-btn:hover { color: var(--ink-soft); }
+.skip-btn:active { transform: scale(.96); }
 .ab-title {
   font-size: 23px;
   font-weight: 400;
@@ -394,6 +436,15 @@ function goChat() {
   border-color: transparent;
   box-shadow: var(--sh-ink);
 }
+/* "잘 모르겠어요" — 부담 없는 보조 옵션 느낌 */
+.type-btn.unsure {
+  background: transparent;
+  color: var(--ink-faint);
+  border-style: dashed;
+  border-color: var(--line);
+  box-shadow: none;
+}
+.type-btn.unsure:hover { color: var(--ink-soft); border-color: var(--ink-faint); }
 
 /* ── 1차 CTA ── */
 .cta {
