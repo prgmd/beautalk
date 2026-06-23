@@ -1,0 +1,3054 @@
+[
+{
+  "model": "products.product",
+  "pk": "003527a0-9b2c-412b-9456-e8adfdd9eb5a",
+  "fields": {
+    "brand": "바이오힐보",
+    "name": "[화잘먹미스트] 바이오힐보 프로바이오덤 콜라겐 리모델링 세럼 겔 미스트 100mL",
+    "price": 12900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000254446&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=19&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025444606ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 건성 및 속건조가 있는 수부지 피부에 특히 적합하며, 99% 고순도 콜라겐, PDRN, 히알루론산 성분이 쫀쫀한 보습막을 형성하여 속건조를 해결하고 피부에 건강한 광채와 탄력을 선사합니다. 겔 타입임에도 불구하고 고르고 미세한 안개 분사력으로 피부에 뭉침 없이 밀착되며, 끈적임 없이 촉촉하고 산뜻하게 마무리되어 수시로 사용하기 좋습니다. 메이크업 전에 사용하면 화장이 잘 먹고 들뜸 없이 마무리되며, 향료나 변성알코올이 없어 민감한 피부도 자극 없이 사용할 수 있는 점이 큰 장점입니다.",
+    "average_rating": 5.0,
+    "review_count": 480,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 51%",
+      "피부고민": "보습: 76%",
+      "자극도": "저자극: 81%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "01157e60-d36d-4136-b71c-013bfb8e7ef7",
+  "fields": {
+    "brand": "스타라이크",
+    "name": "[간편 베이스/잡티커버] 스타라이크 파데프리 톤업 선크림 50ml",
+    "price": 14400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235912&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=45&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023591222ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 6190,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "발림성": "아주 만족해요: 88%",
+      "자극도": "저자극: 90%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "01204912-bdc7-4158-b6ed-fd8d2cdbb51a",
+  "fields": {
+    "brand": "메이크프렘",
+    "name": "[한정기획] 메이크프렘 인테카 수딩크림 70ml 기획 (+크림 31ml*2+NMN 앰플 7ml)",
+    "price": 18900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000247726&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=46&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024772608ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 여드름, 트러블, 민감성 피부를 포함한 복합성(수부지) 피부에 특히 적합하며, 순하고 자극 없는 사용감이 특징입니다. 주요 효능으로는 탁월한 피부 진정 효과와 건강한 유수분 밸런스 조절 기능이 꼽히며, 피부가 뒤집어졌을 때나 작은 트러블이 올라올 때 진정에 효과적입니다.\n\n적당한 보습감으로 화장이 잘 먹는 산뜻한 사용감을 제공하지만, 한겨울 건성 피부에는 다소 건조하게 느껴질 수 있습니다. 여름철에는 모든 피부 타입에 추천되며, 많은 사용자들이 재구매하는 필수템으로 꼽는 만족도 높은 크림입니다.",
+    "average_rating": 4.8,
+    "review_count": 27877,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "피부고민": "진정: 63%",
+      "자극도": "저자극: 78%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "027863bd-21bd-40de-8620-20da79b2e452",
+  "fields": {
+    "brand": "아누아",
+    "name": "[단독기획] 아누아 어성초 센텔라 레드 스팟 크림 30g 2입",
+    "price": 25000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232494&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=7&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023249405ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 여드름성, 복합성, 지성 및 민감 피부 사용자들에게 특히 좋은 평가를 받으며, 울긋불긋한 트러블과 붉은기 진정에 탁월한 효과를 보인다는 후기가 많습니다. 꾸준히 사용 시 여드름 발생을 억제하고 피부 진정 및 전반적인 피부 밸런스를 맞춰 매끈하고 보들보들하게 가꾸는 데 도움을 줍니다. 자극 없이 순하며 무향의 가볍고 부드러운 발림성이 특징이지만, 일부 사용자들은 건조함이나 당김을 느껴 추가 보습이 필요할 수 있습니다. 화장 전 사용 시 밀린다는 의견과 화장이 더 잘 먹고 오래간다는 의견이 엇갈려 개인차가 있을 것으로 보입니다.",
+    "average_rating": 4.6,
+    "review_count": 1833,
+    "satisfaction_by_type": {
+      "피부타입": "복합성에 좋아요: 55%",
+      "피부고민": "진정에 좋아요: 72%",
+      "자극도": "자극없이 순해요: 73%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "02832bdf-1ee4-4893-8309-d6a1b00821af",
+  "fields": {
+    "brand": "제로이드",
+    "name": "제로이드 포밍 클렌저 240ml 리필 2개입 기획 (총 480ml)",
+    "price": 34200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000245641&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=41&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024564102ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 74,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 57%",
+      "세정력": "아주 만족해요: 57%",
+      "자극도": "저자극: 78%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "055877fd-428b-43e9-b17f-d2caf8f9f122",
+  "fields": {
+    "brand": "라로슈포제",
+    "name": "라로슈포제 시카플라스트 멀티 리페어 크림 100ml 기획 (+멜라B3 세럼 3ml 증정)",
+    "price": 46800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000224292&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=20&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022429206ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 8070,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "피부고민": "보습: 53%",
+      "자극도": "저자극: 69%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "058f7f1d-336d-445c-81b2-7e386cc05562",
+  "fields": {
+    "brand": "쏘내추럴",
+    "name": "쏘내추럴 올 데이 타이트 메이크업 세팅 픽서 75ml",
+    "price": 14400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000122275&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=24&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0012/A00000012227525ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "이 쏘내추럴 픽서는 수부지, 건성, 그리고 극지성 피부 사용자 모두에게 높은 만족도를 제공하며, 더운 날씨나 유분기로 인해 화장이 무너지기 쉬운 환경에서도 메이크업을 하루 종일 강력하게 고정해 줍니다. 메이크업의 지속력을 현저히 높여 수정 화장이 거의 필요 없게 하며, 자연스러운 광채를 더해주는 동시에 화장 번짐을 효과적으로 방지합니다.\n\n향이 강하지 않아 데일리로 부담 없이 사용하기 좋으며, 메이크업 전후 또는 파우더 처리 후 등 다양한 방식으로 활용하여 고정력을 극대화할 수 있습니다. 휴대하기 좋은 사이즈 구성과 합리적인 가격대까지 겸비하여 '인생 픽서'라는 호평을 받으며 꾸준한 재구매가 이어지고 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 51162,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "0592a186-d57c-4987-b37e-f27173b8d473",
+  "fields": {
+    "brand": "닥터지",
+    "name": "[5월올영픽/포켓몬 에디션] 닥터지 레드블레미쉬 클리어 수딩크림EX 70ml1+1기획 (+미스트 50ml+꼬부기메쉬백)",
+    "price": 27600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253384&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=7&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025338407ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "닥터지 레드블레미쉬 클리어 수딩크림 EX는 리뉴얼을 통해 이전보다 더욱 가볍고 산뜻한 사용감으로 개선되어 수부지 및 지성 피부에 적합하다는 평이 많습니다. 특히 속건조가 심한 사용자들에게 탁월한 수분감을 제공하여 번들거림 없이 건강한 속광 피부를 연출해주는 것이 주요 효능입니다. 빠르게 흡수되어 끈적임 없이 마무리되며, 트러블 진정 및 붉은기 완화에도 도움을 준다고 합니다. 다만, 일부 사용자에게는 자극 반응이 나타나기도 하여 모든 피부 타입에 100% 적합하다고 보기는 어려우므로 주의가 필요합니다.",
+    "average_rating": 4.9,
+    "review_count": 1750,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "피부고민": "보습: 55%",
+      "자극도": "저자극: 83%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "067ab303-7488-4450-b8f7-0f1c6e55dd7c",
+  "fields": {
+    "brand": "바이오더마",
+    "name": "바이오더마 센시비오 H2O 850ml(클렌징워터)",
+    "price": 24500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000130319&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=7&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0013/A00000013031984ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 52694,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 62%",
+      "세정력": "아주 만족해요: 70%",
+      "자극도": "저자극: 77%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "069249ce-dfe8-4f46-b462-c80174d5fd08",
+  "fields": {
+    "brand": "닥터자르트",
+    "name": "[보송/모공블러] 닥터자르트 에브리 선데이 울트라 쉬어 프라이밍 선스틱 단품 / 더블 기획",
+    "price": 24900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253644&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=30&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025364410ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 212,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "082ed133-aebd-4deb-ae8e-19190ac6503b",
+  "fields": {
+    "brand": "셀퓨전씨",
+    "name": "[매끈밀착썬/조앤프렌즈 콜라보] 셀퓨전씨 레이저 UV 썬스크린 35ml 더블 기획 (+조앤프렌즈 피규어 선크림 집게)",
+    "price": 23500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000198739&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=49&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0019/A00000019873942ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 4215,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 63%",
+      "발림성": "아주 만족해요: 62%",
+      "자극도": "저자극: 65%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "09d5c54c-edf1-4d27-a969-765e5b2d1dcc",
+  "fields": {
+    "brand": "라로슈포제",
+    "name": "라로슈포제 에빠끌라 딥 클렌징 포밍 크림 125ml 2입 기획 (+50ml)",
+    "price": 45000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000250102&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=14&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025010203ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 **지성 및 극지성 피부**에 매우 적합하며, 트러블이 고민인 피부에도 좋은 선택으로 평가받습니다. 가장 큰 특징은 **뛰어난 세정력**으로, 선크림과 과도한 유분을 효과적으로 제거하면서도 피부가 당기지 않는다는 점입니다. 대체로 자극 없이 순한 사용감을 제공하지만, 극지성 피부의 경우 다소 뽀득하고 뻑뻑한 느낌이 들어 다른 클렌저와 섞어 사용하기도 합니다. 많은 사용자들이 피부 트러블 없이 깨끗한 피부를 유지하는 데 도움을 받아 '인생템'으로 꼽는 등 높은 만족도를 보입니다.",
+    "average_rating": 4.8,
+    "review_count": 7789,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 49%",
+      "세정력": "아주 만족해요: 73%",
+      "자극도": "저자극: 62%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "0e76a01b-5e41-413e-8318-3bad50432e40",
+  "fields": {
+    "brand": "아누아",
+    "name": "[말끔모공/피지순삭] 아누아 어성초 클렌징 듀오 기획 (오일 200ml+폼 150ml)",
+    "price": 25500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225774&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=50&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022577426ko.png?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 7765,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 51%",
+      "세정력": "아주 만족해요: 65%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "152346cd-e443-4acc-b592-f9b25b2ea46c",
+  "fields": {
+    "brand": "에스트라",
+    "name": "에스트라 아토베리어365 포밍 클렌저 150ml",
+    "price": 20000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000245096&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=44&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024509611ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 1308,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "세정력": "아주 만족해요: 50%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "16654978-5d27-4279-bf32-9e002c2cd0f8",
+  "fields": {
+    "brand": "메이크프렘",
+    "name": "[리필기획] 메이크프렘 세이프 미 릴리프 모이스처 클렌징밀크 기획 (200ml+100ml 리필)",
+    "price": 21000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000158513&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=5&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0015/A00000015851331ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 순하고 부드러운 사용감의 클렌징 밀크로, 가벼운 메이크업과 선크림을 효과적으로 지워줍니다. 대부분의 사용자들은 세안 후 당김 없이 촉촉함이 유지되며, 자극 없이 피부를 편안하게 해준다고 평가하여 민감성 피부나 평소 가볍게 화장하는 지성 피부에 특히 적합하다는 의견이 많습니다.\n\n다만, 일부 민감한 피부의 경우 환절기에 오히려 자극이나 건조함을 느꼈다는 후기도 있으며, 눈에 들어가면 심한 따가움을 유발할 수 있어 주의가 필요합니다. 마스카라 등 강력한 워터프루프 메이크업보다는 가벼운 일상 세안이나 아침 세안용, 또는 이중 세안 시 1차 클렌저로 사용하기에 적합합니다.",
+    "average_rating": 4.8,
+    "review_count": 12721,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "세정력": "아주 만족해요: 56%",
+      "자극도": "저자극: 80%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "19db46c0-05bb-4c1f-8e77-7340786f54b9",
+  "fields": {
+    "brand": "성분에디터",
+    "name": "[물광리프팅] 성분에디터 실크펩타이드 EGF 하트핏 볼륨 리프팅 앰플 40ml 더블기획",
+    "price": 22900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235179&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=29&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023517930ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 극건조하고 푸석한 피부에 깊고 오래가는 수분감을 제공하며, 특히 건성 및 노화로 인한 탄력 저하 피부에 탁월한 효과를 보입니다. 실크펩타이드, EGF, 콜라겐 녹는 실 등 기능성 성분을 통해 속탄력과 볼륨 리프팅, 잔주름부터 깊은 주름 개선까지 다각적인 탄력 케어 효능을 선사합니다. 사용감은 부드럽고 촉촉하면서도 산뜻하게 흡수되며, 위생적인 주사기 형태의 용기가 특징이나 일부 사용자에게는 다소 번거로울 수 있다는 의견도 있습니다. 다만, 수부지나 좁쌀 여드름성 피부보다는 건성 피부에 더욱 적합하다는 사용자 경험이 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 2552,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 49%",
+      "피부고민": "보습: 45%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "1a8e7f91-626b-41ea-a6ac-4b2d89e892ac",
+  "fields": {
+    "brand": "아누아",
+    "name": "[수지pick/단독기획] 아누아 피디알엔 히알루론산 100 수분 크림 60mL 2입 기획",
+    "price": 29500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000231892&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=2&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023189226ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 악건성부터 지성, 민감성 피부까지 폭넓은 피부 타입에 두루 적합하며, 특히 '순하고 자극 없다'는 평이 많습니다. 강력한 보습력을 제공하여 피부를 촉촉하게 유지해주고, 일부 사용자는 입가 주름 개선 효과까지 경험했다고 밝혔습니다. 부드러운 발림성과 빠른 흡수력을 자랑하며 끈적임 없이 산뜻하게 마무리되어, 메이크업 전 사용하기에도 좋다는 후기가 많습니다.",
+    "average_rating": 4.8,
+    "review_count": 7850,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 48%",
+      "피부고민": "보습: 70%",
+      "자극도": "저자극: 74%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "1b4005e6-b6db-4d2a-ae3e-dfbe0ae462b0",
+  "fields": {
+    "brand": "에스트라",
+    "name": "에스트라 테라크네365 클리어 딥 클렌징 폼 200g",
+    "price": 19550,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000152767&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=35&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0015/A00000015276704ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 민감성 및 모든 피부 타입에 적합한 매우 순한 클렌징폼으로, 특히 트러블이 있거나 유분이 많은 피부를 가진 사용자들에게도 좋은 평가를 받았습니다. 순한 성분에도 불구하고 선크림, 베이스 메이크업, 가벼운 눈화장과 노폐물 및 유분 제거에 뛰어난 세정력을 보여줍니다. 적은 양으로도 풍성하고 쫀쫀한 거품이 잘 나며, 세안 후 피부가 건조하거나 당기지 않고 촉촉하면서도 개운하게 마무리되는 사용감이 특징입니다. 다만, 여드름 개선 효과에 대해서는 사용자별로 개인차가 있거나 직접적인 효과를 느끼지 못했다는 의견도 있었습니다. 많은 사용자들이 '인생 클렌징폼'으로 꼽으며 높은 만족도를 보였습니다.",
+    "average_rating": 4.8,
+    "review_count": 4650,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 61%",
+      "세정력": "아주 만족해요: 60%",
+      "자극도": "저자극: 69%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "1f1aa5d8-2562-4500-9030-4e918e7a3c7c",
+  "fields": {
+    "brand": "션리",
+    "name": "[화해1위/모공쫀쫀 팩폼] 션리 다시마 앰플 클렌징폼 120ml",
+    "price": 12800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000233335&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=11&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023333505ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 11913,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "세정력": "아주 만족해요: 95%",
+      "자극도": "저자극: 95%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "1fe58a09-7a81-41f1-ac4d-ae4bfcf24e9f",
+  "fields": {
+    "brand": "한율",
+    "name": "[1+1] 한율 트러블 진정 쑥시카 수분 크림 기획 (55ml+55ml)",
+    "price": 28800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222882&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=38&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022288206ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 건성, 악건성, 복합성, 수부지, 그리고 예민하고 민감한 피부까지 다양한 피부 타입에 두루 적합하며, 자극 없이 순하게 사용할 수 있습니다. 가볍지만 충분한 수분감을 제공하여 피부를 촉촉하게 채워주며, 트러블이 올라왔을 때 진정 효과도 있습니다. 많은 사용자들이 수분 에센스 대용으로 활용하거나 다른 크림 사용 전 단계에 발라 보습 지속력을 높이는 데 사용하고 있습니다. 순한 성분과 가벼운 발림성, 그리고 트러블 케어 및 보습력 덕분에 재구매율이 매우 높은 '인생템'으로 평가받고 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 7162,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "피부고민": "진정: 61%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "20e1bad9-631f-4d1f-a822-039ccb693a9a",
+  "fields": {
+    "brand": "닥터지",
+    "name": "[포켓몬 에디션] 닥터지 그린마일드 업 선 플러스 40ml 트리플 기획",
+    "price": 26200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253334&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=12&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025333456ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 9916,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "발림성": "아주 만족해요: 58%",
+      "자극도": "저자극: 66%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "21c744b0-2399-438d-a673-739abaf873b4",
+  "fields": {
+    "brand": "아리얼",
+    "name": "[1등 클렌징 티슈] 아리얼 더 퍼펙트 클렌징 티슈 플러스 100매",
+    "price": 6400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000146512&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=29&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0014/A00000014651236ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "'[1등 클렌징 티슈] 아리얼 더 퍼펙트 클렌징 티슈 플러스 100매'는 뛰어난 세정력으로 모공 속 파운데이션까지 한 장으로 말끔하게 지워내는 것이 주요 효능입니다. 상큼하고 프레시한 향이 특징이며, 한 장씩 뽑아 쓰기 편리하여 야근이나 여행 시 간편하게 사용하기 좋습니다. 100매 구성으로 가성비가 우수하며, 올리브영 1등 제품으로 높은 인기를 얻고 있습니다. 피부 타입 적합성에 대해서는 일부 민감성/지성 피부 사용자에게도 만족감을 주지만, 데일리 사용 시에는 피부 자극을 느낄 수 있다는 의견도 있어 튼튼한 피부에 더 적합하거나 간헐적인 사용이 권장됩니다.",
+    "average_rating": 4.8,
+    "review_count": 34974,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 63%",
+      "세정력": "아주 만족해요: 63%",
+      "자극도": "저자극: 52%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "2382136c-0926-406b-868c-8412ebdc5363",
+  "fields": {
+    "brand": "이니스프리",
+    "name": "[품절대란/재고확보][모공블러링] 이니스프리 포어 블러 파우더 11g",
+    "price": 13500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000229688&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=15&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022968822ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 419,
+    "satisfaction_by_type": {
+      "입자": "입자가 고와요: 83%",
+      "지속력": "지속이 오래돼요: 68%",
+      "발림성": "아주 만족해요: 70%",
+      "밀착력": "아주 만족해요: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "276e92c2-3984-4016-a27e-36afb560fdd1",
+  "fields": {
+    "brand": "동국제약",
+    "name": "[1등/손상장벽MD] 동국제약 마데카셀 베리어 엠디 크림 70g",
+    "price": 21900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000249659&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=39&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024965915ko.jpeg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 528,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 56%",
+      "피부고민": "보습: 57%",
+      "자극도": "저자극: 89%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "278c2d85-7263-49d7-8864-09afdeb5ef95",
+  "fields": {
+    "brand": "비플레인",
+    "name": "[말끔모공] 비플레인 녹두 약산성 클렌징폼 160ml 더블 기획",
+    "price": 23900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000249797&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=1&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024979711ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 24056,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "세정력": "아주 만족해요: 64%",
+      "자극도": "저자극: 64%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "283b1a9f-8aca-4d3d-9d91-b129764cda2b",
+  "fields": {
+    "brand": "넘버즈인",
+    "name": "[화잘먹] 넘버즈인 3번 보들보들 모공결 세럼 30ml 더블 기획",
+    "price": 26900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000250773&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=47&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025077324ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "넘버즈인 3번 보들보들 모공결 세럼은 지성, 수부지, 민감성 피부부터 건성 피부까지 폭넓게 만족시키며 유수분 밸런스를 맞춰주는 것이 특징입니다. 피부결을 매끄럽고 보들보들하게 개선하고 모공 및 요철 고민을 동시에 케어하여 '화잘먹' 피부를 완성하는 데 탁월한 효과를 보입니다. 가볍지만 약간의 점성이 느껴지는 제형으로 끈적임 없이 빠르게 흡수되며 산뜻하게 마무리됩니다. 대부분의 사용자들이 메이크업 밀림 없이 화장이 잘 먹는다고 긍정적으로 평가하나, 일부 사용자는 도포 시 밀림 현상을 경험하여 톡톡 두드려 흡수시키는 방법을 권장하기도 했습니다. 전반적으로 피부 요철을 줄이고 베이스 메이크업의 밀착력을 높여주는 데 매우 효과적인 제품으로 평가됩니다.",
+    "average_rating": 4.9,
+    "review_count": 3938,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 58%",
+      "피부고민": "보습: 56%",
+      "자극도": "저자극: 69%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "285c8e9d-b091-402a-86a6-5cfa93f28704",
+  "fields": {
+    "brand": "비플레인",
+    "name": "[총110ml] 비플레인 녹두 쿨링 수분 선크림 50ml 1+1 기획 (+10ml)",
+    "price": 21800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000249802&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=27&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024980218ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 5706,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 58%",
+      "발림성": "아주 만족해요: 67%",
+      "자극도": "저자극: 54%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "2abe31ec-046b-4dea-bc52-eb33558453d3",
+  "fields": {
+    "brand": "스킨1004",
+    "name": "[2입 기획] 스킨1004 마다가스카르 센텔라 히알루-시카 워터핏 선세럼 50ml 더블기획",
+    "price": 28000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000215559&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=22&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021555912ko.png?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 8284,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 46%",
+      "발림성": "아주 만족해요: 76%",
+      "자극도": "저자극: 76%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "2b1b45e7-561f-4d0d-beca-5a0aa973aec1",
+  "fields": {
+    "brand": "바이오더마",
+    "name": "바이오더마 센시비오 H2O 500ml",
+    "price": 17960,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000247215&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=26&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024721502ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 898,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "세정력": "아주 만족해요: 68%",
+      "자극도": "저자극: 72%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "2b4225a9-b2d5-4682-84b8-5aa5f8150550",
+  "fields": {
+    "brand": "리덴스",
+    "name": "[리뷰이벤트/잡티미백] 리덴스 톤앤스팟 코렉터 앰플 30ml 더블기획",
+    "price": 25900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000230854&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=24&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023085431ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 5781,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "피부고민": "주름/미백: 46%",
+      "자극도": "저자극: 88%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "2c21814c-640b-4d63-a738-eabd7cbf618d",
+  "fields": {
+    "brand": "리덴스",
+    "name": "[리뷰이벤트/잡티미백] 리덴스 톤앤스팟 코렉터 앰플 30ml 더블기획",
+    "price": 25900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000230854&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=9&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023085431ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 고함량 나이아신아마이드에도 불구하고 자극 없이 순한 사용감을 제공하여 민감성 피부를 포함한 모든 피부 타입이 사용하기 적합합니다. PDRN과 히알루론산 성분이 피부 속건조를 효과적으로 잡아주며, 끈적임 없이 촉촉하고 산뜻하게 흡수되어 메이크업 전에도 밀림 없이 매끈한 피부결을 선사합니다. 잡티 흔적을 케어하고 칙칙한 피부 톤을 자연스럽고 맑게 개선하여 전반적인 피부 컨디션을 좋게 만드는 데 도움을 주는 것이 주효능입니다.",
+    "average_rating": 5.0,
+    "review_count": 5777,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "피부고민": "주름/미백: 46%",
+      "자극도": "저자극: 88%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "2cb0da92-00db-4867-819a-7e5f8fcd7798",
+  "fields": {
+    "brand": "션리",
+    "name": "[즉각쿨링/SOS진정세럼] 션리 다시마 그리너리 세럼35ml",
+    "price": 24000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000233336&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=39&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023333602ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "'[션리 다시마 그리너리 세럼]은 수부지, 속건조는 물론 지성, 민감성, 건성, 복합성 등 **모든 피부 타입**에 적합하며, **특히 진정 및 속건조 해결**에 뛰어난 효능을 보입니다. 바르는 즉시 느껴지는 **즉각적인 쿨링 효과**로 열감을 동반한 피부를 시원하게 진정시키고, 자극 없이 순하게 작용하여 민감한 피부도 안심하고 사용할 수 있습니다.\n\n제형은 쫀쫀하지만 끈적임 없이 **산뜻하게 흡수**되어 겉돌지 않고 피부 속까지 **촉촉한 수분감과 보습감**을 꽉 채워줍니다. 꾸준히 사용 시 **피부결 개선과 유수분 밸런스 조절**에도 도움을 주며, **위생적인 펌핑 용기**는 사용 편의성을 더해 높은 만족도로 재구매율이 높습니다.",
+    "average_rating": 5.0,
+    "review_count": 4186,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 48%",
+      "피부고민": "보습: 61%",
+      "자극도": "저자극: 95%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "327304c5-9a31-4691-8485-cef52352e711",
+  "fields": {
+    "brand": "라운드랩",
+    "name": "[대용량/약산성] 라운드랩 1025 독도 클렌저 250ml",
+    "price": 15900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000154644&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=47&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0015/A00000015464408ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 14871,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 58%",
+      "세정력": "아주 만족해요: 53%",
+      "자극도": "저자극: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "343cbf27-4ca1-4a25-af7a-5d7daf11eede",
+  "fields": {
+    "brand": "션리",
+    "name": "[수분진정/광채캡슐크림] 션리 다시마 글레이즈드 크림 50g",
+    "price": 21000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000233337&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=48&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023333703ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 4843,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 48%",
+      "피부고민": "보습: 80%",
+      "자극도": "저자극: 95%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "347964d9-425e-4f45-ac5a-72f8b047ed2a",
+  "fields": {
+    "brand": "라로슈포제",
+    "name": "라로슈포제 시카플라스트 밤 B5+ 100ml 기획 (+3ml 추가증정)",
+    "price": 36900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000206904&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=10&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020690409ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 피부과 시술 후 붉고 예민해진 피부나 손상된 장벽을 회복하고 진정시키는 데 탁월한 효과를 보입니다. 쫀쫀하고 꾸덕한 밤 제형이 피부에 두터운 보호막을 형성하여 붉은기와 건조함, 당김을 완화하고 다음 날 아침 피부 컨디션을 크게 개선합니다. 특히 수면팩처럼 활용하면 좋지만, 유분기가 많아 지성 피부나 건강한 피부에 과도하게 사용 시 좁쌀을 유발하거나 답답함을 느낄 수 있으며, 일부 사용자에게는 따가움을 유발할 수도 있으니 주의가 필요합니다. 여름철 사용은 무거울 수 있어 건조한 계절에 더욱 적합하다는 평이 많습니다.",
+    "average_rating": 4.8,
+    "review_count": 24234,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 49%",
+      "피부고민": "진정: 50%",
+      "자극도": "저자극: 70%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "34e41218-ef14-48d7-875e-fd139ba59517",
+  "fields": {
+    "brand": "닥터지",
+    "name": "[5월올영픽/포켓몬 에디션] 닥터지 레드블레미쉬 클리어 수딩크림EX 70ml1+1기획 (+미스트 50ml+꼬부기메쉬백)",
+    "price": 27600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253384&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=8&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025338407ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "닥터지 레드블레미쉬 클리어 수딩크림EX는 특히 속건조가 심한 수부지 및 지성 피부에 적합한 수분 진정 크림입니다. 리뉴얼을 통해 초창기보다 가볍고 산뜻해졌으며, 번들거림 없이 빠르게 흡수되어 끈적임 없이 촉촉한 마무리감을 선사합니다.\n\n사용 후에는 피부 속건조를 해결하고, 아침까지 유지되는 자연스러운 물광/속광 효과로 건조했던 피부에 생기를 부여합니다. 또한, 피부 열감 완화 및 트러블 케어, 붉은기 진정에도 효과적이라 데일리 크림이나 여름철 수분 진정용으로 꾸준히 사랑받고 있습니다. 다만, 일부 민감성 피부 사용자에게는 자극이 느껴질 수 있으니 주의가 필요합니다.",
+    "average_rating": 4.9,
+    "review_count": 1749,
+    "satisfaction_by_type": {
+      "피부타입": "복합성에 좋아요: 52%",
+      "피부고민": "보습에 좋아요: 55%",
+      "자극도": "자극없이 순해요: 83%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "375b2ffd-c562-42b0-a64e-7b02f1a75402",
+  "fields": {
+    "brand": "아비브",
+    "name": "아비브 어성초 테카 캡슐 세럼 카밍 드롭 50ml 더블 기획",
+    "price": 29800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232436&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=35&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023243621ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 민감하고 트러블이 잘 나는 피부, 특히 좁쌀 여드름, 붉은 트러블, 홍조 등 다양한 피부 고민을 가진 사용자들에게 매우 적합하며, 자극 없이 순하게 작용합니다. 어성초 성분이 담긴 초록색 캡슐이 피부에 닿으면 부드럽게 터지면서 흡수되어 울긋불긋한 피부와 트러블을 효과적으로 진정시키고 개선하는 데 탁월한 효능을 보입니다. 바르자마자 느껴지는 시원한 쿨링감과 함께 끈적임 없이 산뜻하고 촉촉하게 마무리되어 데일리로 부담 없이 사용하기 좋으며, 전반적인 피부 상태를 건강하게 만드는 데 기여합니다.",
+    "average_rating": 4.7,
+    "review_count": 12257,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 57%",
+      "피부고민": "진정: 79%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "383f0b66-db78-4d30-a4ec-142cdccf1945",
+  "fields": {
+    "brand": "라곰",
+    "name": "[단독선런칭/리뷰이벤트] 라곰 오트 미셀라 클렌징밀크 200ml",
+    "price": 18500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000255163&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=45&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025516303ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "라곰 오트 미셀라 클렌징밀크는 로션처럼 부드럽고 묽은 제형으로, 건성, 수부지, 민감성 피부 등 모든 피부 타입에 자극 없이 순하게 사용할 수 있습니다. 선크림부터 데일리 메이크업, 심지어 일부 포인트 메이크업까지 단독으로 효과적인 세정력을 보이며, 미셀라 공법과 귀리 성분으로 무너진 피부 장벽 강화 및 진정 효과까지 제공합니다. 세안 후에는 오일감 없이 촉촉하고 편안한 마무리감을 선사하여 건조함 없이 이중 세안이 불필요한 것이 큰 특징입니다.",
+    "average_rating": 5.0,
+    "review_count": 279,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 48%",
+      "세정력": "아주 만족해요: 94%",
+      "자극도": "저자극: 97%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "393bcd19-860d-467b-9439-923f46ac01f5",
+  "fields": {
+    "brand": "메이크프렘",
+    "name": "메이크프렘 세이프 미 릴리프 모이스처 클렌징폼 150ml 1+1 기획",
+    "price": 18000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000113670&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=43&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0011/A00000011367042ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 29373,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "세정력": "아주 만족해요: 51%",
+      "자극도": "저자극: 76%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "3a92050a-6695-4209-8ff8-ebb41bd8de07",
+  "fields": {
+    "brand": "메디필",
+    "name": "[모공쏙폼] 메디필 레드 락토 콜라겐 클리어 폼 2.0 대용량 300ml 기획 (+해면)",
+    "price": 24000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000184643&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=37&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0018/A00000018464337ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 진한 포인트 메이크업까지 부드럽게 지워내 이중 세안 없이도 간편하고 깔끔한 세정력을 자랑합니다. 유분감과 피지로 답답함을 느끼는 피부는 물론, 민감한 피부에도 부담 없이 사용할 수 있으며, 모공 속 노폐물, 블랙헤드, 각질 정돈에 도움을 주어 매끄러운 피부결을 선사합니다. 쫀쫀하고 조밀한 거품으로 부드러운 사용감을 제공하며, 세안 후 피부 당김 없이 산뜻하면서도 촉촉하게 마무리되어 개운함을 느낄 수 있습니다. 또한, 대용량으로 출시되어 뛰어난 가성비를 자랑합니다.",
+    "average_rating": 4.8,
+    "review_count": 22274,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "세정력": "아주 만족해요: 66%",
+      "자극도": "저자극: 59%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "3b5030f0-84b9-4aed-8b4b-2b96975bfd4c",
+  "fields": {
+    "brand": "코스알엑스",
+    "name": "[리뉴얼] 코스알엑스 어드밴스드 더 비타민C 23 세럼 20g 2입",
+    "price": 39900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235050&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=44&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023505006ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 민감성 피부에 강한 자극을 유발하여 피부 손상을 경험한 사례가 있는 반면, 자극 없이 잘 사용하거나 따끔거림이 크지 않다고 느끼는 등 피부 타입에 따른 편차가 큽니다. 주요 효능으로는 피부 톤을 균일하게 밝히고 옅은 잡티나 흔적 완화에 도움을 주어 미백 효과를 기대하는 사용자들이 많습니다. 사용감에 있어서는 높은 비타민 C 함량으로 인해 따끔거림이 느껴질 수 있고 눈가 사용은 특히 피해야 하며, 손에 묻었을 때 일시적으로 노랗게 착색되는 단점이 있습니다. 그러나 높은 함량 대비 합리적인 가격과 꾸준히 사용했을 때의 톤업 효과로 인해 재구매 의사를 밝히는 사용자도 많습니다.",
+    "average_rating": 4.8,
+    "review_count": 673,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "피부고민": "주름/미백: 58%",
+      "자극도": "저자극: 42%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "3bef96df-47bd-48dc-98c3-f8753ccff262",
+  "fields": {
+    "brand": "아누아",
+    "name": "[수지세럼] 아누아 피디알엔 히알루론산 캡슐 100 세럼 30mL 기획 (+30mL 리필팩)",
+    "price": 27500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222698&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=10&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022269818ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 특히 건성 및 속건조가 심한 피부에 적합하며, 물처럼 흐르는 묽은 제형이지만 피부에 빠르게 흡수되어 쫀쫀한 보습감을 선사합니다. 메이크업 전에 발라도 밀림 없이 깔끔하게 마무리되고, 6~8시간 후에도 피부 당김이나 눈가 건조함 없이 촉촉함이 오래 유지되는 것이 특징입니다. 일부 사용자는 꾸준한 사용으로 입가 주름 완화 및 매끈한 피부결, 속광 효과를 경험했으며, 순한 성분으로 민감한 피부도 안심하고 사용할 수 있습니다. 다만, 겨울철 건조한 환경에서 특히 효과적이며, 지성 피부에게는 다소 과하다고 느껴질 수도 있다는 의견도 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 12334,
+    "satisfaction_by_type": {
+      "피부타입": "건성에 좋아요: 54%",
+      "피부고민": "보습에 좋아요: 73%",
+      "자극도": "자극없이 순해요: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "3d703e4c-729c-4bd9-938e-78d3189810c8",
+  "fields": {
+    "brand": "피지오겔",
+    "name": "[재구매율1위/비타민앰플] 피지오겔 사이언수티컬즈 데일리뮨 앰플 20ml+20ml 더블기획",
+    "price": 54000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000243677&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=42&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024367750ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 피지오겔 비타민 앰플은 가볍고 끈적임 없는 산뜻한 사용감으로 빠르게 흡수되어 아침에도 부담 없이 사용할 수 있습니다. 대부분의 민감성 피부도 순하게 사용할 수 있다는 평이 많지만, 일부 사용자에게는 자극이 있을 수 있습니다. 5~7일간의 꾸준한 사용으로 피부톤 개선, 광채 부여, 잡티 완화, 피부결 매끈함 등 즉각적이고 눈에 띄는 항산화 효과를 제공합니다. 히알루론산 같은 보습 성분 덕분에 비타민 앰플임에도 속당김 없이 촉촉하며, 가격대는 있지만 그만한 가치를 한다는 평가가 많습니다.",
+    "average_rating": 4.8,
+    "review_count": 9026,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "피부고민": "주름/미백: 44%",
+      "자극도": "저자극: 60%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "3f58aee2-2acc-40fc-95c6-d65ba5d34a7c",
+  "fields": {
+    "brand": "피지오겔",
+    "name": "[10년연속1위/장벽크림] 피지오겔 DMT 페이셜크림 100ml+100ml 더블기획",
+    "price": 25900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222215&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=37&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022221535ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 '10년 연속 1위' 명성에 걸맞게 건조하고 민감한 피부에 뛰어난 보습력을 제공하며, 속건조를 개선하고 피부 장벽을 탄탄하게 강화하는 데 도움을 줍니다. 눅진하고 밀도 높은 크림 제형임에도 피부에 부드럽게 발려 촉촉한 보습막을 형성하며, 무향으로 자극 없이 온 가족이 편안하게 사용할 수 있습니다. 적절한 유분감으로 유수분 밸런스를 맞춰주어 트러블 걱정을 덜어주지만, 지성 피부의 경우 다소 번들거릴 수 있으므로 얇게 바르거나 양 조절이 필요합니다.",
+    "average_rating": 4.8,
+    "review_count": 30653,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 58%",
+      "피부고민": "보습: 80%",
+      "자극도": "저자극: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "4138880f-7da2-4979-8486-7a14bf6bd65f",
+  "fields": {
+    "brand": "디오디너리",
+    "name": "[트러블모공] 디오디너리 나이아신아마이드 10% + 징크 1% 30ml",
+    "price": 8700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000157350&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=30&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0015/A00000015735005ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 트러블 진정 및 흉터 예방, 안색 개선, 그리고 피지 조절에 탁월한 효과를 보이는 고품질의 나이아신아마이드 앰플입니다. 수부지나 트러블성 피부에 특히 적합하며, 피부를 맑고 깨끗하게 가꾸는 데 도움을 줍니다. 묽은 콧물 제형이지만 건성 피부에는 건조함을 유발할 수 있어 보습 제품이나 오일리한 레티놀과의 병행 사용이 권장됩니다. 상처 부위에는 따끔거리는 자극을 줄 수 있고, 완전히 흡수되지 않으면 밀림 현상이 나타날 수 있으니 사용 시 주의가 필요합니다. 합리적인 가격 대비 우수한 제품력으로 꾸준히 사용하기 좋다는 평이 많습니다.",
+    "average_rating": 4.6,
+    "review_count": 15158,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "피부고민": "진정: 41%",
+      "자극도": "중자극: 49%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "41f19165-8828-4e08-99d7-e9458581c209",
+  "fields": {
+    "brand": "메디필",
+    "name": "[모공쏙폼] 메디필 레드 락토 콜라겐 클리어 폼 2.0 대용량 300ml 기획 (+해면)",
+    "price": 24000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000184643&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=33&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0018/A00000018464337ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 22275,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "세정력": "아주 만족해요: 66%",
+      "자극도": "저자극: 59%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "42851303-a698-41a4-979c-182520293996",
+  "fields": {
+    "brand": "아누아",
+    "name": "[말끔모공/피지순삭] 아누아 어성초 클렌징 듀오 기획 (오일 200ml+폼 150ml)",
+    "price": 25500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225774&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=48&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022577426ko.png?l=ko",
+    "category": "클렌징",
+    "ai_summary": "아누아 어성초 클렌징 듀오는 자극 없이 순한 사용감으로 민감성 피부를 포함, 피지, 블랙헤드, 화이트헤드 등 모공 고민이 있는 모든 피부 타입에 적합합니다. 가벼운 오일 제형이 메이크업은 물론 모공 속 피지와 노폐물을 부드럽게 녹여 화이트헤드와 블랙헤드를 효과적으로 관리하며, 특히 코나 턱 부위의 오돌토돌함을 줄여 피부를 매끈하게 정돈해줍니다. 뛰어난 유화 과정으로 미끈거림 없이 깔끔하게 마무리되어 세안 후 피부가 맑고 보들보들해지는 느낌을 주며, 다음 스킨케어 흡수율을 높여주는 데 도움을 줍니다.",
+    "average_rating": 4.7,
+    "review_count": 7765,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 51%",
+      "세정력": "아주 만족해요: 65%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "42fdf261-0d9f-4d43-b983-be4e296661e2",
+  "fields": {
+    "brand": "달바",
+    "name": "[NO.1 미스트세럼] 달바 퍼스트 스프레이 세럼 100ml 2개 기획",
+    "price": 35200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232724&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=13&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023272416ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 48005,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 57%",
+      "피부고민": "보습: 68%",
+      "자극도": "저자극: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "4306f04f-b09b-4e34-8408-ea0fdc7eaffa",
+  "fields": {
+    "brand": "제로이드",
+    "name": "[대용량] 제로이드 인텐시브 크림 80ml 기획 (+50ml)",
+    "price": 36000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000231590&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=46&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023159023ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 11090,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 50%",
+      "피부고민": "보습: 69%",
+      "자극도": "저자극: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "45f228b2-c6bc-459b-bf75-faf4ec710c59",
+  "fields": {
+    "brand": "AHC",
+    "name": "AHC 마스터즈 아이시 젤리 선스틱 14g",
+    "price": 17500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000250210&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=13&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025021008ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 1537,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "46698ff6-11cf-4ebb-a1e1-741d373b6dc8",
+  "fields": {
+    "brand": "리덴스",
+    "name": "[리뷰이벤트/잡티미백] 리덴스 톤앤스팟 코렉터 앰플 30ml 더블기획",
+    "price": 25900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000230854&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=5&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023085431ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "리덴스 톤앤스팟 코렉터 앰플은 고함량 나이아신아마이드(50,000ppm)에도 불구하고 순하고 자극이 없어 민감성 피부를 포함한 모든 피부 타입이 안심하고 사용할 수 있습니다. PDRN과 히알루론산 성분이 속건조를 효과적으로 잡아주며, 잡티 및 색소침착 케어를 통해 칙칙한 피부톤을 자연스럽고 맑게 개선하고 피부결을 매끈하게 정돈해줍니다. 촉촉하지만 끈적임 없이 산뜻하게 흡수되어 아침저녁 데일리로 사용하기 좋고, 메이크업 전에 발라도 밀림 없이 피부 표현을 돕습니다.",
+    "average_rating": 5.0,
+    "review_count": 5772,
+    "satisfaction_by_type": {
+      "피부타입": "복합성에 좋아요: 53%",
+      "피부고민": "주름/미백에 좋아요: 46%",
+      "자극도": "자극없이 순해요: 88%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "48cddaca-851d-4921-9930-c962e78ed7be",
+  "fields": {
+    "brand": "제로이드",
+    "name": "[5월 올영픽][대용량] 제로이드 수딩 크림 80ml 기획 (+50ml)",
+    "price": 30400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000231589&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=16&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023158911ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 10281,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "피부고민": "보습: 55%",
+      "자극도": "저자극: 76%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "4932d5aa-65b2-460e-9fc2-7411193734cc",
+  "fields": {
+    "brand": "아리얼",
+    "name": "[1등 클렌징 티슈] 아리얼 더 퍼펙트 클렌징 티슈 플러스 100매",
+    "price": 6400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000146512&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=30&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0014/A00000014651236ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 34978,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 63%",
+      "세정력": "아주 만족해요: 63%",
+      "자극도": "저자극: 52%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "4974853a-3495-4880-99a6-25250def5eac",
+  "fields": {
+    "brand": "넘버즈인",
+    "name": "[망곰 콜라보] 넘버즈인 3번 도자기결 파데스킵 톤업베이지 50ml 기획 (+35ml+스패츌라)",
+    "price": 23500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000245680&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=42&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024568030ko.png?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.6,
+    "review_count": 4723,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 54%",
+      "발림성": "아주 만족해요: 55%",
+      "자극도": "저자극: 59%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "49cb5590-bc1a-4bd9-b637-03950c8ea6a4",
+  "fields": {
+    "brand": "넘버즈인",
+    "name": "[화잘먹] 넘버즈인 3번 보들보들 모공결 세럼 30ml 더블 기획",
+    "price": 26900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000250773&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=49&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025077324ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 3938,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 58%",
+      "피부고민": "보습: 56%",
+      "자극도": "저자극: 69%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "4a929dd9-f7f6-45a0-a59b-db3ef640d8f0",
+  "fields": {
+    "brand": "아비브",
+    "name": "[1+1/파데프리톤업] 아비브 글루타치온좀 CC 선크림 토닝 튜브 50ml 더블 기획",
+    "price": 25900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000248226&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=48&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024822615ko.png?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 1705,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "발림성": "아주 만족해요: 70%",
+      "자극도": "저자극: 70%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "4d73f770-60d1-4668-b7bf-413b16a5379f",
+  "fields": {
+    "brand": "유세린",
+    "name": "[5월 올영픽/1등 세럼] 유세린 하이알루론 에피셀린 세럼 30ml 기획 (+에피셀린 세럼 7ml*2)",
+    "price": 39900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000252193&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=3&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025219302ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 유세린 세럼은 건성 피부 사용자들에게 긍정적인 평가를 받지만, 악건성 피부에는 크림 대체제로 부족할 수 있으며, 특히 주름 개선을 기대하는 중장년층에게 적합한 것으로 나타났습니다. 사용 후 피부가 쫀득하고 탱탱하게 느껴진다는 평이 많아 팔자 주름 등 잔주름 개선과 전반적인 피부 컨디션 및 안색 개선에 도움을 주는 것으로 보입니다. 유세린 특유의 기분 좋은 향과 로션 또는 수분 젤 크림 같은 제형으로 편안하게 발립니다. 다만, 일부 사용자들은 다른 제품과 함께 사용하거나 양을 많이 바를 경우 밀림 현상이나 백탁 현상을 경험했다고 보고하여, 소량 사용과 적절한 레이어링이 중요합니다.",
+    "average_rating": 4.8,
+    "review_count": 1035,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "피부고민": "보습: 48%",
+      "자극도": "중자극: 56%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "4eb4e07f-b0df-4268-a672-52fbeeeff580",
+  "fields": {
+    "brand": "라곰",
+    "name": "[단독선런칭/리뷰이벤트] 라곰 오트 미셀라 클렌징밀크 200ml",
+    "price": 18500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000255163&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=39&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025516303ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 281,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 48%",
+      "세정력": "아주 만족해요: 94%",
+      "자극도": "저자극: 97%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "51961378-ec64-4617-9295-16f86358ffe6",
+  "fields": {
+    "brand": "디오디너리",
+    "name": "[각질쓱싹] 디오디너리 글리코릭 애시드 7% 엑스폴리에이팅 토너 240ml",
+    "price": 16900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000223625&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=44&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022362501ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 4313,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 54%",
+      "피부고민": "진정: 40%",
+      "자극도": "중자극: 45%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "53d844aa-5023-4d02-86b2-47410e765bbc",
+  "fields": {
+    "brand": "마녀공장",
+    "name": "[포켓몬에디션/마이크로버블] 마녀공장 퓨어 소이빈 클렌징폼 120ml 2입 기획 (+스티커)",
+    "price": 11400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253619&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=20&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025361922ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 41174,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 61%",
+      "세정력": "아주 만족해요: 84%",
+      "자극도": "저자극: 81%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "547b848f-8bb3-4e04-925a-6b851878e2bb",
+  "fields": {
+    "brand": "AHC",
+    "name": "[포켓몬 에디션] AHC 마스터즈 아쿠아 리치 선크림 50ml 1+1 기획 (+피카츄 핀 거울)",
+    "price": 24900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000254119&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=1&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025411907ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 381,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "발림성": "아주 만족해요: 75%",
+      "자극도": "저자극: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "55932871-b5f1-43a8-9ba8-bb6e9aa62fdc",
+  "fields": {
+    "brand": "디오디너리",
+    "name": "[트러블모공] 디오디너리 나이아신아마이드 10% + 징크 1% 30ml",
+    "price": 8700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000157350&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=28&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0015/A00000015735005ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.6,
+    "review_count": 15159,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "피부고민": "진정: 41%",
+      "자극도": "중자극: 49%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "569d8e2e-1ca2-46ab-9438-f220405ae7ba",
+  "fields": {
+    "brand": "셀라딕스",
+    "name": "[한정수량] 셀라딕스 트러블 세범 리밸런싱 131 앰플 30ml 기획 (+리필 10ml)",
+    "price": 28900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000255068&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=43&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025506822ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 트러블과 과다 피지로 고민하는 지성 및 민감성 피부에 적합하다는 평이 많습니다. 주요 효능으로는 과도한 피지 번들거림을 줄이고 좁쌀 및 붉은 트러블을 진정시켜 피부 컨디션을 안정화시킨다는 긍정적인 후기가 있지만, 일부 사용자는 피지 조절이나 트러블 개선 효과를 전혀 느끼지 못하거나 오히려 트러블이 악화되었다는 상반된 경험을 보고했습니다.\n\n사용감은 묽고 산뜻한 제형으로 끈적임 없이 빠르게 흡수되어 데일리로 사용하기 좋다는 의견이 대다수이나, 제형의 점성에 대해서는 '물처럼 흐른다'와 '꾸덕하지만 산뜻하다'는 평가로 엇갈립니다. 전반적으로 피부 부담이 적다는 점은 공통적이지만, 효과 면에서는 개인차가 큰 편입니다.",
+    "average_rating": 4.7,
+    "review_count": 2460,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 100%",
+      "피부고민": "보습: 100%",
+      "자극도": "저자극: 100%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "58201004-a66f-45c4-8c5a-ae96b6f5c2b0",
+  "fields": {
+    "brand": "에스트라",
+    "name": "에스트라 아토베리어365 포밍 클렌저 150ml",
+    "price": 20000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000245096&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=39&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024509611ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "에스트라 아토베리어365 포밍 클렌저는 민감하고 건조한 피부에 최적화된 저자극 클렌저입니다. 펌핑 시 바로 생성되는 풍성하고 밀도 있는 거품이 피부 마찰을 줄여 자극 없이 부드러운 세안을 가능하게 합니다. 세안 후에도 피부 당김 없이 촉촉함을 유지해주어 건성 피부에게 특히 만족도가 높습니다. 가벼운 메이크업이나 노폐물 제거에 적합하며, 순한 세정력으로 아침 세안이나 2차 세안용으로 추천됩니다.",
+    "average_rating": 4.8,
+    "review_count": 1306,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "세정력": "아주 만족해요: 50%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "58628230-4cdf-4f28-a0b8-c4d1781240b5",
+  "fields": {
+    "brand": "닥터지",
+    "name": "[5월올영픽/포켓몬 에디션] 닥터지 레드 블레미쉬 수딩 업 선 50ml 1+1 기획 (+꼬부기 미니거울)",
+    "price": 19900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253337&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=2&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025333744ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 6153,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 62%",
+      "발림성": "아주 만족해요: 69%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "58caa074-84e8-4d60-927a-c5d581ebec76",
+  "fields": {
+    "brand": "라로슈포제",
+    "name": "라로슈포제 시카플라스트 멀티 리페어 크림 100ml 기획 (+멜라B3 세럼 3ml 증정)",
+    "price": 46800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000224292&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=27&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022429206ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 민감하고 트러블이 있는 피부의 장벽 복구 및 진정에 뛰어난 효과를 보이며, 뛰어난 재생 능력으로 많은 사용자들에게 '피부 구원자'로 평가받습니다. 기존 B5 밤보다 *가볍고 덜 되직한 수분 크림 제형*으로, 특히 지성 피부나 가벼운 사용감을 선호하는 분들께 데일리 크림으로 적합합니다. 보습력도 준수하여 피부를 촉촉하게 유지해줍니다.\n\n다만, 일부 사용자는 바른 후 *밀림 현상*으로 인해 화장이 어렵다는 점과 *눈 시림 현상*, 그리고 환절기에는 지성 피부임에도 건조함을 느꼈다는 의견도 있습니다. 전체적으로는 효과 대비 가격대가 높지만 그만한 가치가 있다는 평가가 많습니다.",
+    "average_rating": 4.7,
+    "review_count": 8070,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "피부고민": "보습: 53%",
+      "자극도": "저자극: 69%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "591f6d05-830f-4dc0-b7d0-7ab3a0917dcc",
+  "fields": {
+    "brand": "더마팩토리",
+    "name": "더마팩토리 나이아신아마이드 20% 세럼 30ml",
+    "price": 5700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225217&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=36&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022521701ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 8664,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "피부고민": "주름/미백: 46%",
+      "자극도": "저자극: 46%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "5b65f254-62fb-409e-b930-6bfc44612ccf",
+  "fields": {
+    "brand": "메이크프렘",
+    "name": "메이크프렘 세이프 미 릴리프 모이스처 클렌징폼 150ml 1+1 기획",
+    "price": 18000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000113670&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=46&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0011/A00000011367042ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 민감하고 건조한 피부를 포함한 모든 피부 타입이 안심하고 사용할 수 있는 약산성 저자극 클렌징폼입니다. 부드럽고 풍성한 거품으로 피부 노폐물과 가벼운 메이크업을 순하게 세정하며, 특히 세안 후 피부 당김 없이 촉촉하고 편안한 느낌을 선사합니다. 피부 유수분 밸런스 유지와 장벽 강화에 도움을 주어 아침 세안이나 데일리 클렌징용으로 많은 추천을 받고 있습니다. 1+1 구성의 대용량으로 뛰어난 가성비를 자랑하지만, 일부 복합성 피부 사용자는 뻑뻑한 사용감이나 세정력에 아쉬움을 표하기도 했습니다.",
+    "average_rating": 4.8,
+    "review_count": 29372,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "세정력": "아주 만족해요: 51%",
+      "자극도": "저자극: 76%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "5b998d17-8e97-49e1-a44e-28708967753a",
+  "fields": {
+    "brand": "바이오더마",
+    "name": "바이오더마 센시비오 H2O 850ml(클렌징워터)",
+    "price": 24500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000130319&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=9&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0013/A00000013031984ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 **자극 없이 순한 사용감**으로 민감한 피부도 안심하고 사용할 수 있는 클렌징 워터입니다. **강력한 세정력**으로 메이크업을 깔끔하게 지워주며, 사용 후에는 상쾌하고 미끌거림 없이 깨끗한 마무리감을 선사하여 2차 세안 없이도 충분히 깨끗한 느낌을 줍니다. 특히 850ml의 **대용량은 뛰어난 가성비**를 자랑하며, 편리한 펌프 용기 덕분에 쉽고 간편하게 사용할 수 있어 일상생활의 만족도를 높여주는 '삶의 질 향상템'으로 평가받고 있습니다.",
+    "average_rating": 4.9,
+    "review_count": 52694,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 62%",
+      "세정력": "아주 만족해요: 70%",
+      "자극도": "저자극: 77%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "5e295d1a-fb4e-43c5-a1c7-8b42ff85d16c",
+  "fields": {
+    "brand": "이니스프리",
+    "name": "[품절대란/재고확보][모공블러링] 이니스프리 포어 블러 파우더 11g",
+    "price": 13500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000229688&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=17&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022968822ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "이니스프리 포어 블러 파우더는 극지성 및 지복합성 등 유분기가 많은 피부 사용자들 사이에서 '인생템', '혁명'으로 불릴 정도로 높은 만족도를 자랑합니다. 매우 고운 입자가 유분을 즉각적으로 잡아주어 피부를 보송하고 부드럽게 유지하며, 모공 블러링 효과로 매끈한 피부 표현을 가능하게 합니다. 뛰어난 지속력으로 장시간 유분 없이 메이크업을 유지시켜주지만, 고운 입자 특성상 내장 퍼프 사용 시 양 조절이나 뭉침에 주의가 필요하며 파우더 브러쉬를 사용하는 것을 추천합니다.",
+    "average_rating": 4.8,
+    "review_count": 419,
+    "satisfaction_by_type": {
+      "입자": "입자가 고와요: 83%",
+      "지속력": "지속이 오래돼요: 68%",
+      "발림성": "아주 만족해요: 70%",
+      "밀착력": "아주 만족해요: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "5f744bd1-5617-433c-9fa8-b8495d8e654a",
+  "fields": {
+    "brand": "셀퓨전씨",
+    "name": "[산뜻보송/조앤프렌즈 콜라보] 셀퓨전씨 스틱 썬스크린 100 19g 1+1 기획",
+    "price": 19900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253705&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=36&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025370509ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 7194,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "606a2287-84d3-428d-9cd0-a3514e8a1d87",
+  "fields": {
+    "brand": "아누아",
+    "name": "[수지세럼] 아누아 피디알엔 히알루론산 캡슐 100 세럼 30mL 기획 (+30mL 리필팩)",
+    "price": 27500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222698&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=8&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022269818ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 건성 피부에 특히 적합하며, 물처럼 흐르는 묽은 제형임에도 불구하고 바르면 쫀쫀하고 뛰어난 수분 보습감을 제공합니다. 속건조를 효과적으로 잡아주어 장시간 동안 피부 당김 없이 촉촉함을 유지해주며, 메이크업 전에 사용해도 밀리지 않고 깔끔하게 마무리됩니다. 일부 사용자는 꾸준한 사용 후 입가 주름 개선과 피부의 매끈함, 속광 효과를 경험했고, 자극 없이 순하다는 평이 많습니다. 다만, 지성 피부에는 다소 과하게 느껴질 수 있으며, 일부 사용자에게는 약간의 끈적임이 느껴지기도 했습니다.",
+    "average_rating": 4.8,
+    "review_count": 12334,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 54%",
+      "피부고민": "보습: 73%",
+      "자극도": "저자극: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "61c34e61-f3d2-4a52-8276-89383f706b9c",
+  "fields": {
+    "brand": "바이오던스",
+    "name": "[1+1/유혜주PICK] 바이오던스 포어 퍼펙팅 콜라겐 펩타이드 세럼 30ml 더블 기획",
+    "price": 29800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000237409&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=24&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023740944ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 묵직하지 않으면서도 쫀쫀한 젤 타입 제형으로, 끈적임 없이 산뜻하게 빠르게 흡수되어 수부지 및 복합성 피부에 특히 적합합니다. 늘어진 모공을 정돈하고 거친 피부결을 매끈하게 개선하는 데 도움을 주며, 피부에 탄력과 쫀쫀한 수분감을 부여합니다. 사용 후 피부에 은은한 속광과 함께 촉촉한 보습감을 남겨, 메이크업 전 베이스로 활용하기에도 좋고 아침저녁 데일리 세럼으로 부담 없이 사용하기 좋습니다.",
+    "average_rating": 4.8,
+    "review_count": 4165,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "피부고민": "보습: 54%",
+      "자극도": "저자극: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "6215e42f-c0c8-4198-ba56-8151ef270659",
+  "fields": {
+    "brand": "아이레시피",
+    "name": "아이레시피x리틀트윈스타 세라마이드 유자 바이오 클렌징오일 200ml 기획",
+    "price": 26000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225888&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=11&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022588819ko.png?l=ko",
+    "category": "클렌징",
+    "ai_summary": "'아이레시피x리틀트윈스타 세라마이드 유자 바이오 클렌징오일'은 논코메도제닉 테스트를 완료하여 트러블 및 민감성 피부도 안심하고 사용할 수 있으며, 세안 후 속건조나 당김 없이 촉촉함을 유지시켜줍니다. 강력한 세정력으로 진한 메이크업, 선크림, 아이라이너는 물론, 피지와 블랙헤드, 화이트헤드까지 부드럽게 제거하여 매끈한 피부로 가꾸는 데 탁월합니다.\n\n너무 무겁지도 가볍지도 않은 맑고 산뜻한 제형은 물처럼 부담 없이 피부에 도포되며, 상큼한 유자향이 은은하게 퍼져 기분 좋은 사용감을 선사합니다. 유화가 빠르고 깔끔하게 이루어져 미끈거리는 잔여감 없이 산뜻하고 개운하게 마무리되어, 특히 여름철 사용에 적합하다는 평이 많습니다.",
+    "average_rating": 5.0,
+    "review_count": 13792,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 45%",
+      "세정력": "아주 만족해요: 92%",
+      "자극도": "저자극: 92%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "647add03-fb14-4c3f-bc38-3fec7653a601",
+  "fields": {
+    "brand": "바를",
+    "name": "[올영단독/샤벳밤 대용량]바를 차콜 멜팅 클렌징밤 100g(+3g*6)",
+    "price": 25000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232301&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=23&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023230110ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 1462,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "64f095f1-7e30-41a7-91ce-6abb566b31b1",
+  "fields": {
+    "brand": "제로이드",
+    "name": "[세정이 쉬운 무기자차] 제로이드 이지워시 마일드 선크림 50ml",
+    "price": 28800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000209913&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=29&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020991303ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 1104,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 60%",
+      "발림성": "아주 만족해요: 65%",
+      "자극도": "저자극: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "669700c5-e704-4e93-81e1-e4b079d70ed7",
+  "fields": {
+    "brand": "파티온",
+    "name": "[대용량/트러블1등] 파티온 노스카나인 트러블 세럼 50ml 리필 기획(+리필40ml+크림10ml)",
+    "price": 33900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000219609&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=32&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021960906ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 자극 없이 순한 사용감으로 민감성, 여드름 피부, 수부지 피부 등 다양한 트러블성 피부에 적합합니다. 묽고 산뜻한 제형 덕분에 피부에 빠르게 흡수되며 끈적임이 전혀 없어 아침, 저녁 모두 부담 없이 사용하기 좋습니다. 사용자들은 붉은기 완화, 피부 진정, 화농성 및 반복적인 트러블 케어에 효과적이라고 언급하며, 충분한 수분감을 제공하면서도 과한 유분감 없이 피부를 촉촉하고 편안하게 가꿔준다고 만족했습니다. 꾸준히 사용하면 여드름 흔적 개선 및 전반적인 피부 상태 복구에도 도움이 된다는 평이 많습니다.",
+    "average_rating": 4.9,
+    "review_count": 73015,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 50%",
+      "피부고민": "진정: 66%",
+      "자극도": "저자극: 84%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "66c6047a-7b2b-4418-99aa-708521fc1d31",
+  "fields": {
+    "brand": "우르오스",
+    "name": "우르오스 올인원 스킨로션 200ml 증정기획/단품",
+    "price": 23700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000006564&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=40&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0000/A00000000656426ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 3534,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 58%",
+      "피부고민": "보습: 60%",
+      "자극도": "저자극: 62%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "6793aa0d-2266-4189-98e0-0e67a86653f1",
+  "fields": {
+    "brand": "더마팩토리",
+    "name": "더마팩토리 나이아신아마이드 20% 세럼 30ml",
+    "price": 5700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225217&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=45&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022521701ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "'더마팩토리 나이아신아마이드 20% 세럼'은 주로 지성 피부 사용자들에게 피지 조절, 블랙헤드 및 화이트헤드 개선에 탁월한 효과를 보이며 호평을 받고 있습니다. 물처럼 가볍고 끈적임 없이 빠르게 흡수되는 산뜻한 사용감으로, 피부톤 정리, 붉은기 완화, 전반적인 피부 장벽 강화 및 흔적 관리에 도움을 준다고 평가됩니다. 다만, 고농도 나이아신아마이드 특성상 일부 사용자에게는 얼굴 솜털이 짙어지는 현상이 나타나거나, 예민한 피부의 경우 따가움을 느낄 수 있어 단독 사용보다는 다른 제품과 섞어 사용하거나 소량으로 조절하여 사용하는 것이 권장됩니다. 꾸준히 사용 시 미백 및 피부결 개선 효과를 기대할 수 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 8663,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "피부고민": "주름/미백: 46%",
+      "자극도": "저자극: 46%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "6b80d536-4b02-44f3-88b2-65b08f83939a",
+  "fields": {
+    "brand": "메이크프렘",
+    "name": "[리필기획] 메이크프렘 세이프 미 릴리프 모이스처 클렌징밀크 기획 (200ml+100ml 리필)",
+    "price": 21000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000158513&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=4&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0015/A00000015851331ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 12722,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "세정력": "아주 만족해요: 56%",
+      "자극도": "저자극: 80%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "6bf29c03-1a51-4fe8-a79f-9fc5baec49db",
+  "fields": {
+    "brand": "바닐라코",
+    "name": "[1등 파우더] 바닐라코 프라임 프라이머 피니쉬 파우더 12g",
+    "price": 17600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253093&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=44&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025309302ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 43590,
+    "satisfaction_by_type": {
+      "입자": "입자가 고와요: 83%",
+      "지속력": "지속이 오래돼요: 69%",
+      "발림성": "아주 만족해요: 70%",
+      "밀착력": "아주 만족해요: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "6c7af7e0-d470-433f-ad10-97fdc1084cf6",
+  "fields": {
+    "brand": "바를",
+    "name": "[올영단독/샤벳밤 대용량]바를 차콜 멜팅 클렌징밤 100g(+3g*6)",
+    "price": 25000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232301&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=34&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023230110ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 돌려서 깎아 쓰는 독특하고 위생적인 밤 타입 클렌징 제품입니다. 피부에 부드럽게 녹아 순하게 발리며, 진한 베이스 메이크업은 물론 마스카라, 립 등 전용 리무버 없이도 한 번에 깔끔하게 지워내는 강력한 세정력을 자랑합니다. 특히 코 주변 피지와 블랙헤드 관리에도 효과적이며, 세안 후 피부 당김 없이 촉촉하고 편안하게 마무리되어 건성 피부를 포함한 모든 피부 타입이 데일리로 사용하기에 적합합니다.",
+    "average_rating": 5.0,
+    "review_count": 1462,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "70a3785e-f623-4c46-baab-2dbee1503681",
+  "fields": {
+    "brand": "달바",
+    "name": "[NO.1 미스트세럼] 달바 퍼스트 스프레이 세럼 100ml 2개 기획",
+    "price": 35200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232724&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=12&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023272416ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 극지성을 제외한 다양한 피부 타입, 특히 수부지(수분 부족 지성) 피부에 적합하며, 피부 자극 없이 데일리로 사용하기 좋습니다. 속건조를 효과적으로 해결하고, 뿌리는 즉시 피부에 은은한 광채와 윤기를 부여하여 촉촉한 피부를 연출해 줍니다. 고운 안개분사력으로 피부에 균일하게 흡수되며, 은은하고 호불호 없는 향과 편리한 사용감으로 기초 첫 단계는 물론 메이크업 전후에도 활용하기 좋습니다.",
+    "average_rating": 4.9,
+    "review_count": 48004,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 57%",
+      "피부고민": "보습: 68%",
+      "자극도": "저자극: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "70cadf22-f67e-474c-a2c1-8003de043827",
+  "fields": {
+    "brand": "비플레인",
+    "name": "[말끔모공] 비플레인 녹두 약산성 클렌징폼 160ml 더블 기획",
+    "price": 23900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000249797&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=3&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024979711ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 비플레인 녹두 클렌징폼은 약산성임에도 불구하고 뛰어난 세정력을 갖춰 가벼운 메이크업과 선크림까지 효과적으로 제거합니다. 건성부터 수부지, 지성 및 여드름성 피부를 포함한 다양한 피부 타입에 순하게 작용하며, 세안 후 당김이나 미끌거림 없이 산뜻한 마무리감을 제공합니다. 함유된 녹두 알갱이가 자극 없이 피지와 각질을 부드럽게 제거하여 피부 컨디션 개선 및 트러블 예방에도 도움을 줍니다. 적은 양으로도 풍성한 거품이 잘 나며, 순하면서도 개운한 사용감으로 사용자들의 높은 만족도를 얻고 있습니다.",
+    "average_rating": 4.9,
+    "review_count": 24053,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "세정력": "아주 만족해요: 64%",
+      "자극도": "저자극: 64%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "7140f314-5593-4471-8bef-20584b5a1ef8",
+  "fields": {
+    "brand": "구달",
+    "name": "[5/31~ 텔레토비 기획 판매] 구달 맑은 어성초 진정 수분 선크림 50ml 1+1 기획",
+    "price": 22000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000219553&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=23&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021955342ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 38372,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 54%",
+      "발림성": "아주 만족해요: 72%",
+      "자극도": "저자극: 74%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "77f0f72f-1321-4744-a8ce-cf9ed0b28ab4",
+  "fields": {
+    "brand": "메이크프렘",
+    "name": "메이크프렘 세이프 미 릴리프 모이스처 클렌징밀크 기획 (200ml+폼50ml)",
+    "price": 18000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000139298&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=49&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0013/A00000013929835ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 피부과에서 추천할 만큼 순하고 자극 없는 약산성 클렌징 밀크로, 특히 극건성 및 심한 민감성 피부에 높은 만족도를 보입니다. 부드러운 롤링감으로 피부에 부담을 주지 않으며, 세안 후에도 속당김 없이 촉촉함이 유지되는 것이 큰 장점입니다. 선크림이나 가벼운 베이스 메이크업은 단독으로도 충분히 세정되고, 진한 색조 메이크업 시에는 1차 클렌저로서 뛰어난 세정력을 자랑합니다. 다만, 일부 사용자는 클렌징 밀크 특유의 미끈한 잔여감을 느낄 수 있어 2차 세안을 선호하기도 합니다.",
+    "average_rating": 4.8,
+    "review_count": 8696,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "세정력": "아주 만족해요: 49%",
+      "자극도": "저자극: 78%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "7aa99f5a-ce26-43b3-8e05-5ce249e87d41",
+  "fields": {
+    "brand": "바닐라코",
+    "name": "[1등 클렌징밤] 바닐라코 클린잇제로 오리지널 클렌징밤 100ml",
+    "price": 15600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000202675&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=40&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020267514ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 22245,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "7e4745c5-5d02-462d-8024-c4b4927812bf",
+  "fields": {
+    "brand": "쏘내추럴",
+    "name": "[1위픽서] 쏘내추럴 올 데이 타이트 메이크업 세팅 픽서 120ml 더블기획 (120ml+120ml)",
+    "price": 33600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000162114&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=7&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0016/A00000016211429ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "이 쏘내추럴 픽서는 수부지, 건성부터 극지성 피부까지 다양한 피부 타입에 적합하며, 화장이 쉽게 무너지거나 흘러내리는 것을 효과적으로 방지합니다. 사용자들은 하루 종일 수정 화장이 필요 없을 정도로 강력한 메이크업 고정력과 유지력을 최고의 장점으로 꼽았으며, 특히 여름철이나 중요한 약속 시 더욱 빛을 발한다고 언급했습니다. 향이 강하지 않아 데일리로 부담 없이 사용하기 좋고, 메이크업 전후 또는 파우더 처리 전후로 여러 번 레이어링하여 사용하면 고정 효과를 극대화할 수 있습니다. 사용 후에는 은은한 광을 선사하며, 더블 기획 구성으로 가격 대비 만족도가 높다는 평입니다.",
+    "average_rating": 4.8,
+    "review_count": 44265,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "7e9928f2-ad44-4ae7-bdec-c13b1aa83e7b",
+  "fields": {
+    "brand": "토리든",
+    "name": "[NEW] 토리든 다이브인 저분자 히알루론산 세럼 50ml 더블 기획 (밸런스풀 세럼 20ml+모이스처 선 20ml)",
+    "price": 38000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000256047&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=14&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025604702ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 46,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 48%",
+      "피부고민": "보습: 83%",
+      "자극도": "저자극: 78%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "7ef9b80c-7336-458d-b980-c752a8cd8036",
+  "fields": {
+    "brand": "비플레인",
+    "name": "[천만돌파/말끔모공]비플레인 녹두 약산성 클렌징폼기획 160ml+40ml 기획",
+    "price": 21900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000187479&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=41&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0018/A00000018747912ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 약산성 클렌징폼으로, 특히 민감성, 지성, 수부지 등 다양한 피부 타입 사용자들에게 자극 없이 순하게 작용하여 높은 만족도를 제공합니다. 선크림까지 깔끔하게 지워내는 우수한 세정력을 지녔으면서도, 세안 후 피부 당김이나 건조함 없이 촉촉하고 부드러운 피부결을 유지시켜 줍니다. 풍성하고 부드러운 거품으로 편안한 세안을 돕고, 여드름 개선에도 긍정적인 영향을 주어 많은 사용자들이 '정착템'으로 꼽으며 재구매 의사를 밝히고 있습니다.",
+    "average_rating": 4.9,
+    "review_count": 17782,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 57%",
+      "세정력": "아주 만족해요: 63%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "7f600353-8ade-415e-aea8-f06dcf6c37a4",
+  "fields": {
+    "brand": "파넬",
+    "name": "[1등 진정세럼] 파넬 시카마누 92세럼 30ml 리필기획(+30ml 리필+15ml)",
+    "price": 27900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000237728&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=42&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023772820ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 12485,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "피부고민": "진정: 81%",
+      "자극도": "저자극: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "8270152b-6cb3-4f8e-a301-8c8375c8c8ba",
+  "fields": {
+    "brand": "쏘내추럴",
+    "name": "쏘내추럴 올 데이 타이트 메이크업 세팅 픽서 75ml",
+    "price": 14400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000122275&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=28&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0012/A00000012227525ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 51170,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "835f72cb-066f-4f2d-8a0a-c79b236441ee",
+  "fields": {
+    "brand": "아누아",
+    "name": "[단독기획] 아누아 어성초 센텔라 레드 스팟 크림 30g 2입",
+    "price": 25000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232494&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=6&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023249405ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 여드름성, 복합성, 지성 피부 사용자들에게 특히 긍정적인 평가를 받으며, 울긋불긋한 피부 진정과 여드름 완화에 탁월한 효과를 보인다고 합니다. 순하고 자극 없는 사용감으로 민감한 피부의 붉은기를 완화하고 진정시키는 데 도움을 주며, 일부 사용자는 피부 톤 균형을 잡아주는 효과도 경험했습니다. 발림성이 부드럽고 무겁지 않은 무향 제형이나, 보습감에 대해서는 사용자별 편차가 있어 일부 건조한 피부에는 당김이나 건조함을 유발할 수 있으므로 추가 보습이 필요할 수 있습니다. 또한, 화장 전 사용 시 밀린다는 의견과 화장이 잘 먹고 오래간다는 의견이 공존하는 만큼, 개인의 피부 상태와 사용 방식에 따라 사용감이 달라질 수 있습니다.",
+    "average_rating": 4.6,
+    "review_count": 1833,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "피부고민": "진정: 72%",
+      "자극도": "저자극: 73%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "8557489d-8883-4520-a978-ce55ec037fa9",
+  "fields": {
+    "brand": "마녀공장",
+    "name": "[포켓몬에디션/블랙헤드1등] 마녀공장 퓨어 소이빈 클렌징오일 200ml 2입 기획 (+미니백 키링)",
+    "price": 25900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253617&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=6&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025361726ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 지성, 수부지, 피지 고민이 많은 피부에 특히 적합하며, 메이크업은 물론 모공 속 노폐물과 블랙헤드를 효과적으로 녹여 깨끗하고 매끈한 피부를 선사합니다. 무겁지 않으면서도 적당한 중간 제형으로 부드럽게 롤링되며, 빠르고 완벽한 유화 과정으로 잔여감 없이 산뜻하게 씻겨나갑니다.\n\n뛰어난 세정력과 인위적이지 않은 향으로 사용감이 좋고, 세안 후 피부 당김이 적어 대부분의 사용자에게 촉촉함을 남기지만, 일부 건성 피부는 약간의 당김을 느끼기도 했습니다. 전반적으로 부드럽고 자극 없이 순한 사용감으로 꾸준히 사용하기 좋은 클렌징 오일로 평가됩니다.",
+    "average_rating": 4.8,
+    "review_count": 50396,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "세정력": "아주 만족해요: 90%",
+      "자극도": "저자극: 87%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "86c27bc2-a33f-43a9-8397-f6c7eacecbad",
+  "fields": {
+    "brand": "션리",
+    "name": "[즉각쿨링/SOS진정세럼] 션리 다시마 그리너리 세럼35ml",
+    "price": 24000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000233336&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=29&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023333602ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 4186,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 48%",
+      "피부고민": "보습: 61%",
+      "자극도": "저자극: 95%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "874521df-3b24-4f5b-93fc-89e1734a95cb",
+  "fields": {
+    "brand": "파티온",
+    "name": "[대용량/트러블1등] 파티온 노스카나인 트러블 세럼 50ml 리필 기획(+리필40ml+크림10ml)",
+    "price": 33900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000219609&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=26&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021960906ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 73015,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 50%",
+      "피부고민": "진정: 66%",
+      "자극도": "저자극: 84%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "8c5a42b4-c659-4bc5-b34b-efd754ca5b11",
+  "fields": {
+    "brand": "오브제",
+    "name": "[덱스PICK/러너 필수템] 오브제 액티브 스웨트프루프 선스틱 18g",
+    "price": 18500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000248755&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=20&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024875505ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 599,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "8e23222b-6b3d-4654-a4fb-a0ccf77828e5",
+  "fields": {
+    "brand": "아이레시피",
+    "name": "아이레시피x리틀트윈스타 세라마이드 유자 바이오 클렌징오일 200ml 기획",
+    "price": 26000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225888&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=38&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022588819ko.png?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 13793,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 45%",
+      "세정력": "아주 만족해요: 92%",
+      "자극도": "저자극: 92%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "8f449bd9-bf9c-4f75-9de2-3d64fbb1e1db",
+  "fields": {
+    "brand": "에스트라",
+    "name": "[5월 올영픽] 에스트라 더마UV365 레드진정 톤업 선크림 40ml 기획 (+무기자차 선크림 20ml)",
+    "price": 21700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000206827&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=43&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020682705ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 2377,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "발림성": "아주 만족해요: 59%",
+      "자극도": "저자극: 65%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "91f0332d-6c8a-413c-b0c7-b56cbbb1b5ae",
+  "fields": {
+    "brand": "셀라딕스",
+    "name": "[한정수량] 셀라딕스 트러블 세범 리밸런싱 131 앰플 30ml 기획 (+리필 10ml)",
+    "price": 28900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000255068&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=50&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025506822ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 2460,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 100%",
+      "피부고민": "보습: 100%",
+      "자극도": "저자극: 100%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "931bd4e0-96ed-4018-b23b-ef0f7297120a",
+  "fields": {
+    "brand": "웰라쥬",
+    "name": "[속건조필수템] 웰라쥬 리얼 히알루로닉 블루 100 앰플 100ml 기획 (+원데이키트2ea)",
+    "price": 19900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000231884&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=15&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023188419ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 6170,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 46%",
+      "피부고민": "보습: 76%",
+      "자극도": "저자극: 76%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "945772e7-cade-4a50-a0af-dead3865ca1a",
+  "fields": {
+    "brand": "AHC",
+    "name": "[포켓몬 에디션] AHC 마스터즈 에어리치 선스틱 22g 더블 기획 (+포켓몬 미니달력)",
+    "price": 29900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000254125&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=9&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025412502ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 397,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "9464ce56-8fb8-4cbc-b09c-c0f37ff565d4",
+  "fields": {
+    "brand": "스타라이크",
+    "name": "[화잘먹/24시간속보습] 스타라이크 PDRN 스킨 핏 수분 선크림 50ml",
+    "price": 14400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235913&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=41&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023591318ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 2825,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 53%",
+      "발림성": "아주 만족해요: 96%",
+      "자극도": "저자극: 97%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "9518afcb-929b-4124-95ac-12087841890c",
+  "fields": {
+    "brand": "아누아",
+    "name": "[NEW/리뉴얼] 아누아 어성초 77 히알루론산 수분 진정 토너 350ml 리필 기획세트 (+350ml 리필팩)",
+    "price": 34300,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000248498&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=31&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024849808ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 토너는 물처럼 가볍고 무자극의 순한 제형으로, 민감성, 트러블성, 여드름성 피부를 포함한 모든 피부 타입에 부담 없이 사용하기 좋습니다. 피부를 편안하게 진정시키고 붉은기 및 트러블 완화에 탁월하며, 속당김 없이 충분한 수분감을 채워줍니다. 끈적임 없이 산뜻하게 흡수되어 여러 번 레이어링해도 답답함이 없으며, 닦토, 흡토뿐만 아니라 화장솜 팩으로도 활용 가능한 다재다능한 사용감을 제공하는 '육각형 토너'입니다.",
+    "average_rating": 4.8,
+    "review_count": 1261,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 58%",
+      "피부고민": "진정: 67%",
+      "자극도": "저자극: 72%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "96f78e8f-80db-4e1d-b238-2d00b8185e23",
+  "fields": {
+    "brand": "라운드랩",
+    "name": "[NEW/쿨링&차단] 라운드랩 자작나무 수분 선 스프레이 100ml 1+1 기획",
+    "price": 19800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000251033&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=44&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025103305ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 179,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "97601d96-cbb3-4523-ad14-099c0054be88",
+  "fields": {
+    "brand": "라로슈포제",
+    "name": "[파데프리] 라로슈포제 유비데아 안뗄리오스 톤업 로지 글로우 30ml 기획 (+멜라B3세럼 3ml*2ea)",
+    "price": 26900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000252919&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=24&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025291902ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 8,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 50%",
+      "발림성": "아주 만족해요: 63%",
+      "자극도": "저자극: 63%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "99295051-2b57-4f29-b530-be13e2f69e38",
+  "fields": {
+    "brand": "달바",
+    "name": "[NO.1 미스트세럼] 달바 퍼스트 스프레이 세럼 100ml 2개 기획",
+    "price": 35200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232724&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=15&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023272416ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 달바 미스트 세럼은 속건조를 효과적으로 잡아주며 은은한 윤광을 부여해 촉촉하고 건강한 피부를 연출해줍니다. 수부지 피부에 특히 잘 맞고, 극지성만 아니라면 건성, 지성 등 대부분의 피부 타입이 데일리로 편안하게 사용하기 좋습니다.\n\n고운 안개 분사력과 호불호 없는 은은한 향이 특징이며, 피부 자극 없이 메이크업 전후나 스킨케어 첫 단계, 또는 퍼프에 활용하는 등 다양한 방법으로 편리하게 사용할 수 있습니다. 오일층이 함유되어 일반 물 미스트보다 뛰어난 지속 보습감을 제공하며, 피부 컨디션이 좋지 않을 때 메이크업이 뜨는 것을 완화하는 데도 도움을 줍니다.",
+    "average_rating": 4.9,
+    "review_count": 48003,
+    "satisfaction_by_type": {
+      "피부타입": "건성에 좋아요: 57%",
+      "피부고민": "보습에 좋아요: 68%",
+      "자극도": "자극없이 순해요: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "9c5b6553-cccd-4d72-9608-8c5e7b63c5c4",
+  "fields": {
+    "brand": "에스트라",
+    "name": "[2025어워즈1위] 에스트라 아토베리어365 크림 80ml 기획 (+하이드로 에센스25ml+앰플7ml)",
+    "price": 33000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222833&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=25&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022283324ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 **건성 및 민감성 피부**, 특히 무너진 피부 장벽을 회복하고 강화하려는 분들에게 높은 만족도를 보입니다. 깊고 탄탄한 보습력으로 피부 속까지 촉촉하게 채워주며, 예민하거나 트러블이 있는 피부에도 자극 없이 순하고 편안하게 사용할 수 있다는 점이 큰 장점입니다. 뾰루지 흔적 완화, 피부 진정, 거칠어진 피부결 개선에도 효과적이라는 평이 많습니다.\n\n사용감은 부드럽게 발리고 대부분 끈적임 없이 촉촉하게 마무리되지만, 일부 지성이나 수부지 피부는 유분감을 느낄 수 있어 소량 사용하거나 얇게 여러 번 레이어링하는 것을 추천합니다. 튜브 타입으로 위생적이며, 데일리 보습 및 피부 장벽 케어용으로 사계절 내내 사용하기 좋습니다.",
+    "average_rating": 4.9,
+    "review_count": 34786,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 54%",
+      "피부고민": "보습: 74%",
+      "자극도": "저자극: 77%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "9f0238ef-4b4d-4224-aad2-5c3d86f34b2f",
+  "fields": {
+    "brand": "파넬",
+    "name": "[1등 진정세럼] 파넬 시카마누 92세럼 30ml 리필기획(+30ml 리필+15ml)",
+    "price": 27900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000237728&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=41&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023772820ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "'[1등 진정세럼] 파넬 시카마누 92세럼'은 건조함으로 인한 트러블이나 민감성 피부에 특히 효과적이며, 뛰어난 보습 및 진정 효과를 제공합니다. 콧물 같거나 쫀득한 제형임에도 불구하고 흡수력이 빠르고, 겉보기와 달리 무겁지 않게 피부에 스며들어 촉촉하고 편안한 사용감을 선사합니다. 피부 붉은기 진정 및 손상된 피부 회복에도 도움을 주지만, 유분기가 많은 지성 또는 화농성 여드름 피부에는 추천하지 않는다는 의견도 있습니다. 전반적으로 많은 사용자에게 '인생 세럼'으로 불릴 만큼 높은 만족도를 보이지만, 일부 피부 타입에서는 호불호가 갈릴 수 있는 제품입니다.",
+    "average_rating": 4.8,
+    "review_count": 12481,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "피부고민": "진정: 81%",
+      "자극도": "저자극: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "a7af8310-d047-4c05-9a53-991fcd618af7",
+  "fields": {
+    "brand": "이니스프리",
+    "name": "[1+1] 이니스프리 화산송이 바하 모공 클렌징폼 130g 더블 기획",
+    "price": 13200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232913&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=25&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023291343ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 클렌징폼은 피지 분비가 많고 모공이 넓은 지성 피부에 특히 적합하며, 여름철 클렌저로 높은 만족도를 보입니다. 강력한 세정력으로 자외선 차단제는 물론 모공 속 노폐물, 뭉친 피지, 각질, 블랙헤드까지 효과적으로 제거하여 유분감을 줄여주고 피부를 개운하게 합니다. 조밀하고 쫀쫀한 거품으로 딥클렌징되며, 세안 후에는 뽀드득하지만 지성 피부에게는 당김 없이 산뜻한 마무리감을 선사합니다. 다만, 환절기나 건조함을 느끼는 지성 피부의 경우 약간의 당김을 느낄 수 있어 세안 후 보습이 필요할 수 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 4955,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "세정력": "아주 만족해요: 66%",
+      "자극도": "저자극: 53%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "aa21fd1d-0eda-465a-89db-1cb09ca686d5",
+  "fields": {
+    "brand": "차앤박",
+    "name": "[보송핑크톤업] 차앤박 애프터레이 톤업 프로텍션 선 50ml 더블기획",
+    "price": 25500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000224140&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=40&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022414020ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 3148,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 49%",
+      "발림성": "아주 만족해요: 70%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "af6b612d-55a0-4b56-baa2-e390daa05c54",
+  "fields": {
+    "brand": "아누아",
+    "name": "[수지세럼] 아누아 피디알엔 히알루론산 캡슐 100 세럼 30mL 기획세트 (+크림 30ml)",
+    "price": 22500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000231894&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=22&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023189419ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 15584,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 47%",
+      "피부고민": "보습: 67%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "b0292b1e-1852-4b3b-bf92-6022e00f4981",
+  "fields": {
+    "brand": "코스알엑스",
+    "name": "[리뉴얼] 코스알엑스 어드밴스드 더 비타민C 23 세럼 20g 2입",
+    "price": 39900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235050&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=43&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023505006ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 673,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "피부고민": "주름/미백: 58%",
+      "자극도": "저자극: 42%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "b23944cc-edc2-4890-8e96-11f7c9032263",
+  "fields": {
+    "brand": "달바",
+    "name": "[생기톤업/스웨트프루프] 달바 핑크 톤업 선크림 듀오 기획 (50ml+50ml)",
+    "price": 35700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232725&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=7&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023272518ko.png?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 11229,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 59%",
+      "발림성": "아주 만족해요: 70%",
+      "자극도": "저자극: 69%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "b6465a9d-7b7b-4fb1-a8b0-c8598267158b",
+  "fields": {
+    "brand": "아누아",
+    "name": "[수지세럼] 아누아 피디알엔 히알루론산 캡슐 100 세럼 30mL 기획세트 (+크림 30ml)",
+    "price": 22500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000231894&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=23&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023189419ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 **건성 피부 및 속건조를 느끼는 사용자에게 특히 적합**하며, 물처럼 흐르는 제형에도 불구하고 피부에 빠르게 흡수되어 끈적임 없이 깔끔하게 마무리됩니다.\n\n주요 효능으로는 **뛰어난 속건조 개선 및 장시간 지속되는 수분 보습력**이 꼽히며, 메이크업 전에 사용해도 밀리지 않고 화장을 쫀쫀하게 밀착시켜 지속력을 높이는 부스터 역할을 합니다.\n\n사용 후 피부 결이 부드럽고 매끈해지며 속광을 선사한다는 평이 많고, 일부 사용자는 입가 주름 완화 효과를 경험했으나, 유분감이 다소 느껴져 **지성 피부나 여름철 사용 시에는 리치하다고 느낄 수 있습니다.**",
+    "average_rating": 4.8,
+    "review_count": 15584,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 47%",
+      "피부고민": "보습: 67%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "b74119a4-a132-4dc0-a01c-e09ba784c15d",
+  "fields": {
+    "brand": "제로이드",
+    "name": "[5월 올영픽][대용량] 제로이드 수딩 크림 80ml 기획 (+50ml)",
+    "price": 30400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000231589&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=18&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023158911ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제로이드 수딩 크림은 모낭염, 홍조, 만성 피부염 등 다양한 문제성 및 민감성 피부를 가진 사용자들이 극찬하는 제품입니다. 다른 진정 크림에 효과를 보지 못했던 이들에게 피부 자극 없이 홍조와 트러블을 진정시키고 손상된 피부 장벽 회복에 탁월한 효능을 제공합니다. 가볍고 끈적임 없는 제형이 피부에 편안하게 스며들어 수분과 유분 밸런스를 맞춰주며, 번들거림 없이 촉촉하고 깔끔하게 마무리됩니다. 특히 지성 및 복합성 피부에 적합하며, 건성 피부는 여름철에 사용하기 좋지만 겨울에는 다소 가볍다고 느낄 수 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 10281,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "피부고민": "보습: 55%",
+      "자극도": "저자극: 76%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "bc744419-2486-4f11-a75e-5deb721f8259",
+  "fields": {
+    "brand": "동국제약",
+    "name": "[1등/손상장벽MD] 동국제약 마데카셀 베리어 엠디 크림 70g",
+    "price": 21900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000249659&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=40&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024965915ko.jpeg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 건조하고 민감하며 손상된 피부, 그리고 피부과 시술 후 회복이 필요한 모든 피부 타입에 두루 적합합니다. 무너진 피부 장벽을 강화하고 외부 자극으로부터 피부를 진정 및 보호하며, 상처나 트러블 자국 관리 및 피부 재생에 탁월한 효능을 제공합니다.\n\n사용감 면에서는 예상보다 꾸덕하지 않고 부드럽게 발리는 크리미한 제형으로, 번들거림이나 끈적임 없이 매끄럽게 흡수되어 촉촉하면서도 편안한 마무리감을 선사합니다. 무향이라 향에 민감한 사용자도 부담 없이 사용할 수 있으며, 의료기기로 분류되어 더욱 신뢰감을 줍니다.",
+    "average_rating": 4.9,
+    "review_count": 528,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 56%",
+      "피부고민": "보습: 57%",
+      "자극도": "저자극: 89%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "bdbb0d78-f6d0-4a69-8b3f-32b309edab83",
+  "fields": {
+    "brand": "어테이션",
+    "name": "어테이션 익모초 유브이 톤업 선스크린 SPF50+ PA++++ 40ml",
+    "price": 15900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232884&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=31&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023288406ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 5148,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 51%",
+      "발림성": "아주 만족해요: 89%",
+      "자극도": "저자극: 90%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "be47731e-6557-4bcb-ae07-42706a3faa12",
+  "fields": {
+    "brand": "에스트라",
+    "name": "[5월 올영픽] (50%용량증정) 에스트라 더마UV365 장벽수분 무기자차 선크림 40ml+20ml",
+    "price": 21700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000206826&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=5&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020682624ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 7951,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 58%",
+      "발림성": "아주 만족해요: 59%",
+      "자극도": "저자극: 70%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "bf068003-45b7-4cf4-b095-3efb9a3e307b",
+  "fields": {
+    "brand": "아누아",
+    "name": "[단독기획] 아누아 TXA 나이아신 흔적 세럼 30ml 2입",
+    "price": 27500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000226201&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=1&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022620115ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 TXA, 알부틴, 나이아신아마이드의 고함량 조합으로 색소 침착 및 다크 스팟 개선에 매우 효과적이라는 평가를 받으며, 피부톤을 밝히고 피부결을 정돈하는 데 도움을 줍니다. 제형은 전반적으로 무겁고 끈적이는 편이라 지성 피부보다는 건성 피부에 적합하며, 주로 저녁 사용이 권장됩니다. 많은 사용자가 효능에 만족하지만, 민감성 또는 여드름성 피부의 경우 일부 사용자에게서 자극이나 트러블 유발 가능성이 보고되므로 주의가 필요합니다.",
+    "average_rating": 4.8,
+    "review_count": 4035,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 54%",
+      "피부고민": "보습: 49%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "c0681a0e-7223-4360-9a7e-55928526564a",
+  "fields": {
+    "brand": "라운드랩",
+    "name": "[저자극/안심자차] 라운드랩 자작나무 무기자차 선크림 50ml 기획 (+클렌저20ml)",
+    "price": 17500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000163503&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=37&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0016/A00000016350314ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 5812,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "발림성": "아주 만족해요: 54%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "c0dda440-390f-4e7f-b41d-8032edd19fe9",
+  "fields": {
+    "brand": "비페스타",
+    "name": "[9일특가] 비페스타 클렌징티슈 세럼 모이스트 46매 (보습개선)",
+    "price": 5900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000013305&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=49&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0001/A00000001330526ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 7037,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "세정력": "아주 만족해요: 70%",
+      "자극도": "저자극: 64%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "c2770dd8-b918-49bc-9988-95adcb431b09",
+  "fields": {
+    "brand": "셀리맥스",
+    "name": "셀리맥스 브라이트닝 모공잡티 선크림 50ml 더블 기획",
+    "price": 22900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000254726&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=33&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025472603ko.png?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 746,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 0%",
+      "발림성": "아주 만족해요: 0%",
+      "자극도": "저자극: 0%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "c55c2756-9baf-4a48-be33-548b8fda1091",
+  "fields": {
+    "brand": "바닐라코",
+    "name": "[1등 클렌징밤] 바닐라코 클린잇제로 오리지널 클렌징밤 100ml",
+    "price": 15600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000202675&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=30&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020267514ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "바닐라코 클린잇제로 오리지널 클렌징밤은 오랜 기간 사랑받아온 스테디셀러로, 샤베트처럼 부드럽게 녹아 진한 메이크업, 아이 메이크업, 무기자차 선크림까지 자극 없이 깔끔하게 지워주는 뛰어난 세정력을 자랑합니다. 세안 후에도 피부 당김 없이 촉촉함을 유지하여 만족도가 높으며, 유화 과정을 통해 블랙헤드 관리에도 도움을 줍니다. 대부분의 피부에 순하게 작용하여 데일리 클렌징으로 적합하지만, 지성 피부는 꼼꼼한 유화가 중요하고 일부 민감성 피부 사용자에게는 약간의 자극이 느껴질 수 있습니다. 또한, 용기 형태에 대한 아쉬움이 일부 언급되었습니다.",
+    "average_rating": 4.9,
+    "review_count": 22244,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "c8442644-0553-4750-a2b7-b1af9078ab46",
+  "fields": {
+    "brand": "라로슈포제",
+    "name": "라로슈포제 시카플라스트 밤 B5+ 100ml 기획 (+3ml 추가증정)",
+    "price": 36900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000206904&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=13&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020690409ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "라로슈포제 시카플라스트 밤 B5+는 피부과 시술 후 붉고 예민해진 피부나 손상된 장벽을 진정시키고 보호하는 데 탁월한 효과를 보입니다. 쫀쫀하고 꾸덕한 제형은 건조하고 민감한 피부의 보습 및 진정에 매우 효과적이며, 특히 밤에 수면팩처럼 도톰하게 사용 시 다음 날 아침 피부 컨디션 개선에 기여합니다. 다만, 일부 사용자에게는 기름지거나 무겁게 느껴질 수 있어 지성 피부나 여름철 사용 시에는 소량만 바르거나 다른 계절에 활용하는 것이 좋으며, 건강한 피부보다는 피부 컨디션이 좋지 않을 때 '긴급 처방용'으로 더욱 빛을 발합니다.",
+    "average_rating": 4.8,
+    "review_count": 24233,
+    "satisfaction_by_type": {
+      "피부타입": "건성에 좋아요: 49%",
+      "피부고민": "진정에 좋아요: 50%",
+      "자극도": "자극없이 순해요: 70%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "cb17dbf4-3358-42a9-875e-12a62b1ba450",
+  "fields": {
+    "brand": "닥터지",
+    "name": "[5월 올영픽/포켓몬 에디션] 닥터지 브라이트닝 업 선 플러스 50ml 1+1 기획 (+10ml+UV치크 5ml)",
+    "price": 25600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253335&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=14&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025333547ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 6564,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "발림성": "아주 만족해요: 66%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "cbaa2e65-a16b-464a-82cf-a62310fccdd6",
+  "fields": {
+    "brand": "토리든",
+    "name": "[NEW] 토리든 다이브인 저분자 히알루론산 세럼 50ml 더블 기획 (밸런스풀 세럼 20ml+모이스처 선 20ml)",
+    "price": 38000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000256047&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=16&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025604702ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 토리든 다이브인 저분자 히알루론산 세럼은 **민감성 피부는 물론, 속건조가 심한 수부지 및 트러블성 피부까지 자극 없이 순하게 사용**할 수 있는 것이 가장 큰 특징입니다. **주요 효능으로는 피부에 깊은 수분을 효과적으로 채워 속건조를 해소**하고 건조함으로 인한 당김을 완화하여 피부를 쫜득하고 건강하게 가꿔줍니다.\n\n**사용감은 묽고 가벼운 제형**이지만 약간의 점성이 있어 흘러내리지 않으며, **끈적임 없이 빠르게 흡수되어 여러 번 덧발라도 답답함이 없습니다.** 또한 화장 전에 사용해도 밀림 현상이 없어 데일리 세럼으로 활용하기 좋으며, 제품 리뉴얼 후에도 꾸준히 재구매하는 사용자가 많을 만큼 높은 만족도를 자랑합니다.",
+    "average_rating": 4.8,
+    "review_count": 46,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 48%",
+      "피부고민": "보습: 83%",
+      "자극도": "저자극: 78%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "cd38d670-6b5a-46ae-b0dd-68fa3f00164e",
+  "fields": {
+    "brand": "코페르",
+    "name": "[곽민경PICK] 코페르 큐리페어 멜라크림 21ml 기획 (+4ml)",
+    "price": 25920,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000246297&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=38&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024629712ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 5.0,
+    "review_count": 2159,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 54%",
+      "피부고민": "주름/미백: 55%",
+      "자극도": "저자극: 90%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "ce5d047e-6a81-477b-90d5-24ce36c9ab05",
+  "fields": {
+    "brand": "바이오더마",
+    "name": "바이오더마 센시비오 H2O 500ml",
+    "price": 17960,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000247215&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=43&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024721502ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "바이오더마 센시비오 H2O는 워터프루프 마스카라를 제외한 대부분의 메이크업을 빠르고 깨끗하게 지워내는 뛰어난 세정력을 자랑합니다. 특히 피부 자극이 적어 '구원템'으로 불릴 만큼 극민감성 피부에도 순하게 작용하여 민감성 피부에 매우 적합합니다. 다만 건성 피부는 사용 후 피부 당김을 느낄 수 있으므로 즉각적인 스킨케어가 필요하며, 그렇지 않을 경우 촉촉한 버전 사용을 추천하는 의견도 있습니다. 전반적으로 순하고 자극 없는 사용감과 효과적인 클렌징 능력으로 높은 재구매율을 보이는 제품입니다.",
+    "average_rating": 4.9,
+    "review_count": 898,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "세정력": "아주 만족해요: 68%",
+      "자극도": "저자극: 72%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "d003c7a0-5b47-49d2-a4c5-d8efbca07d21",
+  "fields": {
+    "brand": "톤28",
+    "name": "[화잘먹] 톤28 해남404 글로우 크림앤세럼 50ml",
+    "price": 21150,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000248589&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=48&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024858915ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "이 제품은 지복합성 및 수부지성 피부에 특히 적합하며, 건조함을 느끼는 지성 피부나 가벼운 보습을 원하는 일반 피부 타입도 만족스럽게 사용할 수 있습니다. 세럼처럼 촉촉하게 발리면서 크림처럼 부드럽게 마무리되는 독특한 이층 제형으로, 끈적임 없이 빠르게 흡수되어 산뜻하고 편안한 사용감을 선사합니다. 주요 효능으로는 메이크업 밀착력을 높여 '화잘먹' 효과를 주며, 피부 속부터 차오르는 듯한 자연스러운 윤기와 함께 보습, 진정, 피부 컨디션 및 장벽 개선에 도움을 줍니다.",
+    "average_rating": 4.9,
+    "review_count": 1662,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 55%",
+      "피부고민": "보습: 63%",
+      "자극도": "저자극: 89%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "d3f92991-f2d0-4cfd-9349-c91a2fd68a6e",
+  "fields": {
+    "brand": "닥터탱글",
+    "name": "닥터탱글 고주파 마사지기 블랙 에디션",
+    "price": 498000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=B000000217599&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=37&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/B00000021759920ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 189,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "d3f9c80a-3e0f-40bf-94f3-94bedb333d01",
+  "fields": {
+    "brand": "닥터탱글",
+    "name": "닥터탱글 고주파 마사지기 블랙 에디션",
+    "price": 498000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=B000000217599&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=36&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/B00000021759920ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "'닥터탱글 고주파 마사지기 블랙 에디션'은 다른 미용기기에서 흔히 발생하는 통증이나 자극이 없어, 잇몸 시림, 두통, 트러블 걱정 없이 통증에 예민한 피부도 편안하고 꾸준히 사용할 수 있습니다. 주요 효능으로는 즉각적인 얼굴 리프팅, V라인 형성, 팔자주름 및 이중턱 개선 등 강력한 탄력 증진 효과가 뛰어나 피부를 쫀쫀하고 탱탱하게 가꿔줍니다. 또한 4가지 모드와 여러 색깔의 LED 불빛(미백, 주름, 모공, 트러블)을 통해 다양한 피부 고민에 맞춤 케어가 가능합니다.\n\n외관은 다소 소박하고 장난감 같다는 평도 있으나, 가볍고 심플한 조작법과 좋은 그립감 덕분에 기계치도 쉽게 사용할 수 있을 만큼 사용자 편의성이 높습니다. 다소 강한 진동과 소음이 느껴질 수 있지만, 고가의 디바이스 못지않은 뛰어난 성능과 효과로 가격 대비 높은 만족도를 선사하는 홈케어 기기입니다.",
+    "average_rating": 4.7,
+    "review_count": 189,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "d452b3d6-1782-4267-906c-deb12155ae73",
+  "fields": {
+    "brand": "한율",
+    "name": "[1+1] 한율 트러블 진정 쑥시카 수분 크림 기획 (55ml+55ml)",
+    "price": 28800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222882&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=35&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022288206ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 7162,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 56%",
+      "피부고민": "진정: 61%",
+      "자극도": "저자극: 71%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "da7872c5-449b-472c-81a7-38ce0b89d637",
+  "fields": {
+    "brand": "비페스타",
+    "name": "[9일특가] 비페스타 클렌징티슈 세럼 모이스트 46매 (보습개선)",
+    "price": 5900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000013305&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=47&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0001/A00000001330526ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 민감한 피부도 자극 없이 사용할 수 있도록 눈 따가움이나 당김이 없고, 진정 효과까지 제공하여 순한 클렌징을 선호하는 사용자에게 적합합니다. 두껍고 부드러운 원단이 특징으로, 피부에 닿는 감촉이 좋고 찢어질 염려 없이 편안하게 클렌징할 수 있습니다. 일상적인 피부 화장은 깔끔하게 지워주지만, 마스카라나 아이라이너 등 진한 색조화장에는 추가적인 클렌징이 필요할 수 있습니다. 간편한 사용감과 휴대성 덕분에 평소 클렌징 티슈를 선호하는 사용자나 여행 시에도 만족도가 높은 제품입니다.",
+    "average_rating": 4.8,
+    "review_count": 7036,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "세정력": "아주 만족해요: 70%",
+      "자극도": "저자극: 64%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "da95587e-64c7-43fc-bf9b-4f76a898b659",
+  "fields": {
+    "brand": "제로이드",
+    "name": "제로이드 포밍 클렌저 240ml 리필 2개입 기획 (총 480ml)",
+    "price": 34200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000245641&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=38&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024564102ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 **자극 없이 순한 약산성 거품 클렌저**로, 특히 **피부가 예민하거나 민감한 사용자들에게 매우 적합**합니다. 쫀쫀한 거품이 밤새 쌓인 유분기를 효과적으로 제거하면서도 눈에 따갑지 않고, 세안 후 피부가 당기거나 건조하지 않고 촉촉하게 마무리되는 것이 특징입니다. 미끌거림이나 잔여감 없이 깔끔하며 무향으로, 거품을 따로 낼 필요 없어 바쁜 아침 세안에 편리하며, 데일리 2차 세정제로 사용하기 좋습니다. 또한, 리필형으로 구매할 수 있어 경제적이고 친환경적이라는 장점도 있습니다.",
+    "average_rating": 4.9,
+    "review_count": 74,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 57%",
+      "세정력": "아주 만족해요: 57%",
+      "자극도": "저자극: 78%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "dbf17acd-5e1b-4ff8-a932-3d047deb943a",
+  "fields": {
+    "brand": "션리",
+    "name": "[화해1위/모공쫀쫀 팩폼] 션리 다시마 앰플 클렌징폼 120ml",
+    "price": 12800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000233335&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=15&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023333505ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "션리 다시마 앰플 클렌징폼은 찰떡처럼 쫀쫀하게 늘어나는 독특한 제형이 특징으로, 팩폼처럼 활용하기에도 좋습니다. 소량으로도 미세하고 풍성한 거품을 생성하여 모공 속 노폐물과 메이크업 잔여물을 자극 없이 깨끗하게 세정합니다. 순하고 당김 없는 사용감 덕분에 건성, 지성, 민감성 등 모든 피부 타입에 적합하며, 세안 후에도 피부를 촉촉하고 매끈하게 유지시켜 만족도가 매우 높습니다.",
+    "average_rating": 5.0,
+    "review_count": 11913,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 52%",
+      "세정력": "아주 만족해요: 95%",
+      "자극도": "저자극: 95%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e01d6057-1d60-44ea-af8f-c749ddfba458",
+  "fields": {
+    "brand": "라운드랩",
+    "name": "[즉각쿨링] 라운드랩 자작나무 수분 선스틱 19g+19g",
+    "price": 24900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000202197&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=18&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020219708ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 4741,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e1726958-6f5b-4b60-b482-dc9ff3710b86",
+  "fields": {
+    "brand": "아누아",
+    "name": "[박희선Pick] 아누아 어성초 피지쏙 모공 폼 150ml 2입 기획",
+    "price": 23900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222790&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=48&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022279013ko.png?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 3260,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 54%",
+      "세정력": "아주 만족해요: 64%",
+      "자극도": "저자극: 67%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e23662ba-0c4a-47fe-b4cf-6560755651c7",
+  "fields": {
+    "brand": "바닐라코",
+    "name": "[1등 파우더] 바닐라코 프라임 프라이머 피니쉬 파우더 12g",
+    "price": 17600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253093&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=36&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025309302ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "이 제품은 지성 및 악지성 피부에 특히 적합하며, 뛰어난 유분 조절 능력으로 피부를 장시간 보송하게 유지시켜 메이크업 지속력을 높여줍니다. 입자가 매우 곱고 가벼워 피부에 뭉침 없이 부드럽고 투명하게 발리며, 백탁 현상 없이 깔끔하게 마무리됩니다.\n\n대다수 사용자들이 모공 블러 처리 및 매끈한 피부 표현에 만족하는 반면, 일부는 블러 효과가 미미하다고 느꼈습니다. 또한, 특정 사용자들은 화학약품이나 밀가루 같은 독특한 냄새를 지적했으며, 과도하게 사용할 경우 파운데이션 색상이 노래지거나 다크닝 현상이 나타날 수 있다는 의견도 있었습니다. 전반적으로 유분 컨트롤과 보송한 마무리감에 강점을 보이는 파우더입니다.",
+    "average_rating": 4.8,
+    "review_count": 43588,
+    "satisfaction_by_type": {
+      "입자": "입자가 고와요: 83%",
+      "지속력": "지속이 오래돼요: 69%",
+      "발림성": "아주 만족해요: 70%",
+      "밀착력": "아주 만족해요: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e291f305-bf2f-4e19-8757-7e58d8a6a0d3",
+  "fields": {
+    "brand": "바이오던스",
+    "name": "[1+1/유혜주PICK] 바이오던스 포어 퍼펙팅 콜라겐 펩타이드 세럼 30ml 더블 기획",
+    "price": 29800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000237409&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=18&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023740944ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 4165,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "피부고민": "보습: 54%",
+      "자극도": "저자극: 75%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e4c7c0e4-787c-4148-90b3-db20bb10183f",
+  "fields": {
+    "brand": "마녀공장",
+    "name": "[포켓몬에디션/마이크로버블] 마녀공장 퓨어 소이빈 클렌징폼 120ml 2입 기획 (+스티커)",
+    "price": 11400,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000253619&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=19&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025361922ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "마녀공장 퓨어 소이빈 클렌징폼 포켓몬 에디션은 민감성, 건성 피부를 포함한 다양한 피부 타입에 적합하며, 세안 후 당김 없는 촉촉한 마무리감을 선사합니다. 풍성하고 쫀쫀한 초미세 마이크로버블 거품이 피부 마찰을 줄여주면서 모공 속 노폐물, 피지 및 가벼운 메이크업까지 효과적으로 딥클렌징합니다.\n\n개운하면서도 뽀득이지 않는 산뜻함을 느낄 수 있어, 불필요한 유분은 제거하면서도 피부 속 수분을 보호하여 세안 후에도 편안하고 매끄러운 피부결을 유지해 줍니다. 특히 귀여운 포켓몬(고라파덕) 디자인과 스티커 증정 등 기획 구성으로 사용 만족도를 더욱 높여줍니다.",
+    "average_rating": 4.8,
+    "review_count": 41174,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 61%",
+      "세정력": "아주 만족해요: 84%",
+      "자극도": "저자극: 81%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e5b19ebd-ffe1-459a-815b-191eca1f9353",
+  "fields": {
+    "brand": "피지오겔",
+    "name": "[10년연속1위/장벽크림] 피지오겔 DMT 페이셜크림 100ml+100ml 더블기획",
+    "price": 25900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222215&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=41&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022221535ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 30654,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 58%",
+      "피부고민": "보습: 80%",
+      "자극도": "저자극: 79%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e5d807bb-ff81-4956-b8fe-26d8442fd543",
+  "fields": {
+    "brand": "비플레인",
+    "name": "[천만돌파/말끔모공]비플레인 녹두 약산성 클렌징폼기획 160ml+40ml 기획",
+    "price": 21900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000187479&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=32&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0018/A00000018747912ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.9,
+    "review_count": 17782,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 57%",
+      "세정력": "아주 만족해요: 63%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e67744eb-9313-426b-856f-3546618174de",
+  "fields": {
+    "brand": "이니스프리",
+    "name": "[1+1] 이니스프리 화산송이 바하 모공 클렌징폼 130g 더블 기획",
+    "price": 13200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232913&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=19&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023291343ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 4957,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 53%",
+      "세정력": "아주 만족해요: 66%",
+      "자극도": "저자극: 53%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e68b984f-1b49-4c0a-a206-89ff6a6215b9",
+  "fields": {
+    "brand": "성분에디터",
+    "name": "[물광리프팅] 성분에디터 실크펩타이드 EGF 하트핏 볼륨 리프팅 앰플 40ml 더블기획",
+    "price": 22900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235179&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=30&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023517930ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 2552,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 49%",
+      "피부고민": "보습: 45%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e94aebe4-746d-4670-ade6-82d8b1ce8e43",
+  "fields": {
+    "brand": "넘버즈인",
+    "name": "[대용량/올영단독] 넘버즈인 1번 말끔 순삭 클렌징 오일 400ml 대용량",
+    "price": 23500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000165797&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=40&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0016/A00000016579719ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "넘버즈인 1번 클렌징 오일은 지성 및 수부지 피부가 데일리로 사용하기 좋은 가볍고 산뜻한 제형이 특징입니다. 선크림부터 진한 메이크업까지 뛰어난 세정력을 보이며, 묽고 부드럽게 롤링되어 피부 마찰감이 적고 유화가 빠르게 이루어집니다. 특히 코 주변 피지와 블랙헤드 제거에 효과적이며, 세안 후 유분감 없이 산뜻하고 촉촉하게 마무리됩니다. 다만 눈 시림이 단점으로 여러 번 언급되었으나, 우수한 세정력과 사용감, 대용량으로 인해 많은 사용자들에게 클렌징 오일 정착템으로 평가받고 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 14556,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 60%",
+      "세정력": "아주 만족해요: 67%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "e9e4be00-7377-4958-b48a-2c1068757a08",
+  "fields": {
+    "brand": "토리든",
+    "name": "[물막선크림] 토리든 다이브인 모이스처 선크림 60ml 1+1 기획",
+    "price": 25000,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000219383&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=28&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021938316ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 3460,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 49%",
+      "발림성": "아주 만족해요: 74%",
+      "자극도": "저자극: 76%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "ecef7449-e9e7-4a14-8f79-3f5646a015de",
+  "fields": {
+    "brand": "라로슈포제",
+    "name": "라로슈포제 시카플라스트 밤 B5+ 100ml 기획 (+3ml 추가증정)",
+    "price": 36900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000206904&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=11&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020690409ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 24236,
+    "satisfaction_by_type": {
+      "피부타입": "건성: 49%",
+      "피부고민": "진정: 50%",
+      "자극도": "저자극: 70%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "ed5a45ac-2901-43a2-947e-edb68a2296a5",
+  "fields": {
+    "brand": "식물나라",
+    "name": "[페이스&바디/대용량] 식물나라 페이스 앤 바디 저자극 선 크림 150ml",
+    "price": 12800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000221882&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=47&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022188216ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 11072,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 62%",
+      "발림성": "아주 만족해요: 46%",
+      "자극도": "저자극: 62%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "f1ca1c1f-71f4-4c89-ae84-cfcc3fc398c3",
+  "fields": {
+    "brand": "아누아",
+    "name": "[박희선Pick] 아누아 어성초 피지쏙 모공 폼 150ml 2입 기획",
+    "price": 23900,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000222790&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=42&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022279013ko.png?l=ko",
+    "category": "클렌징",
+    "ai_summary": "이 제품은 특히 **트러블성 지성 피부와 여드름 피부 진정에 매우 효과적**이라는 평이 많으며, 청소년기 블랙헤드 관리에 도움을 주어 재구매 의사가 높은 편입니다. 알갱이가 있지만 **자극 없이 순하고 부드러운 거품**으로 클렌징이 잘 되며, 아누아 클렌징 오일과 함께 사용 시 딥클렌징 효과가 더욱 좋다는 의견이 있습니다. 다만, 어성초 성분이 모든 피부에 맞지 않을 수 있고 **모공 축소보다는 진정 및 블랙헤드 제거에 중점**을 둔 제품이며, 일부 사용자는 기대만큼의 효과를 느끼지 못하거나 냄새에 대한 아쉬움을 표하기도 했습니다. 전반적으로 순한 사용감과 트러블 진정 효능으로 많은 사랑을 받고 있습니다.",
+    "average_rating": 4.8,
+    "review_count": 3259,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 54%",
+      "세정력": "아주 만족해요: 64%",
+      "자극도": "저자극: 67%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "f4aa432c-d23b-4d87-bf4f-353aa9848247",
+  "fields": {
+    "brand": "넘버즈인",
+    "name": "[대용량/올영단독] 넘버즈인 1번 말끔 순삭 클렌징 오일 400ml 대용량",
+    "price": 23500,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000165797&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=46&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0016/A00000016579719ko.jpg?l=ko",
+    "category": "클렌징",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 14557,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 60%",
+      "세정력": "아주 만족해요: 67%",
+      "자극도": "저자극: 68%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "f9599f98-4e64-4c4e-9d85-3ac9209d2f6a",
+  "fields": {
+    "brand": "식물나라",
+    "name": "[5중프루프] 식물나라 워터프루프 선 크림 100mL",
+    "price": 10800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000151904&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=16&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0015/A00000015190412ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 12038,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 65%",
+      "발림성": "아주 만족해요: 48%",
+      "자극도": "저자극: 57%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "fae3ffc9-9d5e-4b58-8960-42ac7424b15c",
+  "fields": {
+    "brand": "우르오스",
+    "name": "우르오스 올인원 스킨밀크 200ml 증정기획/단품",
+    "price": 23700,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000006565&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=47&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0000/A00000000656527ko.jpg?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 6002,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 59%",
+      "피부고민": "보습: 69%",
+      "자극도": "저자극: 63%"
+    }
+  }
+},
+{
+  "model": "products.product",
+  "pk": "fb6b333d-2a85-4d78-bba1-23529778154f",
+  "fields": {
+    "brand": "쏘내추럴",
+    "name": "[1위픽서] 쏘내추럴 올 데이 타이트 메이크업 세팅 픽서 120ml 더블기획 (120ml+120ml)",
+    "price": 33600,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000162114&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=30&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0016/A00000016211429ko.jpg?l=ko",
+    "category": "메이크업",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 44273,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "fcb5c871-cf59-4b65-9319-5a5e49a2d637",
+  "fields": {
+    "brand": "AHC",
+    "name": "[보송/1등 노세범] AHC 마스터즈 에어리치 선스틱 22g",
+    "price": 19200,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000182989&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%84%A0%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=15&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0018/A00000018298940ko.jpg?l=ko",
+    "category": "선케어",
+    "ai_summary": "",
+    "average_rating": 4.8,
+    "review_count": 18764,
+    "satisfaction_by_type": {}
+  }
+},
+{
+  "model": "products.product",
+  "pk": "feeed68e-30af-4e37-8a8b-0fc175580f92",
+  "fields": {
+    "brand": "아비브",
+    "name": "아비브 어성초 테카 캡슐 세럼 카밍 드롭 50ml 더블 기획",
+    "price": 29800,
+    "oliveyoung_url": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000232436&dispCatNo=90000010009&trackingCd=Best_Sellingbest&t_page=%EB%9E%AD%ED%82%B9&t_click=%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4_%EC%83%81%ED%92%88%EC%83%81%EC%84%B8&t_number=45&tab=review",
+    "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023243621ko.png?l=ko",
+    "category": "스킨케어",
+    "ai_summary": "",
+    "average_rating": 4.7,
+    "review_count": 12258,
+    "satisfaction_by_type": {
+      "피부타입": "복합성: 57%",
+      "피부고민": "진정: 79%",
+      "자극도": "저자극: 71%"
+    }
+  }
+}
+]

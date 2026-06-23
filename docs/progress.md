@@ -62,7 +62,7 @@
 > - 대화 단계: 자연어만 주고받으며 추천에 필요한 정보 수집 (content/ready JSON)
 > - 추천 단계: history 기반 배치 생성 (LLM이 제품 id 추출 → DB 검증 → 배치 저장)
 > - 히스토리: 배치 단위 타임라인 (products = ProductSerializer 전체 + reason)
-> - 토큰 효율: Phase 2에서 RAG 벡터 검색으로 개선 예정
+> - 토큰 효율: Phase 2에서 RAG 벡터 검색으로 개선 예정 (PostgreSQL 전환 완료 → pgvector 도입 기반 마련, plan.md 2-6)
 >
 > ⚠️ **기피 성분 필터는 이번 범위 제외** (제품 성분 데이터 부재, Phase 2)
 - [x] 추천 배치 기록 모델 (Recommendation 부모 + RecommendedProduct 자식, 이벤트 로그)
@@ -98,10 +98,18 @@
 - [x] 입력 검증 강화 (SkinProfile JSONField 타입 + 길이 검증)
 - [x] 자동 토큰 갱신 (401 발생 시 /auth/token/refresh → 재시도)
 - [x] 테스트 커버리지 (accounts 인증 플로우 7가지 단위 테스트)
+- [ ] 서버사이드 사용량 정밀 카운팅 (UsageLog 모델 — 사용자별 일일 한도 집계, plan.md [High])
+  - 현재는 DRF Throttling(100/day)만 적용. Chat 요청별 기록·일일 한도(10회 예정) 초과 시 429는 미구현
 
 ### 배포·QA
-- [ ] Docker 컨테이너화
+> DB 전환 상세: [docs/postgresql-migration.md](./postgresql-migration.md) 참고
+- [x] PostgreSQL 전환 (SQLite → 동시성·데이터 안정성 개선)
+  - docker-compose로 PostgreSQL 16 구동 (UTF-8 인코딩 고정, healthcheck, 데이터 볼륨)
+  - settings DATABASES 환경변수화 (DB_ENGINE 미설정 시 SQLite 폴백 → 점진적 전환)
+  - psycopg2-binary 추가, Product 156건 dumpdata→loaddata 이관, 테스트 34개 통과
+  - URLField max_length 200→500 (PG 길이 강제 대응, 올리브영 URL 최대 298자)
+- [~] Docker 컨테이너화 (DB만 컨테이너로 구동 / 앱 컨테이너화는 배포 단계)
 - [ ] AWS 배포·Nginx 설정
-- [ ] PostgreSQL 전환 (SQLite → 동시성, 데이터 안정성 개선)
+- [ ] DEBUG=False·ALLOWED_HOSTS 설정 (프로덕션 환경 분기)
 - [ ] 전체 QA·버그 수정
 - [ ] 발표 준비

@@ -1,10 +1,22 @@
 # 프로젝트 구조
 
+## 인프라 (프로젝트 루트)
+
+```
+docker-compose.yml    # 로컬 개발 인프라 (PostgreSQL 16 컨테이너)
+│   └── db 서비스: postgres:16, UTF-8 인코딩 고정, healthcheck, 데이터 볼륨(postgres_data)
+│       사용법: docker compose up -d  →  migrate  →  loaddata
+```
+
+> DB를 SQLite → PostgreSQL로 전환하며 컨테이너로 구동. 접속정보는 `backend/.env`의 `DB_*` 값과 일치.
+> 앱(Django) 자체의 컨테이너화는 배포 단계에서 `docker-compose.yml`에 backend 서비스를 추가해 진행 예정.
+
 ## Backend (`backend/`)
 
 ```
 config/
 ├── settings.py       # Django 설정 (SIMPLE_JWT, CORS, Throttling, 환경변수 로드)
+│   └── DATABASES: 환경변수 기반 (DB_ENGINE 미설정 시 SQLite 폴백, 설정 시 PostgreSQL)
 ├── urls.py           # 루트 URL 라우팅 (accounts 앱 포함)
 
 accounts/
@@ -46,6 +58,8 @@ chat/
 ├── tests.py          # 챗봇(mock) + 추천 기록 테스트 10가지
 
 crawling.py           # 크롤링 스크립트
+products_seed.json    # Product 156건 시드 (SQLite→PG 이관용 fixture, loaddata로 적재)
+requirements.txt      # 의존성 (psycopg2-binary 포함 — PostgreSQL 드라이버)
 
 .env                  # 환경변수 (git 제외)
 │   DJANGO_SECRET_KEY=...
@@ -56,6 +70,8 @@ crawling.py           # 크롤링 스크립트
 │   GMS_API_KEY=...
 │   GMS_API_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions
 │   GMS_MODEL=gpt-5-nano
+│   DB_ENGINE=django.db.backends.postgresql   # 미설정 시 SQLite 폴백
+│   DB_NAME / DB_USER / DB_PASSWORD / DB_HOST / DB_PORT
 ```
 
 > 챗봇은 GMS(`gpt-5-nano`)를 `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions`로
