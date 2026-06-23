@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 import requests as http
@@ -6,12 +7,15 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
-from accounts.models import SkinProfile
+from accounts.models import SkinProfile, UserInfo
 from products.models import Product
 from .models import Recommendation, RecommendedProduct
 from .serializers import RecommendationSerializer
+
+logger = logging.getLogger(__name__)
 
 GMS_API_URL = os.environ.get('GMS_API_URL', 'https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions')
 GMS_API_KEY = os.environ.get('GMS_API_KEY')
@@ -19,6 +23,12 @@ GMS_MODEL   = os.environ.get('GMS_MODEL', 'gpt-5-nano')
 
 ERR_TIMEOUT = 'AI 응답 시간 초과. 잠시 후 다시 시도해주세요.'
 ERR_CONNECT = 'AI 서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
+
+# 추천 프롬프트에 넣을 후보 제품 상한 — 전 제품(~27k자) 주입 시 GMS가 페이로드를
+# 거부(400)하던 문제 대응. 리뷰 많은 제품 우선 N개 + 요약 길이 컷으로 토큰을 묶는다.
+# (근본 해결은 Phase 2 RAG 벡터 검색. 그전까지의 임시 상한이며 필요 시 조정)
+RECOMMEND_POOL_SIZE = 30
+RECOMMEND_SUMMARY_LIMIT = 150
 
 
 # ──────────────────────────────────────────────
@@ -33,7 +43,8 @@ def _skin_block(user) -> str:
     """
     try:
         profile = user.userinfo.skinprofile
-    except SkinProfile.DoesNotExist:
+    except (SkinProfile.DoesNotExist, UserInfo.DoesNotExist, AttributeError):
+        # 프로필 미입력은 물론, UserInfo가 아직 없는 사용자도 500 대신 일반 추천으로 흡수
         return '- 피부 프로필 미입력 (일반 추천으로 대응)'
 
     concerns = ', '.join(profile.concerns) if profile.concerns else '없음'
@@ -45,17 +56,14 @@ def _skin_block(user) -> str:
     )
 
 
-def _call_gms(messages, *, timeout=30):
+def _call_gms(messages, *, timeout=60):
     """GMS Chat Completions 호출. 성공 시 message content 문자열을 반환한다.
 
     실패는 (None, error_response) 형태로 돌려준다. 호출 측에서 그대로 return.
     """
-    import sys
-    import json
-
     payload = {'model': GMS_MODEL, 'messages': messages}
 
-    # JSON을 명시적으로 UTF-8로 인코딩
+    # 한글이 섞인 payload를 명시적으로 UTF-8로 인코딩 (서버 기본 인코딩에 의존하지 않음)
     payload_json = json.dumps(payload, ensure_ascii=False).encode('utf-8')
 
     try:
@@ -66,22 +74,22 @@ def _call_gms(messages, *, timeout=30):
                 'Content-Type': 'application/json; charset=utf-8',
             },
             data=payload_json,
-            timeout=60,
+            timeout=timeout,
         )
-        print(f'[GMS DEBUG] Response status: {res.status_code}', file=sys.stderr)
         res.raise_for_status()
-    except http.exceptions.Timeout as e:
-        import sys
-        print(f'[GMS DEBUG] Timeout: {e}', file=sys.stderr)
+    except http.exceptions.Timeout:
+        logger.warning('GMS 응답 시간 초과 (timeout=%ss)', timeout)
         return None, Response({'error': ERR_TIMEOUT}, status=status.HTTP_504_GATEWAY_TIMEOUT)
     except http.exceptions.RequestException as e:
-        import sys
-        print(f'[GMS DEBUG] RequestException: {type(e).__name__}: {e}', file=sys.stderr)
-        print(f'[GMS DEBUG] URL: {GMS_API_URL}', file=sys.stderr)
-        print(f'[GMS DEBUG] Model: {GMS_MODEL}', file=sys.stderr)
+        logger.error('GMS 호출 실패: %s', e)
         return None, Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
-    return res.json()['choices'][0]['message']['content'], None
+    # 예상치 못한 200 페이로드(스키마 변형)도 KeyError/500로 새지 않게 502로 방어
+    try:
+        return res.json()['choices'][0]['message']['content'], None
+    except (KeyError, IndexError, TypeError, ValueError) as e:
+        logger.error('GMS 응답 파싱 실패: %s', e)
+        return None, Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
 
 def _clean_history(raw_history):
@@ -144,6 +152,8 @@ class ChatView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'llm'  # 유료 GMS 호출 전용 한도 (운영 10/day, DEBUG 무제한)
 
     def post(self, request):
         content = request.data.get('content', '').strip()
@@ -181,17 +191,17 @@ def _build_recommend_prompt(user) -> str:
     """추천 단계 시스템 프롬프트. 제품 목록을 id와 함께 제시하고,
     LLM이 그 목록의 '정확한 id 3개'를 고르도록 강제한다(환각 방지).
     """
-    # GMS는 과대 요청을 거부한다: 전 제품 ai_summary를 모두 주입하면 프롬프트가
-    # ~27k자가 되어 "Model not found" 형태의 400으로 실패한다(요청 본문 과대).
-    # 인기 상위 제품으로 후보를 좁히고 ai_summary도 잘라 프롬프트 크기를 안정 범위로 유지한다.
-    # (검증: 후보 40개·요약 컷 시 ~10k자 → 200 OK / 전체 69개 → 27k자 → 400)
+    # 전 제품 주입은 GMS 페이로드를 초과시키므로, 리뷰 많은(검증된) 제품을 우선해
+    # 상한 N개만 후보로 제시하고 ai_summary도 길이를 잘라 토큰을 묶는다.
     products = (
-        Product.objects.exclude(ai_summary='')
-        .order_by('-review_count', 'name')
-        .values('id', 'brand', 'name', 'category', 'ai_summary')[:40]
+        Product.objects
+        .exclude(ai_summary='')
+        .order_by('-review_count')
+        .values('id', 'brand', 'name', 'category', 'ai_summary')[:RECOMMEND_POOL_SIZE]
     )
     product_lines = [
-        f"id={p['id']} | [{p['category']}] {p['brand']} {p['name']}: {p['ai_summary'][:180]}"
+        f"id={p['id']} | [{p['category']}] {p['brand']} {p['name']}: "
+        f"{p['ai_summary'][:RECOMMEND_SUMMARY_LIMIT]}"
         for p in products
     ]
     product_block = '\n'.join(product_lines) if product_lines else '(제품 정보 없음)'
@@ -226,60 +236,43 @@ class RecommendView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'llm'  # 유료 GMS 호출 전용 한도 (운영 10/day, DEBUG 무제한)
 
     def post(self, request):
-        import sys
-        print('[RECOMMEND] 시작', file=sys.stderr)
         history = _clean_history(request.data.get('history', []))
-        print(f'[RECOMMEND] history 정제 완료: {len(history)} 항목', file=sys.stderr)
 
-        try:
-            print('[RECOMMEND] 프롬프트 구성 중...', file=sys.stderr)
-            messages = [{'role': 'system', 'content': _build_recommend_prompt(request.user)}]
-            messages.extend(history)
-            messages.append({'role': 'user', 'content': '지금까지의 대화를 바탕으로 제품을 추천해줘.'})
-            print(f'[RECOMMEND] 메시지 {len(messages)}개 준비 완료', file=sys.stderr)
+        messages = [{'role': 'system', 'content': _build_recommend_prompt(request.user)}]
+        messages.extend(history)
+        messages.append({'role': 'user', 'content': '지금까지의 대화를 바탕으로 제품을 추천해줘.'})
 
-            print('[RECOMMEND] GMS 호출 중...', file=sys.stderr)
-            raw, error = _call_gms(messages)
-            print(f'[RECOMMEND] GMS 응답: error={error is not None}', file=sys.stderr)
-        except Exception as e:
-            print(f'[RECOMMEND ERROR] {type(e).__name__}: {e}', file=sys.stderr)
-            import traceback
-            traceback.print_exc(file=sys.stderr)
-            raise
+        raw, error = _call_gms(messages)
         if error:
             return error
 
-        import sys
-        print(f'[RECOMMEND] GMS 원본: {raw[:100]}...', file=sys.stderr)
         try:
             parsed = json.loads(raw)
             summary = (parsed.get('content') or '').strip()
             picks = parsed.get('products', [])
             if not isinstance(picks, list):
                 raise ValueError
-            print(f'[RECOMMEND] JSON 파싱 성공: 제품 {len(picks)}개', file=sys.stderr)
-        except (json.JSONDecodeError, TypeError, AttributeError, ValueError) as e:
-            print(f'[RECOMMEND DEBUG] JSON 파싱 실패: {type(e).__name__}: {e}', file=sys.stderr)
-            print(f'[RECOMMEND DEBUG] 원본 응답: {raw[:200]}', file=sys.stderr)
+        except (json.JSONDecodeError, TypeError, AttributeError, ValueError):
+            logger.warning('추천 응답 JSON 파싱 실패: %.200s', raw)
             return Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
         # LLM이 고른 id를 DB로 검증 (환각/오타 제거). LLM 순서를 유지하고 중복은 제거한다.
-        print('[RECOMMEND] ID 검증 중...', file=sys.stderr)
         id_to_reason = {}
         for p in picks:
-            if isinstance(p, dict) and p.get('id') and p['id'] not in id_to_reason:
+            if isinstance(p, dict) and p.get('id') and str(p['id']) not in id_to_reason:
                 id_to_reason[str(p['id'])] = (p.get('reason') or '').strip()
-        print(f'[RECOMMEND] 추출된 ID: {list(id_to_reason.keys())}', file=sys.stderr)
 
         product_map = {str(prod.id): prod for prod in Product.objects.filter(id__in=id_to_reason.keys())}
         matched = [(product_map[pid], reason) for pid, reason in id_to_reason.items() if pid in product_map]
-        print(f'[RECOMMEND] 일치하는 제품: {len(matched)}개', file=sys.stderr)
+        matched = matched[:3]  # LLM이 3개를 초과해 줘도 상한 적용 (프롬프트 규칙 강제)
 
         if not matched:
             # 유효한 제품을 하나도 못 골랐으면 빈 배치를 남기지 않고 재시도를 유도한다
-            print('[RECOMMEND] 일치하는 제품 없음 → 502', file=sys.stderr)
+            logger.warning('추천 결과에 유효한 제품 없음 (id 검증 후 0개)')
             return Response({'error': ERR_CONNECT}, status=status.HTTP_502_BAD_GATEWAY)
 
         with transaction.atomic():
