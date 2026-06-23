@@ -9,9 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-DEBUG = True
+# 배포 시 트레이스백 노출 방지. 안전을 위해 기본값을 False로 둔다(미설정=운영 안전).
+# 로컬 개발자는 .env 에 DJANGO_DEBUG=True 를 명시해서 켠다 (fail-safe 기본값).
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = []
+# DEBUG=False가 되는 순간 ALLOWED_HOSTS가 비면 전 요청이 400이 되므로
+# 로컬 기본값을 제공하고, 운영 도메인은 .env(DJANGO_ALLOWED_HOSTS=도메인,IP)로 주입.
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 INSTALLED_APPS = [
@@ -60,6 +64,9 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '20/hour',
         'user': '100/day',
+        # LLM(유료 GMS) 호출 전용 한도. DEBUG에선 None으로 비활성화해
+        # 로컬·테스트가 429에 막히지 않도록 한다 (rate=None이면 throttle 통과).
+        'llm': None if DEBUG else '10/day',
     },
 }
 
