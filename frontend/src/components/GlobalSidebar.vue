@@ -7,6 +7,7 @@ const route = useRoute()
 // 반응형 내비: 모바일=하단 탭바 / 데스크탑=왼쪽 사이드바. (파일명은 기존 import 호환을 위해 유지)
 const TABS = [
   { key: 'chat', label: '상담', icon: '🌿', path: '/chat' },
+  { key: 'community', label: '커뮤니티', icon: '💬', path: '/community' },
   { key: 'recommended', label: '추천', icon: '✦', path: '/mypage/recommended' },
   { key: 'liked', label: '찜', icon: '💧', path: '/mypage/liked' },
   { key: 'my', label: 'MY', icon: '🪞', path: '/mypage/profile' },
@@ -15,6 +16,7 @@ const TABS = [
 function isActive(tab) {
   const p = route.path
   if (tab.key === 'chat') return p === '/chat'
+  if (tab.key === 'community') return p.startsWith('/community')
   if (tab.key === 'recommended') return p.startsWith('/mypage/recommended')
   if (tab.key === 'liked') return p.startsWith('/mypage/liked')
   if (tab.key === 'my') return p === '/mypage/profile' || p === '/mypage/account' || p === '/mypage'
