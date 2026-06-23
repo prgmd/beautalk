@@ -108,17 +108,16 @@
 
 ### AI 고도화 — RAG · LangChain · 관측 (Phase 2 핵심)
 > 목표: 추천 레이어를 **"전 제품 프롬프트 주입" → "의미 기반 벡터 검색(RAG)"** 으로 전환.
-> 현재는 임시로 추천 후보를 리뷰순 30개로 컷(`backend-hardening.md` H3) — RAG가 이를 대체한다.
-> 인프라 기반은 PostgreSQL 전환으로 이미 마련됨.
+> 설계·개념·운영 가이드는 [docs/rag.md](./rag.md) 참고.
 - [x] GMS 임베딩 엔드포인트 검증 (`text-embedding-3-small`, dim 1536, 200 OK)
-- [ ] pgvector 도입 (docker 이미지 `pgvector/pgvector:pg16`, `CREATE EXTENSION vector`)
-- [ ] `Product.embedding` 필드(1536d) + 마이그레이션
-- [ ] 임베딩 서비스 모듈 (GMS embeddings 호출)
-- [ ] 임베딩 백필 관리 명령 (seed엔 미포함 — 재생성 가능한 파생 데이터로 관리)
-- [ ] **추천 검색 교체** (대화 임베딩 → 코사인 top-N → 그 N개만 프롬프트)
+- [x] pgvector 도입 (docker 이미지 `pgvector/pgvector:pg16`, `CREATE EXTENSION vector`)
+- [x] `Product.embedding` 필드(1536d) + 마이그레이션(VectorExtension)
+- [x] 임베딩 서비스 모듈 (`chat/embeddings.py` — GMS embeddings 호출)
+- [x] 임베딩 백필 관리 명령 (`backfill_embeddings`, ai_summary 보유 69건 적재)
+- [x] **추천 검색 교체** (대화 임베딩 → 코사인 top-N → 그 N개만 프롬프트, 실패 시 리뷰순 폴백)
+- [x] RAG 검색 테스트 (벡터 경로/폴백 경로/임베딩 정렬 — 전체 38개 통과)
 - [ ] LangChain 파이프라인화 (ChatOpenAI+GMS, PGVector retriever, 체인 구성)
 - [ ] LLM 관측/추적 도입 (LangSmith 또는 Langfuse — 프롬프트·토큰·지연·검색결과 추적)
-- [ ] RAG 검색 품질 테스트 (임베딩 mock 기반)
 
 ### 배포·QA
 > DB 전환 상세 문서는 Notion 참고 (SQLite→PostgreSQL 전환·Docker 도입·트러블슈팅)

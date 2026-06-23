@@ -10,8 +10,11 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from pgvector.django import CosineDistance
+
 from accounts.models import SkinProfile, UserInfo
 from products.models import Product
+from .embeddings import embed_text
 from .models import Recommendation, RecommendedProduct
 from .serializers import RecommendationSerializer
 
@@ -24,10 +27,9 @@ GMS_MODEL   = os.environ.get('GMS_MODEL', 'gpt-5-nano')
 ERR_TIMEOUT = 'AI 응답 시간 초과. 잠시 후 다시 시도해주세요.'
 ERR_CONNECT = 'AI 서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
 
-# 추천 프롬프트에 넣을 후보 제품 상한 — 전 제품(~27k자) 주입 시 GMS가 페이로드를
-# 거부(400)하던 문제 대응. 리뷰 많은 제품 우선 N개 + 요약 길이 컷으로 토큰을 묶는다.
-# (근본 해결은 Phase 2 RAG 벡터 검색. 그전까지의 임시 상한이며 필요 시 조정)
-RECOMMEND_POOL_SIZE = 30
+# 추천 프롬프트에 넣을 후보 제품 수. 벡터 검색으로 의미적으로 가까운 것만 추리므로
+# 전 제품 주입 없이 작게 유지해도 충분하다(토큰 절약 + 추천 품질).
+RECOMMEND_POOL_SIZE = 15
 RECOMMEND_SUMMARY_LIMIT = 150
 
 
@@ -187,21 +189,39 @@ class ChatView(APIView):
 # 추천 — POST /api/v1/recommend/
 # ──────────────────────────────────────────────
 
-def _build_recommend_prompt(user) -> str:
-    """추천 단계 시스템 프롬프트. 제품 목록을 id와 함께 제시하고,
+def _recommend_candidates(history):
+    """대화 맥락으로 추천 후보 제품을 추린다 (RAG 검색 단계).
+
+    임베딩이 적재돼 있으면 대화를 벡터로 변환해 코사인 거리로 가까운 제품을 검색하고,
+    임베딩이 없거나(백필 전·테스트) 임베딩 호출이 실패하면 리뷰순으로 폴백한다.
+    어떤 경우에도 추천이 멈추지 않도록 항상 후보 리스트를 반환한다.
+    """
+    base = Product.objects.exclude(ai_summary='')
+    embedded = base.exclude(embedding__isnull=True)
+
+    # 임베딩이 하나도 없으면 GMS를 부르지 않고 바로 폴백 (불필요한 비용·네트워크 방지)
+    if embedded.exists():
+        query_text = ' '.join(
+            h['content'] for h in history if h.get('role') == 'user'
+        ).strip() or '화장품 추천'
+        try:
+            query_vector = embed_text(query_text)
+            return list(
+                embedded.order_by(CosineDistance('embedding', query_vector))[:RECOMMEND_POOL_SIZE]
+            )
+        except Exception as e:
+            logger.warning('임베딩 검색 실패, 리뷰순 폴백: %s', e)
+
+    return list(base.order_by('-review_count')[:RECOMMEND_POOL_SIZE])
+
+
+def _build_recommend_prompt(user, products) -> str:
+    """추천 단계 시스템 프롬프트. 검색으로 추린 후보 제품을 id와 함께 제시하고,
     LLM이 그 목록의 '정확한 id 3개'를 고르도록 강제한다(환각 방지).
     """
-    # 전 제품 주입은 GMS 페이로드를 초과시키므로, 리뷰 많은(검증된) 제품을 우선해
-    # 상한 N개만 후보로 제시하고 ai_summary도 길이를 잘라 토큰을 묶는다.
-    products = (
-        Product.objects
-        .exclude(ai_summary='')
-        .order_by('-review_count')
-        .values('id', 'brand', 'name', 'category', 'ai_summary')[:RECOMMEND_POOL_SIZE]
-    )
     product_lines = [
-        f"id={p['id']} | [{p['category']}] {p['brand']} {p['name']}: "
-        f"{p['ai_summary'][:RECOMMEND_SUMMARY_LIMIT]}"
+        f"id={p.id} | [{p.category}] {p.brand} {p.name}: "
+        f"{p.ai_summary[:RECOMMEND_SUMMARY_LIMIT]}"
         for p in products
     ]
     product_block = '\n'.join(product_lines) if product_lines else '(제품 정보 없음)'
@@ -242,7 +262,8 @@ class RecommendView(APIView):
     def post(self, request):
         history = _clean_history(request.data.get('history', []))
 
-        messages = [{'role': 'system', 'content': _build_recommend_prompt(request.user)}]
+        candidates = _recommend_candidates(history)
+        messages = [{'role': 'system', 'content': _build_recommend_prompt(request.user, candidates)}]
         messages.extend(history)
         messages.append({'role': 'user', 'content': '지금까지의 대화를 바탕으로 제품을 추천해줘.'})
 
