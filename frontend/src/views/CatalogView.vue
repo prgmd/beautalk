@@ -64,7 +64,15 @@ function selectCategory(cat) {
   fetchPage(true)
 }
 
-const isEmpty = computed(() => !loading.value && products.value.length === 0)
+// 검색 — 불러온 제품에서 이름/브랜드로 필터(클라이언트). '더 보기'로 더 불러올수록 범위 넓어짐.
+const search = ref('')
+const displayed = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  if (!q) return products.value
+  return products.value.filter((p) => `${p.name} ${p.brand}`.toLowerCase().includes(q))
+})
+
+const isEmpty = computed(() => !loading.value && displayed.value.length === 0)
 
 onMounted(() => fetchPage(true))
 
@@ -83,6 +91,13 @@ function formatPrice(n) {
         </div>
       </header>
 
+      <!-- 검색 -->
+      <div class="searchbar">
+        <span class="s-ic">🔎</span>
+        <input v-model="search" placeholder="제품·브랜드 검색" />
+        <button v-if="search" class="s-clear" @click="search = ''" aria-label="검색어 지우기">×</button>
+      </div>
+
       <!-- 카테고리 필터 -->
       <nav v-if="categories.length" class="filters">
         <button class="chip" :class="{ on: activeCategory === '' }" @click="selectCategory('')">전체</button>
@@ -99,8 +114,8 @@ function formatPrice(n) {
         <p v-if="errorMsg" class="msg err">{{ errorMsg }}</p>
         <p v-if="loading" class="msg">제품을 불러오는 중...</p>
 
-        <div v-if="products.length" class="grid">
-          <article v-for="product in products" :key="product.id" class="card">
+        <div v-if="displayed.length" class="grid">
+          <article v-for="product in displayed" :key="product.id" class="card">
             <div class="arch" @click="productDetail.open(product)">
               <img v-if="product.image" :src="product.image" :alt="product.name" />
               <span v-else class="ph">🧴</span>
@@ -141,6 +156,18 @@ function formatPrice(n) {
 .eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--sage); }
 .title { font-size: 26px; font-weight: 500; letter-spacing: -.3px; margin-top: 4px; }
 
+.searchbar {
+  flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+  margin: 6px 20px 0; padding: 11px 14px; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--line); box-shadow: var(--sh-sm);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.searchbar:focus-within { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(126,139,109,.15); }
+.s-ic { font-size: 14px; opacity: .7; }
+.searchbar input { flex: 1; border: none; background: none; outline: none; font-size: 14px; color: var(--ink); font-family: inherit; }
+.searchbar input::placeholder { color: var(--ink-faint); }
+.s-clear { width: 22px; height: 22px; border-radius: 50%; background: var(--panel); color: var(--ink-soft); font-size: 15px; flex-shrink: 0; }
+
 .filters {
   flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto;
   padding: 10px 20px 12px; -ms-overflow-style: none; scrollbar-width: none;
@@ -157,7 +184,7 @@ function formatPrice(n) {
 .msg { font-size: 13px; color: var(--ink-soft); padding: 16px 2px; text-align: center; }
 .msg.err { color: var(--danger); }
 
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
 .card {
   background: var(--card); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
   padding: 10px; box-shadow: var(--sh-sm); animation: bt-rise .4s var(--ease) both;
@@ -199,11 +226,12 @@ function formatPrice(n) {
 /* ── 데스크탑(≥900px) ── */
 @media (min-width: 900px) {
   .screen { flex-direction: row; }
-  .appbar, .filters, .body { max-width: 980px; width: 100%; margin: 0 auto; }
+  .appbar, .filters, .body, .searchbar { max-width: 980px; width: 100%; margin-left: auto; margin-right: auto; }
   .appbar { padding: 28px 40px 6px; }
+  .searchbar { margin-top: 8px; max-width: 900px; }
   .filters { padding: 10px 40px 14px; }
   .body { padding: 6px 40px 32px; }
   .title { font-size: 30px; }
-  .grid { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 18px; }
 }
 </style>

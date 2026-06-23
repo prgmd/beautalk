@@ -44,8 +44,18 @@ function go(tab) {
         <span class="dot" />
       </button>
     </div>
+    <svg class="sprig" width="72" height="108" viewBox="0 0 80 120" fill="none" aria-hidden="true">
+      <g stroke="#7E8B6D" stroke-width="1.1">
+        <path d="M40 118 C40 88 36 64 46 26" />
+        <ellipse cx="31" cy="92" rx="5.5" ry="14" transform="rotate(38 31 92)" />
+        <ellipse cx="52" cy="70" rx="5.5" ry="14" transform="rotate(-38 52 70)" />
+        <ellipse cx="33" cy="52" rx="5" ry="12" transform="rotate(34 33 52)" />
+        <ellipse cx="49" cy="36" rx="5" ry="11" transform="rotate(-34 49 36)" />
+      </g>
+    </svg>
   </nav>
 </template>
+
 
 <style scoped>
 /* ── 모바일 기본: 하단 탭바 ── */
@@ -57,6 +67,7 @@ function go(tab) {
   z-index: 5;
 }
 .appnav .brand { display: none; }
+.sprig { display: none; }
 .tabs {
   display: flex;
   justify-content: space-around;
@@ -86,17 +97,18 @@ function go(tab) {
 @media (min-width: 900px) {
   .appnav {
     order: -1;
-    width: 232px;
+    width: 240px;
     height: 100%;
     display: flex;
     flex-direction: column;
     gap: 28px;
     padding: 32px 18px;
-    background: transparent;
+    background: var(--sheet);
     border-top: none;
     border-right: 1px solid var(--line);
-    box-shadow: none;
+    box-shadow: 8px 0 30px rgba(50, 40, 24, .07);
   }
+  .sprig { display: block; margin-top: auto; opacity: .55; }
   .appnav .brand {
     display: block;
     font-size: 25px;

@@ -22,6 +22,22 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
 }
 
+/* 식물 라인 워터마크 (은은한 데코) — 코너에 잎사귀 sprig */
+#app::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .5;
+  background-repeat: no-repeat, no-repeat;
+  background-position: left -22px bottom -30px, right 4% top -38px;
+  background-size: 150px auto, 120px auto;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120' viewBox='0 0 80 120' fill='none'%3E%3Cg stroke='%237E8B6D' stroke-width='1.2'%3E%3Cpath d='M40 118 C40 88 36 64 46 26'/%3E%3Cellipse cx='31' cy='92' rx='5.5' ry='14' transform='rotate(38 31 92)'/%3E%3Cellipse cx='52' cy='70' rx='5.5' ry='14' transform='rotate(-38 52 70)'/%3E%3Cellipse cx='33' cy='52' rx='5' ry='12' transform='rotate(34 33 52)'/%3E%3Cellipse cx='49' cy='36' rx='5' ry='11' transform='rotate(-34 49 36)'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120' viewBox='0 0 80 120' fill='none'%3E%3Cg stroke='%23C98AA0' stroke-width='1.2'%3E%3Cpath d='M40 118 C40 88 36 64 46 26'/%3E%3Cellipse cx='31' cy='92' rx='5.5' ry='14' transform='rotate(38 31 92)'/%3E%3Cellipse cx='52' cy='70' rx='5.5' ry='14' transform='rotate(-38 52 70)'/%3E%3Cellipse cx='33' cy='52' rx='5' ry='12' transform='rotate(34 33 52)'/%3E%3Cellipse cx='49' cy='36' rx='5' ry='11' transform='rotate(-34 49 36)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 /* 라우트로 렌더되는 화면이 프레임을 꽉 채우도록 */
 #app > * {
   position: relative;
