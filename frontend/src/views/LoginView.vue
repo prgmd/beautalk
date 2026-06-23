@@ -37,14 +37,29 @@ function handleOAuth(provider) {
 
 <template>
   <div class="page">
-    <div class="blob blob-1" />
-    <div class="blob blob-2" />
-    <div class="blob blob-3" />
+    <!-- 식물 라인 장식 -->
+    <svg class="sprig sprig-top" viewBox="0 0 80 120" fill="none" aria-hidden="true">
+      <path d="M40 118 C40 80 40 40 40 6" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M40 30 C24 24 16 30 12 18" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M40 52 C56 46 64 52 68 40" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M40 74 C24 68 16 74 12 62" stroke="var(--sage)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    <svg class="sprig sprig-bottom" viewBox="0 0 80 120" fill="none" aria-hidden="true">
+      <path d="M40 2 C40 40 40 80 40 114" stroke="var(--rose)" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M40 44 C56 38 64 44 68 32" stroke="var(--rose)" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M40 70 C24 64 16 70 12 58" stroke="var(--rose)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
 
     <div class="card">
-      <div class="logo">beautalk</div>
-      <h1 class="title">시작하기</h1>
-      <p class="subtitle">챗봇이 내 피부에 맞는 화장품을 추천해드려요.</p>
+      <header class="masthead">
+        <p class="eyebrow">Botanical Beauty Lab</p>
+        <div class="logo serif">beaut<em>alk</em></div>
+      </header>
+
+      <div class="headline-block">
+        <h1 class="title serif">내 피부를 위한<br /><em>섬세한</em> 시작</h1>
+        <p class="subtitle">챗봇이 내 피부에 맞는 화장품을 다정하게 추천해 드려요.</p>
+      </div>
 
       <p v-if="errorMessage" class="error-banner" role="alert">{{ errorMessage }}</p>
 
@@ -74,116 +89,147 @@ function handleOAuth(provider) {
 <style scoped>
 .page {
   position: relative;
-  min-height: 100vh;
+  height: 100%;
   width: 100%;
-  background: radial-gradient(140% 120% at 50% 0%, #FBF4EF 0%, var(--bg) 55%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding:
+    calc(env(safe-area-inset-top) + 32px) 24px
+    calc(env(safe-area-inset-bottom) + 32px);
   overflow: hidden;
 }
 
-/* Ambient floating blobs */
-.blob {
+/* 식물 라인 장식 — 모서리에 은은하게 */
+.sprig {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(56px);
-  opacity: 0.55;
+  width: 56px;
+  height: 84px;
+  opacity: 0.5;
   pointer-events: none;
-  will-change: transform;
 }
-.blob-1 { width: 360px; height: 360px; background: #FFB7CE; top: -90px; left: -70px; animation: bt-float 11s var(--ease) infinite; }
-.blob-2 { width: 320px; height: 320px; background: #D6BBFF; bottom: -100px; right: -60px; animation: bt-float 13s var(--ease) infinite reverse; }
-.blob-3 { width: 240px; height: 240px; background: #FFD7B5; top: 40%; right: 18%; opacity: 0.4; animation: bt-float 16s var(--ease) infinite; }
+.sprig-top { top: calc(env(safe-area-inset-top) + 8px); left: 14px; transform: rotate(-12deg); }
+.sprig-bottom { bottom: calc(env(safe-area-inset-bottom) + 8px); right: 14px; transform: rotate(8deg); }
 
 .card {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  padding: 44px 34px;
   width: 100%;
-  max-width: 390px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  animation: bt-pop 0.6s var(--ease-back) both;
+  gap: 20px;
+  animation: bt-rise var(--t-slow) var(--ease) both;
+}
+
+.masthead { text-align: center; }
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--sage);
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .logo {
-  text-align: center;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
-  background: var(--gradient-brand-rich);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 6px;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+  color: var(--ink);
 }
+.logo em { font-style: italic; color: var(--sage-ink); }
+
+.headline-block { text-align: center; }
 
 .title {
-  text-align: center;
-  font-size: 23px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.32;
+  letter-spacing: -0.3px;
+  color: var(--ink);
 }
+.title em { font-style: italic; color: var(--rose-ink); }
 
 .subtitle {
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 16px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.7;
 }
 
 .error-banner {
-  margin-bottom: 8px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: var(--danger-bg, #FEF2F2);
-  border: 1px solid var(--danger-border, #FECACA);
-  color: var(--danger, #DC2626);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
   font-size: 13px;
   line-height: 1.5;
   text-align: center;
+  animation: bt-pop var(--t) var(--ease-back) both;
 }
 
-.oauth { display: flex; flex-direction: column; gap: 10px; }
+.oauth { display: flex; flex-direction: column; gap: 11px; margin-top: 4px; }
 
 .btn-oauth {
   width: 100%;
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  font-size: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--card);
+  font-size: 14.5px;
   font-weight: 600;
+  color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--sh-sm);
   transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), background var(--t-fast);
 }
-.btn-oauth:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.btn-oauth:active { transform: translateY(0) scale(0.99); }
+.btn-oauth:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.btn-oauth:active { transform: scale(0.98); box-shadow: var(--sh-sm); }
 .btn-oauth.kakao { background: #FEE500; border-color: #FEE500; color: #191600; }
-.btn-oauth.kakao:hover { box-shadow: 0 8px 20px rgba(254, 229, 0, 0.4); }
+.btn-oauth.kakao:hover { box-shadow: 0 10px 24px rgba(254, 229, 0, 0.35); }
 .oauth-icon { width: 20px; height: 20px; }
 
 .terms-notice {
-  margin-top: 12px;
+  margin-top: 10px;
   text-align: center;
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--ink-faint);
   line-height: 1.7;
 }
-.terms-notice a { color: var(--text-secondary); text-decoration: underline; }
-.terms-notice a:hover { color: var(--text-primary); }
+.terms-notice a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; }
+.terms-notice a:hover { color: var(--ink); }
+
+/* ── 데스크톱 ≥900px ── */
+@media (min-width: 900px) {
+  .page {
+    padding: 48px 24px;
+  }
+
+  /* 식물 장식을 넓은 화면에 맞춰 확대 */
+  .sprig {
+    width: 88px;
+    height: 132px;
+    opacity: 0.55;
+  }
+  .sprig-top { top: 40px; left: 56px; }
+  .sprig-bottom { bottom: 40px; right: 56px; }
+
+  .card {
+    max-width: 420px;
+    gap: 24px;
+  }
+
+  .logo { font-size: 40px; }
+
+  .title { font-size: 32px; }
+
+  .subtitle { font-size: 14.5px; }
+}
 </style>

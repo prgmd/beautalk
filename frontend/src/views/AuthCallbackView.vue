@@ -1,5 +1,11 @@
 <template>
-  <div>로그인 처리 중...</div>
+  <div class="callback">
+    <DewyLoader
+      text="로그인하는 중"
+      subtitle="잠시만 기다려 주세요"
+      :size="140"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -7,6 +13,7 @@ import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useProfileStore } from '@/stores/profile'
+import DewyLoader from '@/components/DewyLoader.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -53,3 +60,26 @@ onMounted(async () => {
   router.push(data ? '/chat' : '/onboarding')
 })
 </script>
+
+<style scoped>
+.callback {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding:
+    calc(env(safe-area-inset-top) + 24px) 24px
+    calc(env(safe-area-inset-bottom) + 24px);
+  background: var(--canvas);
+  animation: bt-rise var(--t-slow) var(--ease) both;
+}
+
+/* ── 데스크톱 ≥900px ── */
+@media (min-width: 900px) {
+  .callback {
+    padding: 48px 24px;
+    gap: 8px;
+  }
+}
+</style>

@@ -1,92 +1,96 @@
 <script setup>
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 
 const route = useRoute()
 const router = useRouter()
 
+// 마이(설정) 영역 서브탭 — 프로필/계정만.
+// 찜·추천은 글로벌 내비(상담/추천/찜/MY)에 있으므로 여기서 중복으로 넣지 않는다.
 const tabs = [
   { label: '피부 프로필', path: '/mypage/profile' },
-  { label: '찜한 제품', path: '/mypage/liked' },
-  { label: '추천받은 제품', path: '/mypage/recommended' },
   { label: '계정', path: '/mypage/account' },
 ]
+
+// 프로필/계정에서만 서브탭(섹션 내비)을 보여준다.
+// 찜/추천은 글로벌 내비로 진입하는 독립 화면이라 서브탭 없이 콘텐츠만 보인다.
+const isSettings = computed(
+  () => route.path === '/mypage/profile' || route.path === '/mypage/account' || route.path === '/mypage',
+)
 </script>
 
 <template>
-  <div class="layout">
+  <div class="screen">
+    <div class="main">
+      <div v-if="isSettings" class="subnav">
+        <header class="appbar">
+          <span class="ab-title serif">마이페이지</span>
+        </header>
+        <nav class="tabstrip">
+          <button
+            v-for="tab in tabs"
+            :key="tab.path"
+            class="tab"
+            :class="{ active: route.path === tab.path }"
+            @click="router.push(tab.path)"
+          >{{ tab.label }}</button>
+        </nav>
+      </div>
+
+      <main class="content">
+        <RouterView />
+      </main>
+    </div>
+
     <GlobalSidebar />
-
-    <nav class="sub-sidebar">
-      <button
-        v-for="tab in tabs"
-        :key="tab.path"
-        class="sub-tab"
-        :class="{ active: route.path === tab.path }"
-        @click="router.push(tab.path)"
-      >
-        {{ tab.label }}
-      </button>
-    </nav>
-
-    <main class="content">
-      <RouterView />
-    </main>
   </div>
 </template>
 
 <style scoped>
-.layout { display: flex; height: 100vh; background: var(--bg); }
+.screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.subnav { flex-shrink: 0; }
 
-.sub-sidebar {
-  width: 200px;
-  min-width: 200px;
-  border-right: 1px solid var(--border);
-  padding: 24px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.appbar { padding: calc(12px + env(safe-area-inset-top)) 20px 8px; }
+.ab-title { font-size: 24px; font-weight: 500; letter-spacing: -.3px; }
 
-.sub-tab {
-  position: relative;
-  width: 100%;
-  padding: 10px 14px;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: 14px;
-  color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
-  overflow: hidden;
+.tabstrip {
+  display: flex; gap: 8px; overflow-x: auto;
+  padding: 8px 20px 12px;
+  -ms-overflow-style: none; scrollbar-width: none;
 }
-.sub-tab::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%) scaleY(0);
-  width: 3px;
-  height: 56%;
-  border-radius: 0 3px 3px 0;
-  background: var(--gradient-brand);
-  transition: transform var(--t) var(--ease-back);
+.tabstrip::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;
+  color: var(--ink-soft); background: var(--sheet); border: 1px solid var(--line);
+  transition: all var(--t-fast);
 }
-.sub-tab:hover { background: var(--surface-hover); color: var(--text-primary); }
-.sub-tab.active {
-  background: var(--brand-soft);
-  color: var(--brand);
-  font-weight: 700;
-  box-shadow: var(--shadow-sm);
-}
-.sub-tab.active::before { transform: translateY(-50%) scaleY(1); }
+.tab:active { transform: scale(.97); }
+.tab.active { background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-sm); }
 
-.content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 40px 48px;
-  background: var(--surface);
+.content { flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 24px; }
+
+/* ── 데스크탑(≥900px): 글로벌 사이드바 + (설정일 때) 세로 서브 사이드바 ── */
+@media (min-width: 900px) {
+  .screen { flex-direction: row; }
+  .main { flex-direction: row; }
+  .subnav {
+    width: 210px; height: 100%;
+    border-right: 1px solid var(--line);
+    padding: 32px 18px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .appbar { padding: 0 8px; }
+  .ab-title { font-size: 21px; }
+  .tabstrip { flex-direction: column; gap: 4px; overflow: visible; padding: 0; }
+  .tab {
+    width: 100%; text-align: left; border-radius: var(--radius);
+    background: transparent; border-color: transparent; color: var(--ink-soft);
+  }
+  .tab:hover { background: rgba(255,255,255,.5); color: var(--ink); }
+  .tab.active { background: var(--sage-soft); color: var(--ink); border-color: transparent; box-shadow: none; }
+  .content { padding: 40px 48px; }
 }
 </style>

@@ -59,19 +59,23 @@ function getInitials(email) {
 
 <template>
   <div class="view">
-    <h2 class="page-title">계정</h2>
+    <header class="page-header">
+      <p class="eyebrow">Account · 내 계정</p>
+      <h2 class="page-title serif">계정</h2>
+    </header>
 
     <!-- 계정 정보 카드 -->
     <div class="account-card">
+      <span class="leaf" aria-hidden="true">❋</span>
       <div class="avatar">{{ getInitials(auth.user?.email) }}</div>
       <div class="account-info">
-        <p class="email">{{ auth.user?.email || 'demo@example.com' }}</p>
+        <p class="email serif">{{ auth.user?.email || 'demo@example.com' }}</p>
         <p class="join-date">{{ formatJoinDate() }}</p>
       </div>
     </div>
 
     <!-- 계정 관리 -->
-    <div class="section">
+    <section class="section">
       <p class="section-title">계정 관리</p>
       <div class="action-card" @click="logout">
         <div class="action-left">
@@ -83,10 +87,10 @@ function getInitials(email) {
         </div>
         <span class="chevron">›</span>
       </div>
-    </div>
+    </section>
 
     <!-- 위험 영역 -->
-    <div class="section danger-section">
+    <section class="section danger-section">
       <p class="section-title danger-title">위험 영역</p>
       <div class="action-card danger-card" @click="openWithdraw">
         <div class="action-left">
@@ -98,12 +102,14 @@ function getInitials(email) {
         </div>
         <span class="chevron">›</span>
       </div>
-    </div>
+    </section>
 
-    <!-- 탈퇴 확인 모달 -->
+    <!-- 탈퇴 확인 모달 (모바일 바텀 시트) -->
     <div v-if="showWithdrawModal" class="modal-overlay" @click="closeWithdraw">
       <div class="modal" @click.stop>
-        <h3>정말 탈퇴하시겠어요?</h3>
+        <span class="grab-handle" aria-hidden="true"></span>
+        <p class="modal-eyebrow">Danger Zone</p>
+        <h3 class="serif">정말 탈퇴하시겠어요?</h3>
         <p>프로필, 추천 기록, 찜한 제품 등 모든 데이터가 영구 삭제됩니다. 이 작업은 되돌릴 수 없어요.</p>
         <p v-if="errorMsg" class="modal-error">{{ errorMsg }}</p>
         <div class="modal-actions">
@@ -118,59 +124,88 @@ function getInitials(email) {
 </template>
 
 <style scoped>
-.view { max-width: 560px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.view { display: flex; flex-direction: column; gap: 24px; }
 
-.page-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+/* Header */
+.page-header { animation: bt-rise 0.4s var(--ease) both; }
+.eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--sage-ink); margin-bottom: 6px;
+}
+.page-title { font-size: 26px; font-weight: 500; letter-spacing: -0.4px; line-height: 1.15; }
 
+/* Account identity card */
 .account-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 16px;
-  background: var(--surface);
+  background: var(--card);
+  border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
-  padding: 18px 22px;
-  box-shadow: var(--shadow-sm);
-  animation: bt-rise 0.5s var(--ease) both;
+  padding: 20px 22px;
+  box-shadow: var(--sh-sm);
+  animation: bt-rise 0.45s var(--ease) 0.04s both;
+}
+.leaf {
+  position: absolute;
+  top: -12px; right: -8px;
+  font-size: 60px;
+  line-height: 1;
+  color: var(--sage-soft);
+  pointer-events: none;
+  user-select: none;
 }
 .avatar {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: var(--ai-avatar);
+  background: var(--sage-soft);
+  border: 1px solid var(--line-soft);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: #3A5F80;
+  color: var(--sage-ink);
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
-.email { font-size: 15px; font-weight: 700; }
-.join-date { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.account-info { position: relative; z-index: 1; min-width: 0; }
+.email { font-size: 17px; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
+.join-date { font-size: 12px; color: var(--ink-faint); margin-top: 3px; }
 
-.section { display: flex; flex-direction: column; gap: 8px; }
-.section:nth-of-type(2) { animation: bt-rise 0.5s var(--ease) 0.06s both; }
-.danger-section { animation: bt-rise 0.5s var(--ease) 0.12s both; }
-.section-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+/* Sections */
+.section { display: flex; flex-direction: column; gap: 10px; }
+.section:nth-of-type(2) { animation: bt-rise 0.45s var(--ease) 0.1s both; }
+.danger-section { animation: bt-rise 0.45s var(--ease) 0.16s both; }
+.section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--sage-ink);
+}
 
 .action-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 15px 18px;
+  background: var(--card);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--sh-sm);
   transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
 }
-.action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.action-card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.action-card:active { transform: scale(.99); }
 
 .action-left { display: flex; align-items: center; gap: 12px; }
-.action-icon { font-size: 18px; width: 24px; text-align: center; }
-.action-label { font-size: 14px; font-weight: 600; }
-.action-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.chevron { font-size: 18px; color: var(--text-muted); transition: transform var(--t-fast) var(--ease); }
+.action-icon { font-size: 17px; width: 24px; text-align: center; color: var(--ink-soft); }
+.action-label { font-size: 15px; font-weight: 500; color: var(--ink); }
+.action-desc { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+.chevron { font-size: 20px; color: var(--ink-faint); transition: transform var(--t-fast) var(--ease); }
 .action-card:hover .chevron { transform: translateX(3px); }
 
 /* Danger zone */
@@ -179,62 +214,100 @@ function getInitials(email) {
   border: 1px solid var(--danger-border);
   background: var(--danger-bg);
 }
-.danger-card:hover { background: #FEE2E2; box-shadow: var(--shadow-md); }
+.danger-card .action-icon { color: var(--danger); }
+.danger-card:hover { background: var(--danger-bg); box-shadow: var(--sh-md); }
 .danger-label { color: var(--danger); }
 
-/* Modal */
+/* Modal — mobile bottom sheet */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(40,28,22,0.42);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(34,28,22,0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
   z-index: 100;
   animation: bt-rise 0.25s var(--ease) both;
 }
 .modal {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: 28px;
-  width: 340px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--card);
+  border-radius: 26px 26px 0 0;
+  padding: 12px 26px calc(26px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: var(--shadow-lg);
-  animation: bt-pop 0.3s var(--ease-back) both;
+  box-shadow: var(--sh-lg);
+  animation: sheet-up 0.34s var(--ease) both;
 }
-.modal h3 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
-.modal p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+@keyframes sheet-up {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.grab-handle {
+  width: 40px; height: 4px;
+  border-radius: 99px;
+  background: var(--line-strong);
+  margin: 0 auto 12px;
+}
+.modal-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--danger);
+}
+.modal h3 { font-size: 21px; font-weight: 500; letter-spacing: -0.3px; color: var(--ink); }
+.modal p { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
 .modal-error { color: var(--danger); }
 .modal-confirm:disabled, .modal-cancel:disabled { opacity: 0.5; cursor: default; }
-.modal-actions { display: flex; gap: 8px; margin-top: 8px; }
+.modal-actions { display: flex; gap: 8px; margin-top: 14px; }
 .modal-cancel {
   flex: 1;
-  padding: 11px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--sheet);
   font-size: 14px;
   font-weight: 600;
+  color: var(--ink);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease);
 }
-.modal-cancel:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.modal-cancel:active:not(:disabled) { transform: scale(.98); }
 .modal-confirm {
   flex: 1;
-  padding: 11px;
+  padding: 14px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 99px;
   background: var(--danger);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
+  transition: transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
-.modal-confirm:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(220,38,38,0.28); filter: brightness(1.05); }
+.modal-confirm:active:not(:disabled) { transform: scale(.98); filter: brightness(1.05); }
+
+/* ===== Desktop polish (≥900px) ===== */
+@media (min-width: 900px) {
+  .view { max-width: 640px; }
+
+  .page-title { font-size: 32px; }
+
+  .account-card { padding: 24px 26px; }
+  .avatar { width: 60px; height: 60px; font-size: 17px; }
+  .email { font-size: 19px; }
+
+  /* Withdraw modal: centered dialog instead of bottom sheet */
+  .modal-overlay { align-items: center; }
+  .modal {
+    max-width: 420px;
+    border-radius: var(--radius-xl);
+    padding: 30px 30px 30px;
+    animation: bt-pop 0.3s var(--ease-back) both;
+  }
+  .grab-handle { display: none; }
+}
 </style>
