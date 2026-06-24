@@ -17,6 +17,7 @@
 ### 🔵 지금 진행 중 — 하이브리드 추천
 | 문서 | 용도 |
 |------|------|
+| [deployment.md](deployment.md) | **AWS EC2 배포 + CI/CD 계획** (현재 진행) |
 | [recommend-failure-report.md](recommend-failure-report.md) | **왜** 추천이 틀렸나 (근거·진단) |
 | [recommend-hybrid-contract.md](recommend-hybrid-contract.md) | **어떻게** 고칠 건가 (FE↔BE API 계약) |
 | 이 파일 §3 | **남은 작업 + 쉬운 설명** |
@@ -137,8 +138,9 @@
 
 ### E. 배포·마무리 〔막판, 팀〕
 
-- 앱 Docker 컨테이너화 (현재는 DB만 컨테이너)
-- AWS 배포 + Nginx
+- **AWS EC2 배포 + GitHub Actions CI/CD** → 상세 계획 [deployment.md](deployment.md)
+  - 단일 EC2 + docker-compose(nginx·backend·db), 프론트는 정적 빌드, Selenium 제외
+  - 순서: 코드 배포가능화 → EC2 수동배포 → Actions 자동화
 - 전체 QA·버그 수정
 - 발표 준비
 
