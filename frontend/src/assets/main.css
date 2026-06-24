@@ -44,3 +44,8 @@
   z-index: 1;
   height: 100%;
 }
+
+/* 넓은 화면에선 코너 워터마크가 휑하게 떨어져 보여 더 은은하게 */
+@media (min-width: 900px) {
+  #app::after { opacity: .3; }
+}

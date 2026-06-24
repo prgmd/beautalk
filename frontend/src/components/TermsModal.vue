@@ -1,4 +1,6 @@
 <script setup>
+import { onMounted, onUnmounted } from 'vue'
+
 defineProps({
   type: {
     type: String, // 'terms' | 'privacy'
@@ -7,6 +9,16 @@ defineProps({
 })
 
 const emit = defineEmits(['close'])
+
+function onKey(e) { if (e.key === 'Escape') emit('close') }
+onMounted(() => {
+  document.body.style.overflow = 'hidden'
+  window.addEventListener('keydown', onKey)
+})
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', onKey)
+})
 
 const CONTENT = {
   terms: {

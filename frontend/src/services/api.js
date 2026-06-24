@@ -1,7 +1,8 @@
 import { useAuthStore } from '@/stores/auth'
 import { usePaywallStore } from '@/stores/paywall'
+import { API_BASE } from '@/services/config'
 
-const BASE_URL = 'http://localhost:8000/api/v1'
+const BASE_URL = API_BASE
 
 // 동시에 여러 요청이 401을 맞아도 refresh는 한 번만 수행한다.
 // (각 호출자는 같은 Promise를 공유해 결과를 함께 받는다 → 중복 갱신/오인 로그아웃 방지)

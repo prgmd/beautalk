@@ -5,6 +5,8 @@ import { useCommunityStore } from '@/stores/community'
 import { useAuthStore } from '@/stores/auth'
 import { usePostLikesStore } from '@/stores/postLikes'
 import { useProductDetailStore } from '@/stores/productDetail'
+import { useToastStore } from '@/stores/toast'
+import { useConfirmStore } from '@/stores/confirm'
 import { normalizeProduct } from '@/utils/product'
 import { formatRelative } from '@/utils/datetime'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
@@ -15,6 +17,8 @@ const community = useCommunityStore()
 const auth = useAuthStore()
 const postLikes = usePostLikesStore()
 const productDetail = useProductDetailStore()
+const toast = useToastStore()
+const confirm = useConfirmStore()
 
 const post = ref(null)
 const loading = ref(true)
@@ -60,9 +64,8 @@ async function toggleLike() {
     liked.value = res.liked
     likeCount.value = res.like_count
     postLikes.set(post.value.id, res.liked) // 로컬에 좋아요 상태 기억
-
   } catch {
-    /* 무시 — 다음 시도에서 복구 */
+    toast.error('좋아요 처리에 실패했어요')
   } finally {
     likeBusy.value = false
   }
@@ -77,29 +80,32 @@ async function submitComment() {
     post.value.comments.push(c)
     commentText.value = ''
   } catch {
-    /* 무시 */
+    toast.error('댓글 등록에 실패했어요')
   } finally {
     commentBusy.value = false
   }
 }
 
 async function removeComment(id) {
-  if (!confirm('댓글을 삭제할까요?')) return
+  if (!(await confirm.ask({ title: '댓글을 삭제할까요?', confirmText: '삭제', danger: true }))) return
   try {
     await community.deleteComment(id)
     post.value.comments = post.value.comments.filter((c) => c.id !== id)
   } catch {
-    /* 무시 */
+    toast.error('댓글 삭제에 실패했어요')
   }
 }
 
 async function removePost() {
-  if (!confirm('이 글을 삭제할까요? 되돌릴 수 없어요.')) return
+  if (!(await confirm.ask({
+    title: '이 글을 삭제할까요?', message: '삭제하면 되돌릴 수 없어요.',
+    confirmText: '삭제', danger: true,
+  }))) return
   try {
     await community.deletePost(post.value.id)
     router.replace('/community')
   } catch {
-    error.value = '삭제에 실패했어요.'
+    toast.error('삭제에 실패했어요')
   }
 }
 

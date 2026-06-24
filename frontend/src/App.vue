@@ -4,8 +4,11 @@ import { RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLikesStore } from '@/stores/likes'
 import { usePaywallStore } from '@/stores/paywall'
+import { API_BASE } from '@/services/config'
 import ProductDetailModal from '@/components/ProductDetailModal.vue'
 import PaywallModal from '@/components/PaywallModal.vue'
+import ToastHost from '@/components/ToastHost.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const auth = useAuthStore()
 const likes = useLikesStore()
@@ -16,7 +19,7 @@ onMounted(async () => {
   // localStorage에 user 정보가 남아있으면 HttpOnly 쿠키로 조용히 토큰을 복원한다.
   if (auth.user && !auth.accessToken) {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/auth/token/refresh', {
+      const res = await fetch(`${API_BASE}/auth/token/refresh`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -47,4 +50,6 @@ onMounted(async () => {
   </RouterView>
   <ProductDetailModal />
   <PaywallModal v-if="paywall.isOpen" @close="paywall.close()" />
+  <ToastHost />
+  <ConfirmDialog />
 </template>

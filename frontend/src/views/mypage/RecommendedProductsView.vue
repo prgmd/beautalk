@@ -31,7 +31,7 @@ onMounted(async () => {
 })
 
 function formatPrice(n) {
-  return n?.toLocaleString('ko-KR') + '원'
+  return n != null ? n.toLocaleString('ko-KR') + '원' : '가격 정보 없음'
 }
 
 function formatDate(dateStr) {
@@ -49,7 +49,7 @@ function formatDate(dateStr) {
         <h2 class="page-title serif">추천받은 제품</h2>
         <span class="count">총 {{ totalCount }}개</span>
       </div>
-      <p class="page-desc">챗봇이 추천해 준 제품을 추천받은 순서대로 모아봤어요.</p>
+      <p class="page-desc">챗봇이 추천해 준 제품을 최신순으로 모아봤어요.</p>
     </header>
 
     <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
@@ -82,12 +82,16 @@ function formatDate(dateStr) {
               <div class="row">
                 <p class="price serif">{{ formatPrice(product.price) }}</p>
                 <div class="actions">
-                  <a :href="product.oliveyoungUrl" target="_blank" class="link-btn" title="올리브영">↗</a>
+                  <a
+                    v-if="product.oliveyoungUrl && product.oliveyoungUrl !== '#'"
+                    :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer"
+                    class="link-btn" aria-label="올리브영에서 보기">↗</a>
                   <button
                     class="heart"
                     :class="{ liked: likes.isLiked(product.id) }"
+                    :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
+                    :aria-pressed="likes.isLiked(product.id)"
                     @click="likes.toggleLike(product)"
-                    title="찜하기"
                   >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
                 </div>
               </div>
@@ -97,7 +101,7 @@ function formatDate(dateStr) {
       </section>
     </div>
 
-    <div v-else-if="!loading" class="empty">
+    <div v-else-if="!loading && !errorMsg" class="empty">
       <p class="empty-icon">💬</p>
       <p class="empty-text serif">아직 추천받은 제품이 없어요.</p>
       <p class="empty-sub">챗봇에게 화장품을 추천받아 보세요.</p>
@@ -245,14 +249,6 @@ function formatDate(dateStr) {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-}
-.product-image::before {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 46%;
-  background: repeating-linear-gradient(180deg, transparent 0 9px, rgba(34, 42, 46, .05) 9px 10px);
-  pointer-events: none;
 }
 .product-image img {
   width: 100%;

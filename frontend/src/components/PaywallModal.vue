@@ -1,7 +1,17 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const emit = defineEmits(['close'])
+
+function onKey(e) { if (e.key === 'Escape') emit('close') }
+onMounted(() => {
+  document.body.style.overflow = 'hidden'
+  window.addEventListener('keydown', onKey)
+})
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', onKey)
+})
 
 // 결제 단계: 'plans'(요금제 선택) | 'pending'(결제 준비 중 목업)
 const step = ref('plans')

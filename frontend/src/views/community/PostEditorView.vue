@@ -1,10 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { api } from '@/services/api'
 import { useCommunityStore, CATEGORIES } from '@/stores/community'
+import { useConfirmStore } from '@/stores/confirm'
 import { normalizeProduct } from '@/utils/product'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
+
+const confirm = useConfirmStore()
+const saved = ref(false)
 
 const route = useRoute()
 const router = useRouter()
@@ -95,6 +99,7 @@ async function submit() {
     const data = isEdit.value
       ? await community.updatePost(editId.value, payload)
       : await community.createPost(payload)
+    saved.value = true
     router.replace(`/community/${data.id}`)
   } catch (e) {
     error.value = e?.data?.detail || '저장에 실패했어요. 입력을 확인해 주세요.'
@@ -121,6 +126,19 @@ async function loadForEdit() {
     loading.value = false
   }
 }
+
+// 작성 중 이탈하면 확인
+const isDirty = computed(() =>
+  !saved.value && (title.value.trim() || content.value.trim() || selectedProducts.value.length),
+)
+onBeforeRouteLeave(async () => {
+  if (!isDirty.value) return true
+  return await confirm.ask({
+    title: '작성을 그만둘까요?',
+    message: '저장하지 않은 내용은 사라져요.',
+    confirmText: '나가기', danger: true,
+  })
+})
 
 onMounted(() => {
   if (isEdit.value) loadForEdit()

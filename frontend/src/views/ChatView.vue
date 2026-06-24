@@ -3,6 +3,7 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
+import { useConfirmStore } from '@/stores/confirm'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import DewyLoader from '@/components/DewyLoader.vue'
 import { FORM_OPTIONS, PRICE_BANDS, formLabel } from '@/utils/forms'
@@ -10,6 +11,7 @@ import { FORM_OPTIONS, PRICE_BANDS, formLabel } from '@/utils/forms'
 const chat = useChatStore()
 const likes = useLikesStore()
 const productDetail = useProductDetailStore()
+const confirm = useConfirmStore()
 
 const inputText = ref('')
 const chatBody = ref(null)
@@ -53,6 +55,18 @@ function toggleForm(key) {
 function toggleBand(key) {
   selBand.value = selBand.value === key ? null : key
 }
+function clearFilters() {
+  selForms.value = []
+  selBand.value = null
+}
+
+// 선택한 조건 요약(버튼 옆에 표시)
+const filterSummary = computed(() => {
+  const parts = selForms.value.map(formLabel)
+  const band = PRICE_BANDS.find((b) => b.key === selBand.value)
+  if (band) parts.push(band.label)
+  return parts.join(' · ')
+})
 
 // 선택값 → 백엔드 filters. 아무것도 안 골랐으면 undefined(=기존 동작).
 function buildFilters() {
@@ -70,7 +84,12 @@ function getRecommendations() {
   chat.requestRecommend(buildFilters())
 }
 
-function newChat() {
+async function newChat() {
+  if (chat.messages.length && !(await confirm.ask({
+    title: '새 대화를 시작할까요?',
+    message: '지금까지의 대화 내용이 모두 지워져요.',
+    confirmText: '새 대화', danger: true,
+  }))) return
   chat.clearMessages()
 }
 
@@ -84,7 +103,7 @@ watch(
 )
 
 function formatPrice(n) {
-  return n?.toLocaleString('ko-KR') + '원'
+  return n != null ? n.toLocaleString('ko-KR') + '원' : '가격 정보 없음'
 }
 </script>
 
@@ -138,10 +157,17 @@ function formatPrice(n) {
               <button
                 class="rec-heart"
                 :class="{ liked: likes.isLiked(product.id) }"
+                :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
+                :aria-pressed="likes.isLiked(product.id)"
                 @click.stop="likes.toggleLike(product)"
               >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
             </div>
-            <div class="rec-meta" @click="productDetail.open(product)">
+            <div
+              class="rec-meta" role="button" tabindex="0"
+              @click="productDetail.open(product)"
+              @keydown.enter.prevent="productDetail.open(product)"
+              @keydown.space.prevent="productDetail.open(product)"
+            >
               <p class="rec-brand">{{ product.brand }}</p>
               <p class="rec-name">{{ product.name }}</p>
               <p class="rec-price serif">{{ formatPrice(product.price) }}</p>
@@ -161,7 +187,10 @@ function formatPrice(n) {
             </div>
 
             <p v-if="product.reason" class="rec-reason">{{ product.reason }}</p>
-            <a :href="product.oliveyoungUrl" target="_blank" class="rec-link">올리브영에서 보기 ↗</a>
+            <a
+              v-if="product.oliveyoungUrl && product.oliveyoungUrl !== '#'"
+              :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer" class="rec-link"
+            >올리브영에서 보기 ↗</a>
           </article>
         </div>
 
@@ -215,8 +244,10 @@ function formatPrice(n) {
 
       <!-- 추천받기 -->
       <div v-if="!isEmpty" class="reco-bar">
-        <button class="filters-toggle" :class="{ open: showFilters }" @click="showFilters = !showFilters">
-          <span>조건 좁히기 <span class="opt">선택</span><span v-if="activeCount" class="cnt">{{ activeCount }}</span></span>
+        <button class="filters-toggle" :class="{ open: showFilters, active: activeCount }" @click="showFilters = !showFilters">
+          <span class="ft-ic">⛃</span>
+          <span class="ft-text">조건 좁히기 <span class="opt">선택</span></span>
+          <span v-if="activeCount" class="cnt">{{ activeCount }}</span>
           <span class="chev">{{ showFilters ? '▾' : '▸' }}</span>
         </button>
 
@@ -241,7 +272,11 @@ function formatPrice(n) {
               >{{ b.label }}</button>
             </div>
           </div>
+          <button v-if="activeCount" class="filters-clear" @click="clearFilters">전체 해제</button>
         </div>
+
+        <!-- 접었을 때도 선택한 조건을 보이게 -->
+        <p v-if="!showFilters && filterSummary" class="filter-summary">적용: {{ filterSummary }}</p>
 
         <button class="reco-btn" :class="{ ready: chat.ready }" @click="getRecommendations()">
           <span class="lf">✦</span> 추천 3개 받기{{ chat.ready ? ' · 준비됐어요' : '' }}
@@ -256,7 +291,7 @@ function formatPrice(n) {
           :disabled="chat.isLoading"
           @keydown.enter="onEnterKey"
         />
-        <button class="go" :disabled="!inputText.trim() || chat.isLoading" @click="sendMessage()">↑</button>
+        <button class="go" :disabled="!inputText.trim() || chat.isLoading" aria-label="보내기" @click="sendMessage()">↑</button>
       </div>
     </template>
     </div>
@@ -338,15 +373,29 @@ function formatPrice(n) {
 /* ── 추천 조건 패널 ── */
 .reco-bar { flex-shrink: 0; padding: 8px 20px 4px; }
 .filters-toggle {
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  padding: 9px 6px 8px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft);
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  padding: 10px 13px; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
+  background: var(--card); border: 1px solid var(--line); border-radius: 99px; box-shadow: var(--sh-sm);
+  transition: border-color var(--t-fast), color var(--t-fast);
 }
-.filters-toggle .opt { font-weight: 500; color: var(--ink-faint); margin-left: 4px; }
+.filters-toggle:hover { color: var(--ink); border-color: var(--ink-faint); }
+.filters-toggle.active { border-color: var(--sage); color: var(--ink); }
+.filters-toggle .ft-ic { font-size: 13px; color: var(--sage); }
+.filters-toggle .ft-text { flex: 1; text-align: left; }
+.filters-toggle .opt { font-weight: 500; color: var(--ink-faint); margin-left: 2px; }
 .filters-toggle .cnt {
-  display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px;
-  margin-left: 6px; padding: 0 4px; border-radius: 99px; background: var(--sage); color: #fff; font-size: 10.5px;
+  display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px;
+  padding: 0 5px; border-radius: 99px; background: var(--sage); color: #fff; font-size: 11px; font-weight: 700;
 }
 .filters-toggle .chev { color: var(--ink-faint); font-size: 11px; }
+.filters-clear {
+  align-self: flex-start; margin-top: 2px; padding: 6px 12px; border-radius: 99px;
+  font-size: 12px; font-weight: 600; color: var(--ink-soft); background: var(--card); border: 1px solid var(--line);
+}
+.filters-clear:hover { color: var(--danger); border-color: var(--danger-border); }
+.filter-summary {
+  margin: 0 4px 8px; font-size: 12px; color: var(--sage-ink); font-weight: 600;
+}
 .filters-panel {
   display: flex; flex-direction: column; gap: 12px;
   padding: 12px 12px 14px; margin-bottom: 8px;

@@ -52,7 +52,13 @@ function write() {
         <p v-if="community.loading && !community.posts.length" class="msg">불러오는 중...</p>
 
         <ul v-if="community.posts.length" class="list">
-          <li v-for="post in community.posts" :key="post.id" class="post" @click="openPost(post.id)">
+          <li
+            v-for="post in community.posts" :key="post.id" class="post"
+            role="button" tabindex="0"
+            @click="openPost(post.id)"
+            @keydown.enter="openPost(post.id)"
+            @keydown.space.prevent="openPost(post.id)"
+          >
             <div class="post-top">
               <span class="cat" :class="post.category">{{ post.category_label }}</span>
               <span v-if="post.has_product" class="tag-ic" title="제품 태그">🏷</span>
@@ -64,7 +70,7 @@ function write() {
               <span>{{ formatRelative(post.created_at) }}</span>
               <span class="spacer" />
               <span class="stat">💬 {{ post.comment_count }}</span>
-              <span class="stat">♥ {{ post.like_count }}</span>
+              <span class="stat">♡ {{ post.like_count }}</span>
             </div>
           </li>
         </ul>
