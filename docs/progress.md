@@ -160,8 +160,16 @@
     - 로컬에서 `docker-compose.prod.yml` 기동 검증 (nginx·backend·db, SPA·API·admin·static 응답 확인)
     - 검증 중 버그 발견·수정: `db` 서비스 변수치환용 루트 `.env` 누락 → 빈 자격증명 초기화 위험 (상세: deployment.md "로컬 검증 트러블슈팅")
     - 루트 `.env.prod.example` 추가, `.gitignore`에 `!.env.prod.example` 예외 추가
-  - [ ] 프론트 API base env화 (FE 담당, 스펙은 deployment.md)
-  - [ ] Phase 2: EC2 수동 배포 (보안그룹·도메인·HTTPS·OAuth redirect 등록·E2E 검증)
+  - [x] 프론트 API base env화 (FE 담당, PR #49 `fix/api-base-env`) — `config.js`의 `API_BASE`가
+    `VITE_API_BASE`(`.env.production`)를 읽도록 전환, 하드코딩 호출 잔존 없음 확인
+  - [~] Phase 2: EC2 수동 배포 (진행 중)
+    - EC2 생성(t3.micro, Ubuntu 24.04, 보안그룹 22/80/443), Docker+compose 설치, 스왑 2GB
+    - 도메인 A레코드(GoDaddy) → 퍼블릭 IP 연결
+    - 배포 브랜치에 `develop`(FE 작업분) merge — 파일 겹침 없어 무충돌
+    - 코드 배포 + env 2개 주입 + `docker compose -f docker-compose.prod.yml up -d --build` 기동
+    - migrate 정상 적용, **`products_seed.json` 스테일 발견·갱신**(156건→306건, 임베딩·제형 포함) —
+      상세: deployment.md "프로덕션 데이터 적재 트러블슈팅"
+    - 남음: certbot HTTPS, OAuth redirect 등록, 프론트 dist 배포, E2E 검증
   - [ ] Phase 3: Actions (CI 테스트 + CD 자동 배포)
 - [x] DEBUG/ALLOWED_HOSTS 환경변수 분리 (배포 시 `.env`만 주입하면 운영 전환 — backend-hardening.md)
 - [ ] 전체 QA·버그 수정

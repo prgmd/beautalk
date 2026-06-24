@@ -91,15 +91,54 @@ API 주소가 여러 파일에 `http://localhost:8000/api/v1`로 하드코딩됨
 - 빌드: `npm run build` → `frontend/dist/` (이걸 nginx가 서빙. **빌드는 Actions에서**, EC2 X)
 
 ### Phase 2 — EC2 '수동' 1회 배포 (동작 검증)
-- [ ] EC2 생성 (Ubuntu 24.04 LTS, **t3.micro**, §4 결정), 보안그룹 22/80/443
-- [ ] Docker + compose 플러그인 설치
-- [ ] 도메인 A레코드 → EC2 퍼블릭 IP
-- [ ] 서버에 프로덕션 env 주입 (시크릿) — **루트 `.env`**(DB_NAME/DB_USER/DB_PASSWORD, compose
-  변수치환용) **+ `backend/.env`**(Django 전체 시크릿) **2개 모두**, `DB_*` 값 동일하게
-- [ ] `docker compose up -d` → `migrate` → `loaddata`(products·board seed) → `backfill_form --apply` → `backfill_embeddings`
+- [x] EC2 생성 (Ubuntu 24.04 LTS, **t3.micro**, §4 결정), 보안그룹 22(SSH, My IP)/80/443(0.0.0.0/0)
+  — AMI 검색 시 "SQL Server" 등 Marketplace 번들과 헷갈리지 않게 Quick Start 탭의 순정 Ubuntu만 선택
+- [x] Docker + compose 플러그인 설치 (공식 apt 저장소, `docker-ce`·`docker-compose-plugin`)
+- [x] 스왑 2GB + `vm.swappiness=10` (§5)
+- [x] 도메인 A레코드(GoDaddy) → EC2 퍼블릭 IP — `www`는 기존 `@` CNAME이 따라가서 별도 레코드 불필요
+- [x] 배포 브랜치에 `develop` 병합 — FE 작업(API base env화 등)과 백엔드 배포 작업이 서로 다른
+  파일만 건드려 무충돌 병합. FE가 동일 브랜치에 이어서 푸시할 수 있도록 먼저 정리.
+- [x] 서버에 프로덕션 env 주입 (시크릿) — **루트 `.env`**(DB_NAME/DB_USER/DB_PASSWORD, compose
+  변수치환용) **+ `backend/.env`**(Django 전체 시크릿) **2개 모두**, `DB_*` 값 동일하게,
+  `SECRET_KEY`·DB 비밀번호는 운영용으로 새로 생성(dev 값 재사용 안 함)
+- [x] `docker compose up -d --build` → `migrate` → `loaddata`(products·board seed) →
+  `backfill_form --apply` → `backfill_embeddings` — **데이터 트러블슈팅 발견**, 아래 참고
 - [ ] certbot으로 HTTPS 발급
 - [ ] 카카오/구글 콘솔에 배포 redirect URI 등록
-- [ ] 수동 E2E 검증: 로그인 → 추천 → 게시판
+- [ ] 수동 E2E 검증: 로그인 → 추천 → 게시판 (프론트 dist 배포 후)
+
+#### 프로덕션 데이터 적재 트러블슈팅 — "체크리스트에 있다고 다 끝난 게 아니다"
+
+**발견** — `loaddata products_seed.json`을 돌렸더니 "156 object(s) installed"가 나왔다. 로컬
+dev DB는 306건(데이터 정제·임베딩·제형 백필 완료 상태)인데
+정확히 절반밖에 안 들어간 게 이상해서 `git log -- backend/products_seed.json`을 봤더니, 이 픽스처는
+**PostgreSQL 전환 커밋(초기 156건) 이후 단 한 번도 갱신된 적이 없었다.** 그 사이 진행한 크롤링
+확장·중복 53건 제거·`form` 백필·임베딩 백필이 전부 빠진 스냅샷을 그대로 운영 DB에 넣고 있었던 것.
+체크리스트엔 "loaddata"라고만 적혀 있어 무심코 지나치기 쉬운 함정이었다.
+
+**왜 위험했나** — 하이브리드 추천(SQL `form` 필터 + 임베딩 RAG)은 두 필드가 비어 있으면 그냥
+안 도는 게 아니라 **모든 후보가 필터에서 걸러져 추천 자체가 텅 비거나, 의미 검색이 무작위 폴백으로
+빠지는** 식으로 조용히 망가진다. 에러 없이 "그냥 품질이 이상한" 상태라 발표 중에야 들킬 수 있었다.
+
+**해결 — 두 단계 함정**
+1. `python manage.py dumpdata products.Product --output products_seed.json`을 Windows에서
+   돌리면 `cp949 codec can't encode` 에러가 난다(콘솔 코드페이지가 UTF-8이 아님). `PYTHONUTF8=1`
+   환경변수로 강제 UTF-8 런타임 모드를 켜야 한글 제품명이 깨지지 않고 써진다.
+2. 새 픽스처를 EC2 **호스트**의 `~/beautalk/backend/products_seed.json`에 올려도 `loaddata`가
+   여전히 옛 156건을 읽었다. 원인: `docker-compose.prod.yml`의 backend는 **코드를 빌드 시점에
+   이미지에 baked-in**(Dockerfile `COPY . .`)하고 호스트 디렉터리를 마운트하지 않으므로, 컨테이너
+   안의 `/app/products_seed.json`은 이미지를 만들 때의 스냅샷이다. 호스트 파일을 바꿔도 이미 떠 있는
+   컨테이너에는 반영되지 않는다 — `docker compose cp backend/products_seed.json
+   backend:/app/products_seed.json`로 실행 중인 컨테이너에 직접 집어넣어야 한다(재빌드보다 빠름).
+3. 갱신 전 156건이 모두 새 306건의 부분집합이 아닐 수 있어(중복 제거로 빠진 행), 그냥 `loaddata`만
+   하면 사라져야 할 옛 행이 잔류한다 → `Product.objects.all().delete()`로 비우고서 재적재.
+   `board.Post.products` M2M은 모델 설계상 "제품이 삭제되면 태그 행만 사라지고 글은 남는다"라
+   안전하게 cascade됨(실제로 데모 게시글 하나가 가리키던, 중복 제거로 이미 없어진 제품 UUID 태그가
+   조용히 빠짐 — 글 자체는 그대로).
+
+**교훈** — git에 커밋된 픽스처(seed/fixture)는 "한 번 만들고 끝"이 아니라 데이터가 바뀌면 같이
+갱신해야 하는 **코드와 동급의 자산**이다. Phase 3(Actions CD)에서는 이 적재 단계를 자동화하기
+전에, 픽스처 자체가 최신인지 확인하는 절차(또는 매 배포마다 갱신하는 스크립트)를 넣어야 한다.
 
 ### Phase 3 — GitHub Actions
 - [ ] **CI**: PR/push에 Django 테스트 (PG service 컨테이너) + (선택) 프론트 빌드
