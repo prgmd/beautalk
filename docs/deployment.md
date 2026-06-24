@@ -2,7 +2,7 @@
 
 > 로컬 개발 완료 → **AWS EC2 단일 인스턴스에 docker-compose로 배포**하고,
 > **GitHub Actions로 CI(테스트)·CD(자동 배포)** 를 구축한다.
-> 상태: **계획**. 관련 이슈: #(생성 시 부여) · 도메인: `<확정 필요>`
+> 상태: **Phase 1·2 완료(https://beautalk.site 운영 중), Phase 3(Actions) 대기**. 도메인: `beautalk.site`
 
 ---
 
@@ -103,9 +103,9 @@ API 주소가 여러 파일에 `http://localhost:8000/api/v1`로 하드코딩됨
   `SECRET_KEY`·DB 비밀번호는 운영용으로 새로 생성(dev 값 재사용 안 함)
 - [x] `docker compose up -d --build` → `migrate` → `loaddata`(products·board seed) →
   `backfill_form --apply` → `backfill_embeddings` — **데이터 트러블슈팅 발견**, 아래 참고
-- [ ] certbot으로 HTTPS 발급
-- [ ] 카카오/구글 콘솔에 배포 redirect URI 등록
-- [ ] 수동 E2E 검증: 로그인 → 추천 → 게시판 (프론트 dist 배포 후)
+- [x] certbot으로 HTTPS 발급 — 아래 "HTTPS 발급 + OAuth 트러블슈팅" 참고
+- [x] 카카오/구글 콘솔에 배포 redirect URI 등록 — 카카오 `KOE006` 함정, 아래 참고
+- [x] 수동 E2E 검증: 로그인 → 추천 → 게시판 — 전 구간 통과, 아래 "E2E 검증 결과" 참고
 
 #### 프로덕션 데이터 적재 트러블슈팅 — "체크리스트에 있다고 다 끝난 게 아니다"
 
@@ -140,6 +140,43 @@ dev DB는 306건(데이터 정제·임베딩·제형 백필 완료 상태)인데
 갱신해야 하는 **코드와 동급의 자산**이다. Phase 3(Actions CD)에서는 이 적재 단계를 자동화하기
 전에, 픽스처 자체가 최신인지 확인하는 절차(또는 매 배포마다 갱신하는 스크립트)를 넣어야 한다.
 
+#### HTTPS 발급 + OAuth 트러블슈팅
+
+**certbot** — nginx를 80포트로 먼저 띄워 ACME HTTP-01 챌린지 경로(`/.well-known/acme-challenge/`,
+`docker-compose.prod.yml`의 `certbot/www` 볼륨)가 응답하는 걸 확인한 뒤, 별도 컨테이너로 1회성
+발급을 실행했다(`docker run --rm -v ...certbot/conf:/etc/letsencrypt -v ...certbot/www:/var/www/certbot
+certbot/certbot certonly --webroot -w /var/www/certbot -d beautalk.site -d www.beautalk.site`).
+nginx 자체에 certbot을 심지 않고 별도 1회 실행으로 분리한 이유: 발급은 도메인당 1회면 되고, 갱신은
+나중에 cron/systemd timer로 같은 명령을 재실행하면 되므로 nginx 컨테이너 수명과 묶을 필요가 없다.
+발급 후 `nginx.conf`를 다시 써서 ① 80은 ACME 챌린지 통과 + 나머지는 443으로 301 리다이렉트만,
+② 443 server 블록에 `ssl_certificate`/`ssl_certificate_key`로 `/etc/letsencrypt/live/beautalk.site/`
+경로를 지정(이 경로는 certbot이 쓴 볼륨을 nginx 컨테이너도 마운트하고 있어 별도 복사 불필요).
+`nginx -t`로 문법 검증 후 `restart`. 인증서는 Let's Encrypt, 2026-09-22 만료.
+
+**카카오 `KOE006`(앱 관리자 설정 오류)** — 카카오 개발자 콘솔에 Redirect URI를 등록하고 로그인을
+시도하니 카카오 쪽에서 일반적인 "앱 관리자 설정 오류" 화면이 떴다(우리 서버까지 요청이 오지도
+못하고 카카오 단계에서 막힘 — nginx/backend 로그에 콜백 자체가 안 찍히는 것으로 확인). 원인은
+사소했다: 등록한 Redirect URI가 `http://beautalk.site/...`로, **`s`가 빠진 오타**였다(코드는
+`BACKEND_URL=https://beautalk.site`라 실제 보내는 redirect_uri는 https인데, 카카오 콘솔엔 http로
+등록되어 있어 불일치). `https://`로 정정하자 즉시 정상 동작. 구글 콘솔은 처음부터 정확히 등록해
+한 번에 통과. **교훈**: OAuth 제공자가 주는 에러 메시지(`KOE006`)는 일반적이라 redirect_uri
+**문자열 단위(스킴까지)** 로 직접 대조하는 게 제일 빠른 디버깅이었다.
+
+#### E2E 검증 결과
+
+브라우저로 직접 진행하면서 서버 로그(`docker compose logs -f backend nginx`)를 실시간으로 같이
+보는 방식으로 검증했다(에러가 나면 어느 요청에서 났는지 바로 대조 가능). 결과:
+- 구글 로그인 → 콜백 → 토큰 교환 → 신규 유저 온보딩 → 프로필 생성(201)
+- 카카오 로그인(redirect_uri 수정 후) → 동일 플로우로 온보딩 → 프로필 생성(201)
+- 챗봇 대화(`POST /api/v1/chat/` 200 연속) → 추천 생성(`POST /api/v1/recommend/` 201)
+- 추천 제품 찜(`POST /api/v1/likes/` 201)
+- 커뮤니티: 목록(`GET /api/v1/posts/` 200) → 글 작성(`POST /api/v1/posts/` 201) → 상세(200) →
+  제품 역참조(`GET /api/v1/products/{id}/posts/` 200) → 게시글 좋아요(`POST /api/v1/likes/` 201)
+
+전 구간 에러 없이 통과. (참고: 로그 중간에 `GET /api/v1/auth/exchange/`가 한 번 401을 반환한
+줄이 있는데, exchange 엔드포인트는 1회용 토큰을 소비하는 구조라 동일 콜백에서 중복 호출되면
+두 번째는 401이 나는 게 정상 — 첫 호출이 이미 성공해 로그인 자체엔 영향 없음.)
+
 ### Phase 3 — GitHub Actions
 - [ ] **CI**: PR/push에 Django 테스트 (PG service 컨테이너) + (선택) 프론트 빌드
 - [ ] **CD**: 배포 브랜치 push → SSH로 EC2 접속 → `git pull` + `docker compose up -d --build` + `migrate`
@@ -163,7 +200,7 @@ dev DB는 306건(데이터 정제·임베딩·제형 백필 완료 상태)인데
 
 ## 4. 결정 사항 (확정 필요)
 
-- [ ] **도메인 이름**: `beautalk.site`
+- [x] **도메인 이름**: `beautalk.site` (GoDaddy 구매, A레코드 연결 완료)
 - [ ] **배포 브랜치**: `main`(배포 전용, 권장) vs `develop`
 - [x] **DB**: 컨테이너 (RDS 안 씀)
 - [x] **EC2 사양**: **t3.micro (1GB)** — 프리티어 소진, 최소비용. 1GB 최적화는 §5.
