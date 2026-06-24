@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCommunityStore } from '@/stores/community'
 import { useAuthStore } from '@/stores/auth'
+import { usePostLikesStore } from '@/stores/postLikes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { normalizeProduct } from '@/utils/product'
 import { formatRelative } from '@/utils/datetime'
@@ -12,6 +13,7 @@ const route = useRoute()
 const router = useRouter()
 const community = useCommunityStore()
 const auth = useAuthStore()
+const postLikes = usePostLikesStore()
 const productDetail = useProductDetailStore()
 
 const post = ref(null)
@@ -39,6 +41,8 @@ async function load() {
     const data = await community.fetchPost(route.params.id)
     post.value = data
     likeCount.value = data?.like_count || 0
+    // 서버가 is_liked를 주면 우선 사용, 없으면 로컬 기억으로 복원
+    liked.value = data?.is_liked != null ? data.is_liked : postLikes.isLiked(data.id)
   } catch (e) {
     error.value = e?.status === 404 ? '삭제되었거나 존재하지 않는 글이에요.' : '글을 불러오지 못했어요.'
   } finally {
@@ -55,6 +59,8 @@ async function toggleLike() {
       : await community.like(post.value.id)
     liked.value = res.liked
     likeCount.value = res.like_count
+    postLikes.set(post.value.id, res.liked) // 로컬에 좋아요 상태 기억
+
   } catch {
     /* 무시 — 다음 시도에서 복구 */
   } finally {
