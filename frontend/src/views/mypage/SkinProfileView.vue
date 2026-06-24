@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { useToastStore } from '@/stores/toast'
+import Icon from '@/components/Icon.vue'
 
 const profile = useProfileStore()
 const toast = useToastStore()
@@ -84,8 +85,7 @@ function removeAvoid(item) {
   <div class="view">
     <header class="page-header">
       <div class="header-text">
-        <p class="eyebrow">My Skin · 피부 카르테</p>
-        <h2 class="page-title serif">피부 프로필</h2>
+        <h2 class="page-title t-page">피부 프로필</h2>
         <p class="page-desc">챗봇이 추천할 때 <em>자동으로</em> 참조하는 정보입니다.</p>
       </div>
       <button v-if="!editing" class="edit-btn" @click="startEdit">수정</button>
@@ -102,14 +102,12 @@ function removeAvoid(item) {
     <div v-if="!editing" class="cards">
       <article class="profile-card">
         <span class="leaf" aria-hidden="true">❋</span>
-        <p class="card-label">Skin Type</p>
         <p class="card-sub">피부 타입</p>
         <p class="card-value serif">{{ profile.skinType }}</p>
       </article>
 
       <article class="profile-card">
         <span class="leaf" aria-hidden="true">❋</span>
-        <p class="card-label">Concerns</p>
         <p class="card-sub">피부 고민</p>
         <div class="tags">
           <span v-for="c in profile.concerns" :key="c" class="tag">{{ c }}</span>
@@ -119,7 +117,6 @@ function removeAvoid(item) {
 
       <article class="profile-card">
         <span class="leaf" aria-hidden="true">❋</span>
-        <p class="card-label">Avoid</p>
         <p class="card-sub">기피 성분</p>
         <div class="tags">
           <span v-for="i in profile.avoidIngredients" :key="i" class="tag">{{ i }}</span>
@@ -131,7 +128,6 @@ function removeAvoid(item) {
     <!-- 편집 모드 -->
     <div v-else class="edit-form">
       <section class="edit-section">
-        <p class="edit-eyebrow">Skin Type</p>
         <p class="edit-label">피부 타입</p>
         <div class="type-btns">
           <button
@@ -144,7 +140,6 @@ function removeAvoid(item) {
       </section>
 
       <section class="edit-section">
-        <p class="edit-eyebrow">Concerns</p>
         <p class="edit-label">피부 고민</p>
         <div class="tags-row">
           <button
@@ -157,12 +152,11 @@ function removeAvoid(item) {
       </section>
 
       <section class="edit-section">
-        <p class="edit-eyebrow">Avoid</p>
         <p class="edit-label">기피 성분</p>
         <div class="avoid-tags">
           <span v-for="item in editAvoidList" :key="item" class="avoid-tag">
             {{ item }}
-            <button class="remove-tag" @click="removeAvoid(item)">×</button>
+            <button class="remove-tag" :aria-label="`${item} 삭제`" @click="removeAvoid(item)"><Icon name="x" :size="14" /></button>
           </span>
         </div>
         <div class="avoid-input-row">
@@ -187,11 +181,6 @@ function removeAvoid(item) {
   animation: bt-rise 0.4s var(--ease) both;
 }
 .header-text { min-width: 0; }
-.eyebrow {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--sage-ink); margin-bottom: 6px;
-}
-.page-title { font-size: 26px; font-weight: 500; letter-spacing: -0.4px; line-height: 1.15; }
 .page-desc { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
 .page-desc em { font-style: italic; color: var(--sage-ink); }
 
@@ -256,7 +245,7 @@ function removeAvoid(item) {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  box-shadow: var(--sh-sm);
+  box-shadow: var(--sh-soft);
   animation: bt-rise 0.45s var(--ease) both;
 }
 .profile-card:nth-child(1) { animation-delay: 0.04s; }
@@ -271,11 +260,7 @@ function removeAvoid(item) {
   pointer-events: none;
   user-select: none;
 }
-.card-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--sage-ink);
-}
-.card-sub { font-size: 11px; color: var(--ink-faint); margin-bottom: 8px; }
+.card-sub { font-size: 12px; font-weight: 700; letter-spacing: .4px; color: var(--sage-ink); margin-bottom: 8px; }
 .card-value { font-size: 22px; font-weight: 500; color: var(--ink); }
 
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -299,11 +284,7 @@ function removeAvoid(item) {
 .edit-section:nth-child(1) { animation-delay: 0.04s; }
 .edit-section:nth-child(2) { animation-delay: 0.1s; }
 .edit-section:nth-child(3) { animation-delay: 0.16s; }
-.edit-eyebrow {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--sage-ink); margin-bottom: -8px;
-}
-.edit-label { font-size: 15px; font-weight: 500; color: var(--ink); }
+.edit-label { font-size: 15px; font-weight: 600; color: var(--ink); }
 
 .type-btns, .tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .type-btn, .tag-btn {
@@ -341,11 +322,13 @@ function removeAvoid(item) {
   animation: bt-pop 0.25s var(--ease-back) both;
 }
 .remove-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background: none;
   color: var(--sage-ink);
   opacity: 0.6;
-  font-size: 16px;
   line-height: 1;
   cursor: pointer;
   transition: opacity var(--t-fast) var(--ease);
@@ -390,7 +373,6 @@ function removeAvoid(item) {
   .view { max-width: 860px; }
 
   .page-header { margin-bottom: 28px; }
-  .page-title { font-size: 32px; }
   .page-desc { font-size: 14px; }
 
   /* View-mode cards: roomier 2-column grid, full-width concerns/avoid */

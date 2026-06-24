@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useToastStore } from '@/stores/toast'
+import Icon from '@/components/Icon.vue'
 
 const likes = useLikesStore()
 const productDetail = useProductDetailStore()
@@ -50,29 +51,34 @@ function unlike(product) {
 <template>
   <div class="view">
     <header class="page-header">
-      <p class="eyebrow">My Collection</p>
       <div class="title-row">
-        <h2 class="page-title serif">찜한 제품</h2>
+        <h2 class="page-title t-page">찜한 제품</h2>
         <span class="count">총 {{ likedProducts.length }}개</span>
       </div>
     </header>
 
-    <p v-if="loading && !likedProducts.length" class="loading-msg">
-      <span class="dots"><i></i><i></i><i></i></span>
-      찜한 제품을 불러오는 중...
-    </p>
+    <div v-if="loading && !likedProducts.length" class="product-grid" aria-hidden="true">
+      <article v-for="n in 6" :key="n" class="product-card skel">
+        <div class="product-image sk" />
+        <div class="product-body">
+          <div class="sk-line sk" style="width:40%" />
+          <div class="sk-line sk" style="width:80%" />
+          <div class="sk-line sk" style="width:55%" />
+        </div>
+      </article>
+    </div>
 
     <div v-else-if="loadError && !likedProducts.length" class="empty">
-      <p class="empty-icon">🌿</p>
+      <span class="empty-art"><Icon name="leaf" :size="40" /></span>
       <p class="empty-text serif">불러오지 못했어요.</p>
       <button class="retry-btn" @click="retry">다시 시도</button>
     </div>
 
     <div v-if="likedProducts.length" class="product-grid">
-      <article v-for="product in likedProducts" :key="product.id" class="product-card">
+      <article v-for="(product, i) in likedProducts" :key="product.id" class="product-card" :style="{ '--d': i * 40 + 'ms' }">
         <div class="product-image clickable" @click="productDetail.open(product)">
           <img v-if="product.image" :src="product.image" :alt="product.name" />
-          <div v-else class="img-placeholder">🧴</div>
+          <Icon v-else name="leaf" :size="36" class="img-placeholder" />
         </div>
         <div class="product-body">
           <div class="clickable" @click="productDetail.open(product)">
@@ -85,8 +91,8 @@ function unlike(product) {
               <a
                 v-if="product.oliveyoungUrl && product.oliveyoungUrl !== '#'"
                 :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer"
-                class="link-btn" aria-label="올리브영에서 보기">↗</a>
-              <button class="heart liked" aria-label="찜 해제" @click="unlike(product)">♥</button>
+                class="link-btn" aria-label="올리브영에서 보기"><Icon name="external" :size="14" /></a>
+              <button class="heart liked" aria-label="찜 해제" @click="unlike(product)"><Icon name="heart-fill" :size="15" /></button>
             </div>
           </div>
         </div>
@@ -94,7 +100,7 @@ function unlike(product) {
     </div>
 
     <div v-else-if="!loading && !loadError" class="empty">
-      <p class="empty-icon">🤍</p>
+      <span class="empty-art"><Icon name="leaf" :size="40" /></span>
       <p class="empty-text serif">아직 찜한 제품이 없어요.</p>
       <p class="empty-sub">챗봇에서 마음에 드는 제품에 <em>♡</em>를 눌러보세요.</p>
     </div>
@@ -106,16 +112,7 @@ function unlike(product) {
 
 /* Header */
 .page-header { margin-bottom: 20px; animation: bt-rise 0.5s var(--ease) both; }
-.eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-bottom: 6px;
-}
 .title-row { display: flex; align-items: center; gap: 12px; }
-.page-title { font-size: 25px; font-weight: 600; letter-spacing: -0.4px; color: var(--ink); }
 .count {
   font-size: 12px;
   font-weight: 600;
@@ -127,25 +124,19 @@ function unlike(product) {
   white-space: nowrap;
 }
 
-.loading-msg {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--ink-soft);
-  padding: 48px 0;
-  text-align: center;
+/* Skeleton */
+.skel { pointer-events: none; animation: none; }
+.sk { position: relative; overflow: hidden; background: var(--panel); }
+.sk::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.65) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: shimmer 1.3s infinite;
 }
-.dots { display: inline-flex; gap: 5px; }
-.dots i {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--sage);
-  animation: bt-pop 0.9s var(--ease) infinite;
-}
-.dots i:nth-child(2) { animation-delay: 0.15s; opacity: 0.7; }
-.dots i:nth-child(3) { animation-delay: 0.3s; opacity: 0.45; }
+.sk-line { height: 11px; border-radius: 6px; margin: 7px 0; }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
 
 /* Grid: 2-column arch cards */
 .product-grid {
@@ -159,18 +150,16 @@ function unlike(product) {
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--line-soft);
-  box-shadow: var(--sh-sm);
+  box-shadow: var(--sh-soft);
   transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
-  animation: bt-rise 0.5s var(--ease) both;
+  animation: card-in 0.5s var(--ease) both;
+  animation-delay: var(--d, 0ms);
 }
-.product-grid .product-card:nth-child(2) { animation-delay: 0.05s; }
-.product-grid .product-card:nth-child(3) { animation-delay: 0.1s; }
-.product-grid .product-card:nth-child(4) { animation-delay: 0.15s; }
-.product-grid .product-card:nth-child(n+5) { animation-delay: 0.2s; }
-.product-card:active { transform: scale(0.985); box-shadow: var(--sh-sm); }
+.product-card:active { transform: scale(0.985); box-shadow: var(--sh-soft); }
 @media (hover: hover) {
-  .product-card:hover { transform: translateY(-3px); box-shadow: var(--sh-md); }
+  .product-card:hover { transform: translateY(-4px); box-shadow: var(--sh-hover); }
 }
+@keyframes card-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 /* Arch frame image */
 .product-image {
@@ -190,14 +179,14 @@ function unlike(product) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--t-slow) var(--ease);
+  transition: transform .6s var(--ease);
 }
 @media (hover: hover) {
   .product-card:hover .product-image img { transform: scale(1.05); }
 }
 .clickable { cursor: pointer; }
 .product-body .clickable:hover .name { text-decoration: underline; }
-.img-placeholder { font-size: 46px; position: relative; z-index: 1; }
+.img-placeholder { color: var(--sage); opacity: .5; position: relative; z-index: 1; }
 
 .product-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; }
 .brand {
@@ -264,7 +253,11 @@ function unlike(product) {
   text-align: center;
   animation: bt-rise 0.5s var(--ease) both;
 }
-.empty-icon { font-size: 42px; }
+.empty-art {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sage-soft); color: var(--sage-ink);
+}
 .empty-text { font-size: 18px; font-weight: 600; color: var(--ink); }
 .empty-sub { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
 .empty-sub em { color: var(--rose); font-style: normal; }
@@ -273,12 +266,17 @@ function unlike(product) {
   color: var(--ink); background: var(--card); border: 1px solid var(--line); box-shadow: var(--sh-sm);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .product-card { animation: none; }
+  .sk::after { animation: none; }
+  .product-card:hover .product-image img { transform: none; }
+}
+
 /* ===== Desktop (≥900px) ===== */
 @media (min-width: 900px) {
   .view { max-width: 900px; }
 
   .page-header { margin-bottom: 28px; }
-  .page-title { font-size: 30px; }
 
   /* 3-column arch-card grid */
   .product-grid {

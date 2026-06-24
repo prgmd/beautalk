@@ -6,6 +6,7 @@ import { useAvatarStore } from '@/stores/avatar'
 import { useToastStore } from '@/stores/toast'
 import { useConfirmStore } from '@/stores/confirm'
 import { AVATARS, avatarSrc } from '@/utils/avatars'
+import Icon from '@/components/Icon.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -96,8 +97,7 @@ function getInitials(email) {
 <template>
   <div class="view">
     <header class="page-header">
-      <p class="eyebrow">Account · 내 계정</p>
-      <h2 class="page-title serif">계정</h2>
+      <h2 class="page-title t-page">계정</h2>
     </header>
 
     <!-- 계정 정보 카드 -->
@@ -151,7 +151,7 @@ function getInitials(email) {
       <p class="section-title">계정 관리</p>
       <div class="action-card" role="button" tabindex="0" @click="logout" @keydown.enter="logout" @keydown.space.prevent="logout">
         <div class="action-left">
-          <span class="action-icon">→</span>
+          <span class="action-icon"><Icon name="arrow-left" :size="16" /></span>
           <div>
             <p class="action-label">로그아웃</p>
             <p class="action-desc">이 기기에서 로그아웃합니다</p>
@@ -166,7 +166,7 @@ function getInitials(email) {
       <p class="section-title danger-title">위험 영역</p>
       <div class="action-card danger-card" role="button" tabindex="0" @click="openWithdraw" @keydown.enter="openWithdraw" @keydown.space.prevent="openWithdraw">
         <div class="action-left">
-          <span class="action-icon">⚠️</span>
+          <span class="action-icon"><Icon name="trash" :size="17" /></span>
           <div>
             <p class="action-label danger-label">회원 탈퇴</p>
             <p class="action-desc">프로필 · 추천 기록 · 찜 등 모든 데이터 삭제</p>
@@ -180,7 +180,7 @@ function getInitials(email) {
     <div v-if="showWithdrawModal" class="modal-overlay" @click="closeWithdraw">
       <div class="modal" @click.stop>
         <span class="grab-handle" aria-hidden="true"></span>
-        <p class="modal-eyebrow">Danger Zone</p>
+        <p class="modal-eyebrow">위험</p>
         <h3 class="serif">정말 탈퇴하시겠어요?</h3>
         <p>프로필, 추천 기록, 찜한 제품 등 모든 데이터가 영구 삭제됩니다. 이 작업은 되돌릴 수 없어요.</p>
         <p v-if="errorMsg" class="modal-error">{{ errorMsg }}</p>
@@ -200,11 +200,6 @@ function getInitials(email) {
 
 /* Header */
 .page-header { animation: bt-rise 0.4s var(--ease) both; }
-.eyebrow {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--sage-ink); margin-bottom: 6px;
-}
-.page-title { font-size: 26px; font-weight: 500; letter-spacing: -0.4px; line-height: 1.15; }
 
 /* Account identity card */
 .account-card {
@@ -217,7 +212,7 @@ function getInitials(email) {
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
   padding: 20px 22px;
-  box-shadow: var(--sh-sm);
+  box-shadow: var(--sh-soft);
   animation: bt-rise 0.45s var(--ease) 0.04s both;
 }
 .leaf {
@@ -296,14 +291,14 @@ function getInitials(email) {
   border-radius: var(--radius-lg);
   padding: 16px 18px;
   cursor: pointer;
-  box-shadow: var(--sh-sm);
+  box-shadow: var(--sh-soft);
   transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
 }
-.action-card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.action-card:hover { transform: translateY(-2px); box-shadow: var(--sh-hover); }
 .action-card:active { transform: scale(.99); }
 
 .action-left { display: flex; align-items: center; gap: 12px; }
-.action-icon { font-size: 17px; width: 24px; text-align: center; color: var(--ink-soft); }
+.action-icon { width: 24px; display: flex; align-items: center; justify-content: center; color: var(--ink-soft); }
 .action-label { font-size: 15px; font-weight: 500; color: var(--ink); }
 .action-desc { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
 .chevron { font-size: 20px; color: var(--ink-faint); transition: transform var(--t-fast) var(--ease); }
@@ -316,7 +311,7 @@ function getInitials(email) {
   background: var(--danger-bg);
 }
 .danger-card .action-icon { color: var(--danger); }
-.danger-card:hover { background: var(--danger-bg); box-shadow: var(--sh-md); }
+.danger-card:hover { background: var(--danger-bg); box-shadow: var(--sh-hover); }
 .danger-label { color: var(--danger); }
 
 /* Modal — mobile bottom sheet */
@@ -395,7 +390,6 @@ function getInitials(email) {
 @media (min-width: 900px) {
   .view { max-width: 640px; }
 
-  .page-title { font-size: 32px; }
 
   .account-card { padding: 24px 26px; }
   .avatar { width: 60px; height: 60px; font-size: 17px; }

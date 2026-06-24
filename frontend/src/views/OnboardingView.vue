@@ -162,7 +162,7 @@ function goChat() {
     <!-- 앱바 + 진행 -->
     <header class="appbar">
       <div class="ab-top">
-        <span class="eyebrow">your profile</span>
+        <span class="eyebrow">프로필 설정</span>
         <div class="ab-right">
           <span class="ab-step">{{ Math.min(step, 3) }} <span class="ab-of">/ 3</span></span>
           <button v-if="step < 4" class="skip-btn" @click="skipOnboarding">건너뛰기 ›</button>

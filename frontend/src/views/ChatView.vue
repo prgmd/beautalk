@@ -6,6 +6,7 @@ import { useProductDetailStore } from '@/stores/productDetail'
 import { useConfirmStore } from '@/stores/confirm'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import DewyLoader from '@/components/DewyLoader.vue'
+import Icon from '@/components/Icon.vue'
 import { FORM_OPTIONS, PRICE_BANDS, formLabel } from '@/utils/forms'
 
 const chat = useChatStore()
@@ -141,26 +142,25 @@ function formatPrice(n) {
       <template v-else-if="chat.recommendBatch">
         <!-- 완화 안내: 조건이 부족해 일부 풀었을 때 -->
         <div v-if="chat.recommendBatch.constraints?.relaxed" class="relax-banner">
-          <span class="rb-ic">ⓘ</span>{{ chat.recommendBatch.constraints.note }}
+          <span class="rb-ic"><Icon name="info" :size="14" /></span>{{ chat.recommendBatch.constraints.note }}
         </div>
 
         <div class="result-head">
-          <span class="eyebrow">your edit</span>
           <p class="result-summary serif">{{ chat.recommendBatch.content }}</p>
         </div>
 
         <div class="rec-list">
-          <article v-for="product in chat.recommendBatch.products" :key="product.id" class="rec-card">
+          <article v-for="(product, index) in chat.recommendBatch.products" :key="product.id" class="rec-card" :style="{ '--d': index * 40 + 'ms' }">
             <div class="rec-arch" @click="productDetail.open(product)">
               <img v-if="product.image" :src="product.image" :alt="product.name" />
-              <span v-else class="rec-ph">🧴</span>
+              <Icon v-else name="leaf" :size="38" class="rec-ph" />
               <button
                 class="rec-heart"
                 :class="{ liked: likes.isLiked(product.id) }"
                 :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
                 :aria-pressed="likes.isLiked(product.id)"
                 @click.stop="likes.toggleLike(product)"
-              >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
+              ><Icon :name="likes.isLiked(product.id) ? 'heart-fill' : 'heart'" :size="16" /></button>
             </div>
             <div
               class="rec-meta" role="button" tabindex="0"
@@ -190,7 +190,7 @@ function formatPrice(n) {
             <a
               v-if="product.oliveyoungUrl && product.oliveyoungUrl !== '#'"
               :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer" class="rec-link"
-            >올리브영에서 보기 ↗</a>
+            >올리브영에서 보기 <Icon name="external" :size="14" /></a>
           </article>
         </div>
 
@@ -206,15 +206,18 @@ function formatPrice(n) {
           <div class="empty-orb">
             <DewyLoader :size="96" />
           </div>
-          <span class="eyebrow">consultation</span>
           <h1 class="empty-title serif">맑게 비치는<br><em>당신의 피부</em></h1>
           <p class="empty-desc">피부 고민을 편하게 적어주세요. 저장된 프로필을 참고해 맞춤 추천을 드려요.</p>
+          <p class="ex-label">이렇게 물어보세요</p>
           <div class="examples">
             <button
               v-for="p in EXAMPLE_PROMPTS" :key="p"
               class="example"
               @click="sendMessage(p)"
-            >{{ p }}</button>
+            >
+              <Icon name="chat" :size="15" class="ex-ic" />
+              <span class="ex-text">“{{ p }}”</span>
+            </button>
           </div>
         </div>
 
@@ -279,7 +282,7 @@ function formatPrice(n) {
         <p v-if="!showFilters && filterSummary" class="filter-summary">적용: {{ filterSummary }}</p>
 
         <button class="reco-btn" :class="{ ready: chat.ready }" @click="getRecommendations()">
-          <span class="lf">✦</span> 추천 3개 받기{{ chat.ready ? ' · 준비됐어요' : '' }}
+          <span class="lf"><Icon name="sparkle" :size="16" /></span> 추천 3개 받기{{ chat.ready ? ' · 준비됐어요' : '' }}
         </button>
       </div>
 
@@ -337,13 +340,21 @@ function formatPrice(n) {
 .empty-title { font-size: 26px; font-weight: 400; line-height: 1.25; letter-spacing: -.3px; }
 .empty-title em { font-style: italic; }
 .empty-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; max-width: 300px; }
-.examples { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 8px; }
-.example {
-  padding: 13px 16px; background: var(--card); border: 1px solid var(--line-soft);
-  border-radius: var(--radius); font-size: 14px; text-align: left; box-shadow: var(--sh-sm);
-  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+.ex-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--ink-faint);
+  margin-top: 14px; margin-bottom: 2px;
 }
-.example:active { transform: scale(.98); box-shadow: var(--sh-sm); }
+.examples { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.example {
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 15px; background: var(--sheet); border: 1px dashed var(--line-strong);
+  border-radius: var(--radius); text-align: left;
+  transition: transform var(--t) var(--ease), background var(--t-fast), border-color var(--t-fast);
+}
+.example .ex-ic { color: var(--sage); flex-shrink: 0; }
+.example .ex-text { font-size: 13.5px; color: var(--ink-soft); }
+.example:hover { background: var(--card); border-color: var(--sage); }
+.example:active { transform: scale(.98); }
 
 /* ── 메시지 ── */
 .msg { display: flex; gap: 9px; margin-bottom: 14px; align-items: flex-end; animation: bt-rise .35s var(--ease) both; }
@@ -482,17 +493,19 @@ function formatPrice(n) {
 .rec-list { display: flex; flex-direction: column; gap: 16px; }
 .rec-card {
   background: var(--card); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
-  padding: 12px; box-shadow: var(--sh-sm); animation: bt-rise .5s var(--ease) both;
+  padding: 12px; box-shadow: var(--sh-soft);
+  animation: card-in .5s var(--ease) both; animation-delay: var(--d, 0ms);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
-.rec-card:nth-child(2) { animation-delay: .07s; }
-.rec-card:nth-child(3) { animation-delay: .14s; }
+.rec-card:hover { transform: translateY(-4px); box-shadow: var(--sh-hover); }
 .rec-arch {
   position: relative; aspect-ratio: 16/10; border-radius: 90px 90px 12px 12px; overflow: hidden;
   background: linear-gradient(170deg,#EFE7DB,#E6E3D0 60%,#DEE7DF); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.rec-arch img { width: 100%; height: 100%; object-fit: cover; }
-.rec-ph { font-size: 40px; position: relative; }
+.rec-arch img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.rec-card:hover .rec-arch img { transform: scale(1.06); }
+.rec-ph { color: var(--sage); opacity: .5; }
 .rec-heart {
   position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
   background: rgba(28,22,16,.42); border: 1px solid rgba(255,255,255,.35);
@@ -520,6 +533,12 @@ function formatPrice(n) {
 }
 .ghost-btn { padding: 10px 18px; border-radius: 99px; border: 1px solid var(--line); background: var(--sheet); font-size: 13px; }
 .primary-btn { padding: 10px 18px; border-radius: 99px; border: none; background: var(--ink); color: var(--canvas); font-size: 13px; font-weight: 600; box-shadow: var(--sh-ink); }
+
+@keyframes card-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .rec-card { animation: none; }
+  .rec-card:hover .rec-arch img { transform: none; }
+}
 
 /* ── 데스크탑(≥900px) ── */
 @media (min-width: 900px) {

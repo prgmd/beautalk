@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useCommunityStore, CATEGORIES } from '@/stores/community'
 import { formatRelative } from '@/utils/datetime'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
+import Icon from '@/components/Icon.vue'
 
 const router = useRouter()
 const community = useCommunityStore()
@@ -28,11 +29,8 @@ function write() {
   <div class="screen">
     <div class="main">
       <header class="appbar">
-        <div>
-          <span class="eyebrow">community</span>
-          <h1 class="title serif">커뮤니티</h1>
-        </div>
-        <button class="write-btn" @click="write"><span class="plus">＋</span> 글쓰기</button>
+        <h1 class="title t-page">커뮤니티</h1>
+        <button class="write-btn" @click="write"><Icon name="plus" :size="16" /> 글쓰기</button>
       </header>
 
       <!-- 카테고리 필터 -->
@@ -49,11 +47,19 @@ function write() {
 
       <div class="body">
         <p v-if="community.error" class="msg err">{{ community.error }}</p>
-        <p v-if="community.loading && !community.posts.length" class="msg">불러오는 중...</p>
+
+        <!-- 스켈레톤 -->
+        <ul v-if="community.loading && !community.posts.length" class="list" aria-hidden="true">
+          <li v-for="n in 5" :key="n" class="post skel">
+            <div class="sk-line sk" style="width:55%" />
+            <div class="sk-line sk" style="width:35%; margin-top:12px" />
+          </li>
+        </ul>
 
         <ul v-if="community.posts.length" class="list">
           <li
-            v-for="post in community.posts" :key="post.id" class="post"
+            v-for="(post, i) in community.posts" :key="post.id" class="post"
+            :style="{ '--d': i * 30 + 'ms' }"
             role="button" tabindex="0"
             @click="openPost(post.id)"
             @keydown.enter="openPost(post.id)"
@@ -61,7 +67,7 @@ function write() {
           >
             <div class="post-top">
               <span class="cat" :class="post.category">{{ post.category_label }}</span>
-              <span v-if="post.has_product" class="tag-ic" title="제품 태그">🏷</span>
+              <span v-if="post.has_product" class="tag-ic" title="제품 태그"><Icon name="tag" :size="13" /></span>
             </div>
             <h2 class="post-title">{{ post.title }}</h2>
             <div class="post-meta">
@@ -69,14 +75,14 @@ function write() {
               <span class="dot">·</span>
               <span>{{ formatRelative(post.created_at) }}</span>
               <span class="spacer" />
-              <span class="stat">💬 {{ post.comment_count }}</span>
-              <span class="stat">♡ {{ post.like_count }}</span>
+              <span class="stat"><Icon name="chat" :size="13" /> {{ post.comment_count }}</span>
+              <span class="stat"><Icon name="heart" :size="13" /> {{ post.like_count }}</span>
             </div>
           </li>
         </ul>
 
         <div v-if="!community.loading && !community.posts.length && !community.error" class="empty">
-          <p class="empty-icon">🌿</p>
+          <span class="empty-art"><Icon name="leaf" :size="40" /></span>
           <p class="empty-text">아직 글이 없어요. 첫 글을 남겨보세요.</p>
           <button class="empty-cta" @click="write">글쓰기</button>
         </div>
@@ -87,7 +93,7 @@ function write() {
       </div>
 
       <!-- 모바일 플로팅 글쓰기 버튼 -->
-      <button class="fab" @click="write" aria-label="글쓰기">＋</button>
+      <button class="fab" @click="write" aria-label="글쓰기"><Icon name="plus" :size="22" /></button>
     </div>
 
     <GlobalSidebar />
@@ -102,15 +108,13 @@ function write() {
   flex-shrink: 0; display: flex; align-items: flex-end; justify-content: space-between;
   padding: calc(12px + env(safe-area-inset-top)) 20px 6px;
 }
-.eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--sage); }
-.title { font-size: 26px; font-weight: 500; letter-spacing: -.3px; margin-top: 4px; }
+.title { margin: 0; }
 .write-btn {
   display: none; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 99px;
   background: var(--ink); color: var(--canvas); font-size: 13px; font-weight: 600; box-shadow: var(--sh-ink);
   transition: transform var(--t-fast) var(--ease);
 }
 .write-btn:active { transform: scale(.97); }
-.write-btn .plus { font-size: 15px; line-height: 1; }
 
 .filters {
   flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto;
@@ -131,11 +135,11 @@ function write() {
 .list { display: flex; flex-direction: column; gap: 10px; }
 .post {
   background: var(--card); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
-  padding: 15px 16px; box-shadow: var(--sh-sm); cursor: pointer;
-  animation: bt-rise .35s var(--ease) both;
+  padding: 15px 16px; box-shadow: var(--sh-soft); cursor: pointer;
+  animation: card-in .45s var(--ease) both; animation-delay: var(--d, 0ms);
   transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), border-color var(--t-fast);
 }
-.post:hover { transform: translateY(-2px); box-shadow: var(--sh-md); border-color: var(--line); }
+.post:hover { transform: translateY(-3px); box-shadow: var(--sh-hover); border-color: var(--line); }
 .post-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .cat {
   font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px;
@@ -143,7 +147,7 @@ function write() {
 }
 .cat.qna { background: var(--rose-soft); color: var(--rose-ink); }
 .cat.sale { background: #F5E6C8; color: #8A6A2A; }
-.tag-ic { font-size: 13px; opacity: .8; }
+.tag-ic { display: inline-flex; color: var(--ink-faint); opacity: .85; }
 .post-title { font-size: 15.5px; font-weight: 600; line-height: 1.4; letter-spacing: -.2px; color: var(--ink); }
 .post-meta {
   display: flex; align-items: center; gap: 6px; margin-top: 9px;
@@ -152,10 +156,23 @@ function write() {
 .post-meta .author { font-weight: 600; color: var(--ink-soft); }
 .post-meta .dot { opacity: .5; }
 .post-meta .spacer { flex: 1; }
-.post-meta .stat { color: var(--ink-soft); }
+.post-meta .stat { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-soft); }
 
-.empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 60px 0; text-align: center; }
-.empty-icon { font-size: 38px; }
+/* 스켈레톤 */
+.skel { pointer-events: none; animation: none; cursor: default; }
+.sk { position: relative; overflow: hidden; background: var(--panel); }
+.sk::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.65) 50%, transparent 80%);
+  transform: translateX(-100%); animation: shimmer 1.3s infinite;
+}
+.sk-line { height: 12px; border-radius: 6px; }
+
+.empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 0; text-align: center; }
+.empty-art {
+  width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--sage-soft); color: var(--sage-ink);
+}
 .empty-text { font-size: 14px; color: var(--ink-soft); }
 .empty-cta {
   margin-top: 4px; padding: 11px 24px; border-radius: 99px; background: var(--ink); color: var(--canvas);
@@ -174,10 +191,18 @@ function write() {
 .fab {
   position: absolute; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom));
   width: 54px; height: 54px; border-radius: 50%; background: var(--ink); color: var(--canvas);
-  font-size: 26px; line-height: 1; box-shadow: var(--sh-lg); z-index: 4;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; box-shadow: var(--sh-lg); z-index: 4;
   transition: transform var(--t-fast) var(--ease);
 }
 .fab:active { transform: scale(.93); }
+
+@keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .post { animation: none; }
+  .sk::after { animation: none; }
+}
 
 /* ── 데스크탑(≥900px) ── */
 @media (min-width: 900px) {
@@ -186,7 +211,6 @@ function write() {
   .appbar { padding: 28px 40px 6px; }
   .filters { padding: 12px 40px 14px; }
   .body { padding: 6px 40px 40px; }
-  .title { font-size: 30px; }
   .write-btn { display: inline-flex; }
   .fab { display: none; }
 }
