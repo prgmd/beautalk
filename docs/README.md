@@ -28,6 +28,7 @@
 | [chat-recommend-plan.md](chat-recommend-plan.md) | 대화/추천 단계 분리 설계 | 계약 확정·구현 완료 |
 | [rag.md](rag.md) | RAG(pgvector + 임베딩) 구현 정리 | 완료 |
 | [data-cleanup.md](data-cleanup.md) | 데이터 정제 (중복 53건·요약 백필) | 완료 |
+| [chatbot-quality-troubleshooting.md](chatbot-quality-troubleshooting.md) | 챗봇 대화 품질 진단·해결 (§3-F Phase 1~3) | 완료 |
 | [review-findings.md](review-findings.md) | 코드 전수 리뷰 결과 | 반영 완료 |
 
 > 기록 문서는 "왜 이렇게 짰나"를 추적할 때만 열면 된다. 새 작업은 항상 🔵·이 파일에서 시작.
@@ -56,7 +57,7 @@
 | **C. 데이터 품질 후속** | 백엔드 | 🟡 A의 선행 일부 | 가격·카테고리 정합성 |
 | **D. 커뮤니티 프론트** | 프론트 | 🟡 명세 필수 | 게시판 화면 5개 (백엔드는 끝남) |
 | **E. 배포·마무리** | 팀 | 🟢 막판 | AWS 배포·QA·발표 |
-| **F. 챗봇 대화 품질** | 백엔드 | 🟡 프롬프트 튜닝 | 의도 못 잡고 빙빙 돌려말함 |
+| **F. 챗봇 대화 품질** | 백엔드 | ✅ Phase 1~3 구현 | 의도 못 잡고 빙빙 돌려말함 → 해결 |
 
 ---
 
@@ -106,7 +107,8 @@
 > 운영 감시가 아니라 **개발 디버깅**이 진짜 목적 — 그래서 "마지막"이 아니라 "지금".
 
 - **LangChain(프레임워크)은 도입하지 않는다.** 이미 `_call_gms`가 30줄로 깔끔하고, 하이브리드는 Django ORM+pgvector 도메인 로직이라 LangChain이 오히려 방해.
-- **관측은 LangSmith로 확정** (웹 대시보드 원함). `@traceable` 데코레이터만 핵심 함수(`_extract_constraints`·`_call_gms`·`_recommend_candidates`)에 부착 → **LangChain 없이** 트레이스 UI 확보.
+- **✅ 배선 완료** — `@traceable`를 `_call_gms`·`_resolve_constraints`·`_recommend_candidates`에 부착. [chat/observability.py](../backend/chat/observability.py)가 langsmith 미설치/미설정 시 **no-op**라 안전.
+- **활성화(키 필요):** `pip install langsmith` + `.env`에 `LANGSMITH_TRACING=true`·`LANGSMITH_API_KEY=...`(·`LANGSMITH_PROJECT=beautalk`). 그러면 입력·출력·지연이 LangSmith 대시보드로.
   - 활용: 규칙 추출이 얼마나 놓치는지 관찰 → LLM 폴백 도입 시점 판단 근거.
 
 ---
@@ -141,7 +143,14 @@
 
 ---
 
-### F. 챗봇 대화 품질 〔개선 백로그〕
+### F. 챗봇 대화 품질 〔✅ Phase 1~3 구현됨〕
+
+> **해결 요약 (2026-06-24):** ① 프롬프트를 추천 필터 축(제품군·제형 enum·가격·고민)에 묶고
+> 못 쓰는 축(향료·성분·세부 텍스처·SPF)을 차단 + "모름/적당히" 수용·재질문 금지 규칙
+> ([_build_chat_prompt](../backend/chat/views.py)). ② LangSmith 관측 배선([observability.py](../backend/chat/observability.py)).
+> ③ 대화 중 실제 재고를 SQL로 읽어 주입(_availability_hint) — 봇이 데이터에 근거해 대화.
+> 라이브 검증: 빙빙 돌던 대화 → `ready=true` 직행, "5천원 선크림 없음 → 1만원대로?" 유도.
+> 아래는 원래 문제 분석(기록 보존).
 
 > **쉽게 말하면:** 대화 챗봇이 사용자 말귀를 못 알아듣고 같은 걸 빙빙 돌려 묻는다.
 > (2026-06-24 관찰) ① "선크림 성능 적당히 좋으면 됨"이라 해도 SPF 수치를 4번 반복 질문,

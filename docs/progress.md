@@ -124,7 +124,12 @@
   - [x] PostgreSQL 전용화 (SQLite 폴백 제거 — ArrayField/pgvector 의존)
   - [ ] A8 계약서 보완(추출 1급 승격·우선순위·하드/소프트 분리) / 라이브 회귀 테스트 보강
 - [ ] ~~LangChain 파이프라인화~~ — 도입 보류(직접 호출이 더 단순, README §3-B)
-- [ ] LLM 관측/추적 도입 (LangSmith `@traceable` — 프롬프트·추출·검색결과 추적, README §3-B)
+- [x] **LLM 관측 배선 (LangSmith `@traceable`)** — `_call_gms`·`_resolve_constraints`·`_recommend_candidates`에 부착, 미설정 시 no-op (chat/observability.py). 활성화는 키 설정만 하면 됨.
+- [x] **챗봇 대화 품질 개선 (README §3-F, Phase 1~3)**
+  - [x] 프롬프트 그라운딩 — 추천 필터 축(제품군·제형 enum·가격·고민)으로 질문 한정, 못 쓰는 축(향료·성분·SPF·세부 텍스처) 차단
+  - [x] 행동 규칙 — "모름/적당히" 수용·슬롯 스킵, 재질문 금지, 쉬운 말, 라벨 확인 떠넘김 금지, 제품군 특정 시 빠른 ready
+  - [x] 라이브 데이터 그라운딩 — 대화 중 실제 재고를 SQL로 읽어 주입(_availability_hint, A3+A4 재활용)
+  - [x] 가격 추출 천원·"N만M천원" 지원 보강
 
 ### 커뮤니티 — 용도별 게시판 (F1303 필수 요건) ✅ 백엔드 완료
 > 명세서 F1303(유저 소통)·F1304(RESTful)·NF1304(5페이지+) 충족용.

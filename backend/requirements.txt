@@ -6,6 +6,7 @@ django-cors-headers==4.9.0
 djangorestframework==3.17.1
 djangorestframework_simplejwt==5.5.1
 idna==3.18
+langsmith==0.7.37   # LLM 관측(선택). 미설정 시 chat/observability.py가 no-op 처리
 pgvector==0.4.2
 psycopg2-binary==2.9.10
 PyJWT==2.13.0

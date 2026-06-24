@@ -17,6 +17,7 @@ from accounts.models import SkinProfile, UserInfo
 from products.models import Product
 from .embeddings import embed_text
 from .models import Recommendation, RecommendedProduct
+from .observability import traceable
 from .serializers import RecommendationSerializer
 
 logger = logging.getLogger(__name__)
@@ -78,6 +79,7 @@ def _skin_block(user) -> str:
     )
 
 
+@traceable(name='gms_call')
 def _call_gms(messages, *, timeout=60):
     """GMS Chat Completions 호출. 성공 시 message content 문자열을 반환한다.
 
@@ -132,27 +134,66 @@ def _clean_history(raw_history):
 # 대화 — POST /api/v1/chat/
 # ──────────────────────────────────────────────
 
-def _build_chat_prompt(user) -> str:
-    """대화 단계 시스템 프롬프트. 한두 문장씩 짧게 답하면서 추천에 필요한
-    정보(원하는 제품군·향/가격대 선호 등)를 하나씩 물어본다.
+def _availability_hint(history) -> str:
+    """현재 대화의 제약으로 실제 재고를 SQL로 읽어 한 줄 요약한다 (라이브 그라운딩).
+
+    임베딩 없이 제약 추출(_resolve_constraints)+필터(_filtered_qs)를 재활용해, 봇이
+    "데이터에 실제로 뭐가 있는지"에 근거해 대화하게 한다(freestyle 방지). 제약이 하나도
+    없으면 빈 문자열(주입 안 함). 비용은 가벼운 count + min/max 쿼리뿐.
+    """
+    c = _resolve_constraints(history, None)
+    if not (c['forms'] or c['price_min'] is not None
+            or c['price_max'] is not None or c['categories']):
+        return ''
+
+    qs = _filtered_qs(Product.objects.exclude(ai_summary=''), c)
+    n = qs.count()
+    if n == 0:
+        return ('현재까지 파악된 조건에 맞는 제품이 0개입니다. '
+                '조건(가격대·제형)을 넓히도록 자연스럽게 유도하세요.')
+    prices = list(qs.values_list('price', flat=True))
+    return (f'현재 조건에 맞는 제품 약 {n}개 (가격 {min(prices):,}~{max(prices):,}원). '
+            f'충분하면 더 캐묻지 말고 추천으로 넘기세요.')
+
+
+def _build_chat_prompt(user, availability='') -> str:
+    """대화 단계 시스템 프롬프트.
+
+    추천이 실제로 쓸 수 있는 축(제품군·제형·가격대·피부고민)에만 대화를 묶는다(grounding).
+    데이터에 없는 속성(향료·성분·세부 텍스처·SPF 수치)은 묻지 않게 하고, '모름/상관없음'을
+    유효한 답으로 수용해 같은 질문으로 빙빙 도는 것을 막는다.
+    availability(현재 조건의 실제 재고 현황)가 있으면 주입해 데이터에 근거해 대화하게 한다.
     """
     categories = list(
         Product.objects.values_list('category', flat=True).distinct()
     )
     category_block = ', '.join(c for c in categories if c) or '(제품 정보 없음)'
+    form_block = ', '.join(label for _, label in Product.FORM_CHOICES)
+    availability_block = f'\n[현재 데이터 현황 — 근거로 삼으세요]\n{availability}\n' if availability else ''
 
     return f"""당신은 화장품 추천 상담 AI 'Beautalk'입니다.
-사용자 질문에 최대 2문장으로 짧게 답하고, 필요한 정보는 하나씩 물어보세요.
+사용자와 짧게 대화하며 추천에 필요한 정보를 모읍니다.
 
 [사용자 피부 프로필]
 {_skin_block(user)}
 
-[취급 제품군]
-{category_block}
+[추천에 쓰는 정보 — 이 안에서만 질문하세요]
+- 제품군(카테고리): {category_block}
+- 제형(원하면): {form_block}
+- 가격대(원하면): "2~3만원대", "2만원 이하" 같은 범위
+- 피부 고민: 위 프로필 참고 (없으면 한 번만 물어볼 수 있음)
+{availability_block}
+
+[절대 묻지 말 것 — 데이터에 없어 추천에 못 씀]
+- 향료/성분 포함 여부, 세부 텍스처(젤·스틱 등 제형 하위 구분), SPF 정확한 수치.
+- 이런 건 시스템이 거를 수 없으니 묻지 마세요. 사용자에게 "성분표를 확인하라"고 시키지 마세요.
 
 [대화 규칙]
-- 답변은 최대 2문장 (2-3줄)으로 짧게.
-- 한 번에 한 가지만 물어보세요.
+- 답변은 최대 2문장으로 짧게. 한 번에 한 가지만 물어보세요.
+- 사용자가 "모름/상관없음/적당히/아무거나"라고 하면 그것도 유효한 답입니다.
+  그 항목은 더 캐묻지 말고 넘어가세요. 같은 질문을 표현만 바꿔 반복하지 마세요.
+- 이미 답을 들은 항목은 다시 묻지 마세요.
+- 어려운 전문 용어 대신 쉬운 말로 설명하고, 용어부터 먼저 묻지 마세요.
 - 제품을 직접 나열/추천하지 마세요. 추천은 별도 단계에서 처리됩니다.
 - 화장품·스킨케어와 무관한 질문은 정중히 거절하고 다시 유도하세요.
 - 반드시 한국어로 답하세요.
@@ -161,7 +202,8 @@ def _build_chat_prompt(user) -> str:
 반드시 아래 JSON 형식으로만 답하세요:
 {{"content": "2문장 이내의 짧은 답변", "ready": true 또는 false}}
 - content: 채팅에 표시할 대화 답변 (2문장 이내, 제품 나열 금지)
-- ready: 추천을 의미 있게 할 만큼 정보(특히 원하는 제품군)가 모였으면 true, 아니면 false"""
+- ready: 원하는 제품군(또는 제형)이 특정되면 true. 가격·고민은 있으면 좋지만 필수 아님.
+  정보가 충분하면 더 묻지 말고 ready=true로 추천 단계에 넘기세요."""
 
 
 class ChatView(APIView):
@@ -184,7 +226,9 @@ class ChatView(APIView):
 
         history = _clean_history(request.data.get('history', []))
 
-        messages = [{'role': 'system', 'content': _build_chat_prompt(request.user)}]
+        # 방금 보낸 content까지 포함해 현재 제약의 실제 재고를 읽어 프롬프트에 주입(라이브 그라운딩).
+        availability = _availability_hint(history + [{'role': 'user', 'content': content}])
+        messages = [{'role': 'system', 'content': _build_chat_prompt(request.user, availability)}]
         messages.extend(history)
         messages.append({'role': 'user', 'content': content})
 
@@ -212,22 +256,33 @@ class ChatView(APIView):
 # ── 제약 추출 (규칙 기반) ────────────────────────────────
 # 자연어 발화 → 구조화 제약. 규칙으로 못 잡으면 빈손 → 필터 없이 폴백(fail-open).
 
+# "N만", "N천", "N만M천" 조합을 원으로. 둘 다 없으면 None.
+_PRICE_TOKEN = r'(?:(\d+)만)?(?:(\d+)천)?원'
+
+
+def _won(man, cheon):
+    return (int(man) if man else 0) * 10000 + (int(cheon) if cheon else 0) * 1000
+
+
 def _extract_price(text: str):
-    """발화에서 가격 하한/상한(원)을 추출한다. 못 잡으면 (None, None)."""
+    """발화에서 가격 하한/상한(원)을 추출한다. 만원·천원·"N만M천원"을 지원. 못 잡으면 (None, None)."""
     t = text.replace(',', '').replace(' ', '')
-    m = re.search(r'(\d+)\s*[~\-]\s*(\d+)\s*만원', t)     # "2~3만원"
+    m = re.search(r'(\d+)[~\-](\d+)만원', t)               # "2~3만원"
     if m:
         return int(m.group(1)) * 10000, int(m.group(2)) * 10000
-    m = re.search(r'(\d+)\s*만원\s*대', t)                 # "3만원대" → 3.0~3.9만
+    m = re.search(r'(\d+)[~\-](\d+)천원', t)               # "5~8천원"
+    if m:
+        return int(m.group(1)) * 1000, int(m.group(2)) * 1000
+    m = re.search(r'(\d+)만원대', t)                       # "3만원대" → 3.0~3.9만
     if m:
         base = int(m.group(1)) * 10000
         return base, base + 9999
-    m = re.search(r'(\d+)\s*만원\s*(이하|미만|아래|안쪽|이내)', t)
-    if m:
-        return None, int(m.group(1)) * 10000
-    m = re.search(r'(\d+)\s*만원\s*(이상|초과|넘|부터)', t)
-    if m:
-        return int(m.group(1)) * 10000, None
+    m = re.search(_PRICE_TOKEN + r'(이하|미만|아래|안쪽|이내)', t)   # "2만5천원 이하"
+    if m and (m.group(1) or m.group(2)):
+        return None, _won(m.group(1), m.group(2))
+    m = re.search(_PRICE_TOKEN + r'(이상|초과|넘|부터)', t)
+    if m and (m.group(1) or m.group(2)):
+        return _won(m.group(1), m.group(2)), None
     return None, None
 
 
@@ -247,6 +302,7 @@ def _extract_forms(text: str) -> list:
     return forms
 
 
+@traceable(name='resolve_constraints')
 def _resolve_constraints(history, filters) -> dict:
     """제약을 확정한다. 명시 filters가 추출값보다 우선하고, 빈 축만 발화 추출로 보강한다.
     enum 밖 form·뒤집힌 가격은 버린다(검증; 잘못된 추출이 엉뚱한 필터를 만들지 않게).
@@ -343,6 +399,7 @@ def _rank_candidates(qs, history):
     return list(qs.order_by('-review_count')[:RECOMMEND_POOL_SIZE])
 
 
+@traceable(name='recommend_candidates')
 def _recommend_candidates(history, filters=None):
     """대화(+선택적 filters)로 추천 후보를 추린다 — 하이브리드 검색의 핵심.
 
