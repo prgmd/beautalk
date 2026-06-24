@@ -13,10 +13,30 @@ const showWithdrawModal = ref(false)
 const withdrawing = ref(false)
 const errorMsg = ref('')
 
+// 닉네임 편집
+const nickname = ref(auth.user?.nickname || '')
+const nickSaving = ref(false)
+const nickMsg = ref('')
+
 // 진입 시 백엔드에서 최신 계정 정보를 불러온다(실패해도 기존 표시 유지).
-onMounted(() => {
-  auth.fetchAccount().catch(() => {})
+onMounted(async () => {
+  await auth.fetchAccount().catch(() => {})
+  nickname.value = auth.user?.nickname || ''
 })
+
+async function saveNickname() {
+  if (nickSaving.value) return
+  nickSaving.value = true
+  nickMsg.value = ''
+  try {
+    await auth.saveNickname(nickname.value.trim())
+    nickMsg.value = '저장됐어요.'
+  } catch (e) {
+    nickMsg.value = e?.data?.nickname?.[0] || '저장에 실패했어요.'
+  } finally {
+    nickSaving.value = false
+  }
+}
 
 async function logout() {
   await auth.serverLogout()
@@ -93,6 +113,25 @@ function getInitials(email) {
           <img :src="a.src" :alt="a.label" />
         </button>
       </div>
+    </section>
+
+    <!-- 닉네임 -->
+    <section class="section">
+      <p class="section-title">닉네임</p>
+      <div class="nick-row">
+        <input
+          v-model="nickname"
+          class="nick-input"
+          placeholder="닉네임 (최대 30자)"
+          maxlength="30"
+          @keyup.enter="saveNickname"
+        />
+        <button class="nick-save" :disabled="nickSaving" @click="saveNickname">
+          {{ nickSaving ? '저장 중…' : '저장' }}
+        </button>
+      </div>
+      <p class="nick-hint">커뮤니티에 표시되는 이름이에요. 비우면 이메일 앞부분이 보여요.</p>
+      <p v-if="nickMsg" class="nick-msg">{{ nickMsg }}</p>
     </section>
 
     <!-- 계정 관리 -->
@@ -208,6 +247,22 @@ function getInitials(email) {
 .avatar-choice:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
 .avatar-choice:active { transform: scale(.96); }
 .avatar-choice.on { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(126,139,109,.2); }
+
+/* 닉네임 */
+.nick-row { display: flex; gap: 8px; }
+.nick-input {
+  flex: 1; min-width: 0; padding: 12px 15px; border: 1px solid var(--line); border-radius: 14px;
+  font-size: 14px; background: var(--card); color: var(--ink); outline: none;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.nick-input:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(126,139,109,.15); }
+.nick-save {
+  flex-shrink: 0; padding: 12px 18px; border-radius: 14px; background: var(--ink); color: var(--canvas);
+  font-size: 13.5px; font-weight: 600; box-shadow: var(--sh-ink); transition: opacity var(--t-fast);
+}
+.nick-save:disabled { opacity: .5; }
+.nick-hint { font-size: 12px; color: var(--ink-faint); margin-top: 8px; line-height: 1.5; }
+.nick-msg { font-size: 12.5px; color: var(--sage-ink); margin-top: 4px; }
 .email { font-size: 17px; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
 .join-date { font-size: 12px; color: var(--ink-faint); margin-top: 3px; }
 
