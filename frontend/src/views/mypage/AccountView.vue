@@ -269,7 +269,6 @@ function getInitials(email) {
 }
 .nick-save:disabled { opacity: .5; }
 .nick-hint { font-size: 12px; color: var(--ink-faint); margin-top: 8px; line-height: 1.5; }
-.nick-msg { font-size: 12.5px; color: var(--sage-ink); margin-top: 4px; }
 .email { font-size: 17px; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
 .join-date { font-size: 12px; color: var(--ink-faint); margin-top: 3px; }
 

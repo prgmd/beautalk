@@ -336,7 +336,6 @@ function formatPrice(n) {
   text-align: center; padding: 20px 8px 40px; gap: 14px;
 }
 .empty-orb { margin-bottom: 4px; }
-.eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--sage); }
 .empty-title { font-size: 26px; font-weight: 400; line-height: 1.25; letter-spacing: -.3px; }
 .empty-title em { font-style: italic; }
 .empty-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; max-width: 300px; }
