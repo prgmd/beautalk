@@ -94,7 +94,7 @@ function formatPrice(n) {
     <!-- 앱바 -->
     <header class="appbar">
       <span class="ab-brand serif">beau<span class="it">talk</span></span>
-      <button class="ab-new" title="새 대화" @click="newChat">⟲</button>
+      <button class="ab-new" @click="newChat"><span class="abn-ic">⟲</span> 새 대화</button>
     </header>
 
     <!-- 추천 결과 화면 -->
@@ -278,12 +278,15 @@ function formatPrice(n) {
 .ab-brand { font-size: 21px; font-weight: 500; letter-spacing: -.3px; }
 .ab-brand .it { font-style: italic; color: var(--sage); }
 .ab-new {
-  width: 36px; height: 36px; border-radius: 50%;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 99px;
   border: 1px solid var(--line); background: var(--sheet); color: var(--ink-soft);
-  font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: var(--sh-sm);
-  transition: transform var(--t) var(--ease);
+  font-size: 13px; font-weight: 600; box-shadow: var(--sh-sm);
+  transition: transform var(--t) var(--ease), color var(--t-fast), border-color var(--t-fast);
 }
-.ab-new:active { transform: rotate(-180deg); }
+.ab-new .abn-ic { font-size: 15px; }
+.ab-new:hover { color: var(--ink); border-color: var(--ink-faint); }
+.ab-new:active { transform: scale(.97); }
 
 .body { flex: 1; min-height: 0; overflow-y: auto; }
 
@@ -439,18 +442,16 @@ function formatPrice(n) {
   background: linear-gradient(170deg,#EFE7DB,#E6E3D0 60%,#DEE7DF); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.rec-arch::before {
-  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 46%;
-  background: repeating-linear-gradient(180deg, transparent 0 9px, rgba(34,42,46,.05) 9px 10px);
-}
 .rec-arch img { width: 100%; height: 100%; object-fit: cover; }
 .rec-ph { font-size: 40px; position: relative; }
 .rec-heart {
-  position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(255,255,255,.9); box-shadow: var(--sh-sm); font-size: 14px; color: var(--rose);
+  position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(28,22,16,.42); border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,.28); backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); font-size: 15px; color: #fff;
   display: flex; align-items: center; justify-content: center;
 }
-.rec-heart.liked { background: var(--rose); color: #fff; }
+.rec-heart.liked { background: var(--rose); border-color: transparent; color: #fff; }
 .rec-meta { padding: 12px 6px 0; cursor: pointer; }
 .rec-brand { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-faint); }
 .rec-name { font-size: 15px; font-weight: 600; line-height: 1.35; margin: 4px 0 6px; }
