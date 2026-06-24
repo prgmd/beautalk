@@ -14,6 +14,8 @@ class UserInfo(models.Model):
     )
     email = models.EmailField(unique=True)
     auth_provider = models.CharField(max_length=10, choices=AUTH)
+    # 커뮤니티 표시명(사용자 편집형). 빈 값이면 화면에선 이메일 로컬파트로 대체.
+    nickname = models.CharField(max_length=30, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     # 상수는 클래스 위에 넣는 것이 관례

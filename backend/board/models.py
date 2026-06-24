@@ -23,11 +23,11 @@ class Post(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='free')
     title = models.CharField(max_length=200)
     content = models.TextField()
-    # 제품 태그(선택). 제품이 삭제돼도 글은 남도록 SET_NULL.
+    # 제품 태그(복수·선택). 글 하나에 여러 제품을 태그할 수 있다.
     # related_name='tagged_posts'로 '제품 → 그 제품이 태그된 글' 역참조를 연다.
-    product = models.ForeignKey(
-        'products.Product', null=True, blank=True,
-        on_delete=models.SET_NULL, related_name='tagged_posts',
+    # (제품이 삭제되면 M2M through 행만 사라지고 글은 남는다)
+    products = models.ManyToManyField(
+        'products.Product', blank=True, related_name='tagged_posts',
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

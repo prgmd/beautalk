@@ -26,5 +26,12 @@ class SkinProfileSerializer(serializers.ModelSerializer):
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
-        fields = ['email', 'auth_provider', 'created_at']
+        fields = ['email', 'auth_provider', 'nickname', 'created_at']
+        # nickname만 편집 가능(나머지는 가입 시 확정된 식별 정보).
         read_only_fields = ['email', 'auth_provider', 'created_at']
+
+    def validate_nickname(self, value):
+        value = (value or '').strip()
+        if len(value) > 30:
+            raise serializers.ValidationError('닉네임은 30자 이하여야 합니다.')
+        return value

@@ -140,3 +140,33 @@ class SkinProfileValidationTest(TestCase):
         }, format='json')
         self.assertEqual(res.status_code, 201)
         self.assertTrue(SkinProfile.objects.filter(user=self.user.userinfo).exists())
+
+
+class NicknameTest(TestCase):
+    """계정 닉네임 편집 (PATCH /api/v1/account/)"""
+
+    def setUp(self):
+        self.user = User.objects.create(username='kakao_1')
+        self.user_info = UserInfo.objects.create(
+            user=self.user, email='alice@kakao.com', auth_provider='kakao',
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_patch_updates_nickname(self):
+        res = self.client.patch('/api/v1/account/', {'nickname': '앨리스'}, format='json')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['nickname'], '앨리스')
+        self.user_info.refresh_from_db()
+        self.assertEqual(self.user_info.nickname, '앨리스')
+
+    def test_email_stays_read_only(self):
+        res = self.client.patch('/api/v1/account/',
+                                {'nickname': 'x', 'email': 'hacker@evil.com'}, format='json')
+        self.assertEqual(res.status_code, 200)
+        self.user_info.refresh_from_db()
+        self.assertEqual(self.user_info.email, 'alice@kakao.com')   # read_only라 무시
+
+    def test_rejects_too_long_nickname(self):
+        res = self.client.patch('/api/v1/account/', {'nickname': 'x' * 31}, format='json')
+        self.assertEqual(res.status_code, 400)

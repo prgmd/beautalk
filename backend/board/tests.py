@@ -34,13 +34,16 @@ class BoardTestBase(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
-    def _make_post(self, owner=None, **overrides):
+    def _make_post(self, owner=None, products=None, **overrides):
         defaults = dict(
             user=owner or self.user_info, category='free',
             title='제목', content='본문',
         )
         defaults.update(overrides)
-        return Post.objects.create(**defaults)
+        post = Post.objects.create(**defaults)
+        if products:
+            post.products.set(products)   # M2M은 저장 후 set
+        return post
 
 
 # ──────────────────────────────────────────────
@@ -79,30 +82,48 @@ class PostApiTest(BoardTestBase):
         product = _make_product()
         res = self.client.post('/api/v1/posts/', {
             'category': 'sale', 'title': '이거 세일중', 'content': '올영 50%',
-            'product_id': str(product.id),
+            'product_ids': [str(product.id)],
         }, format='json')
         self.assertEqual(res.status_code, 201)
-        self.assertEqual(res.data['product']['id'], str(product.id))   # 제품 카드 중첩
-        self.assertEqual(Post.objects.first().product, product)
+        self.assertEqual(res.data['products'][0]['id'], str(product.id))   # 제품 카드 중첩
+        self.assertEqual(Post.objects.first().products.first(), product)
+
+    def test_create_post_with_multiple_products(self):
+        p1 = _make_product()
+        p2 = _make_product(name='다른 제품', oliveyoung_url='https://oliveyoung.co.kr/p2')
+        res = self.client.post('/api/v1/posts/', {
+            'category': 'free', 'title': '둘 다 추천', 'content': '비교글',
+            'product_ids': [str(p1.id), str(p2.id)],
+        }, format='json')
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual({p['id'] for p in res.data['products']}, {str(p1.id), str(p2.id)})
+        self.assertEqual(Post.objects.first().products.count(), 2)
 
     def test_create_post_with_invalid_product_is_rejected(self):
         res = self.client.post('/api/v1/posts/', {
             'category': 'free', 'title': 't', 'content': 'c',
-            'product_id': str(uuid.uuid4()),
+            'product_ids': [str(uuid.uuid4())],
         }, format='json')
         self.assertEqual(res.status_code, 400)
         self.assertEqual(Post.objects.count(), 0)
 
-    def test_detail_includes_comments_and_product(self):
+    def test_detail_includes_comments_and_products(self):
         product = _make_product()
-        post = self._make_post(product=product)
+        post = self._make_post(products=[product])
         Comment.objects.create(post=post, user=self.other_info, content='댓글이요')
         res = self.client.get(f'/api/v1/posts/{post.id}/')
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.data['content'], '본문')
         self.assertEqual(len(res.data['comments']), 1)
         self.assertEqual(res.data['comments'][0]['author'], 'bob')
-        self.assertEqual(res.data['product']['id'], str(product.id))
+        self.assertEqual(res.data['products'][0]['id'], str(product.id))
+
+    def test_author_shows_nickname_when_set(self):
+        self.user_info.nickname = '앨리스'
+        self.user_info.save()
+        post = self._make_post()
+        res = self.client.get(f'/api/v1/posts/{post.id}/')
+        self.assertEqual(res.data['author'], '앨리스')   # 닉네임 우선
 
     def test_author_can_update_own_post(self):
         post = self._make_post(title='원본')
@@ -202,9 +223,9 @@ class ProductPostsTest(BoardTestBase):
     def test_returns_posts_tagged_with_product(self):
         product = _make_product()
         other_product = _make_product(name='다른 제품')
-        self._make_post(product=product, title='이 제품 후기')
-        self._make_post(product=product, title='이 제품 질문', category='qna')
-        self._make_post(product=other_product, title='무관한 글')
+        self._make_post(products=[product], title='이 제품 후기')
+        self._make_post(products=[product], title='이 제품 질문', category='qna')
+        self._make_post(products=[other_product], title='무관한 글')
         self._make_post(title='태그 없는 글')
 
         res = self.client.get(f'/api/v1/products/{product.id}/posts/')

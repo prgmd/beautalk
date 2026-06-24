@@ -43,8 +43,8 @@ class PostListCreateView(generics.ListCreateAPIView):
         # 작성자·제품을 미리 당겨 N+1을 줄인다.
         qs = (
             Post.objects
-            .select_related('user', 'product')
-            .prefetch_related('comments', 'likes')
+            .select_related('user')
+            .prefetch_related('products', 'comments', 'likes')
             .order_by('-created_at')
         )
         category = self.request.query_params.get('category')
@@ -68,8 +68,8 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = (
         Post.objects
-        .select_related('user', 'product')
-        .prefetch_related('comments__user', 'likes')
+        .select_related('user')
+        .prefetch_related('products', 'comments__user', 'likes')
     )
     serializer_class = PostDetailSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]

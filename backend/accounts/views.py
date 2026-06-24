@@ -339,7 +339,8 @@ class LogoutView(APIView):
 # ──────────────────────────────────────────────
 
 class AccountView(APIView):
-    """GET    /api/v1/account/  — 내 계정 정보 (이메일, 가입 경로, 가입일)
+    """GET    /api/v1/account/  — 내 계정 정보 (이메일, 가입 경로, 닉네임, 가입일)
+    PATCH  /api/v1/account/  — 계정 정보 수정 (닉네임)
     DELETE /api/v1/account/  — 회원 탈퇴
 
     탈퇴는 되돌릴 수 없는 작업이므로 다음 순서를 지킨다:
@@ -353,6 +354,15 @@ class AccountView(APIView):
 
     def get(self, request):
         return Response(UserInfoSerializer(request.user.userinfo).data)
+
+    def patch(self, request):
+        # 닉네임 등 편집 가능한 계정 정보 수정 (email/provider는 read_only라 무시됨)
+        serializer = UserInfoSerializer(
+            request.user.userinfo, data=request.data, partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     def delete(self, request):
         refresh_token = request.COOKIES.get(REFRESH_COOKIE_NAME)
