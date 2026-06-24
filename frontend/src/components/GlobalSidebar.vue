@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUiStore } from '@/stores/ui'
 import { useAvatarStore } from '@/stores/avatar'
+import { useConfirmStore } from '@/stores/confirm'
 import { avatarSrc } from '@/utils/avatars'
 
 const router = useRouter()
@@ -11,6 +12,7 @@ const route = useRoute()
 const auth = useAuthStore()
 const ui = useUiStore()
 const avatar = useAvatarStore()
+const confirm = useConfirmStore()
 
 // 상단 메뉴(이모지 없음). '내 정보'는 하단 프로필로 따로 둔다.
 const MENU = [
@@ -37,6 +39,11 @@ function goInfo() {
 }
 
 async function logout() {
+  if (!(await confirm.ask({
+    title: '로그아웃할까요?',
+    message: '이 기기에서 로그아웃됩니다.',
+    confirmText: '로그아웃',
+  }))) return
   await auth.serverLogout()
   router.push('/login')
 }
@@ -54,10 +61,13 @@ onMounted(() => {
   <nav class="appnav" :class="{ collapsed: ui.sidebarCollapsed }">
     <!-- 모바일: 하단 탭바 -->
     <div class="mtabs">
-      <button v-for="t in MENU" :key="t.key" class="mtab" :class="{ on: isActive(t.key) }" @click="go(t.path)">
+      <button
+        v-for="t in MENU" :key="t.key" class="mtab" :class="{ on: isActive(t.key) }"
+        :aria-current="isActive(t.key) ? 'page' : undefined" @click="go(t.path)"
+      >
         <span class="mlb">{{ t.label }}</span>
       </button>
-      <button class="mtab" :class="{ on: infoActive }" @click="goInfo">
+      <button class="mtab" :class="{ on: infoActive }" :aria-current="infoActive ? 'page' : undefined" @click="goInfo">
         <span class="mlb">내 정보</span>
       </button>
     </div>
@@ -76,20 +86,21 @@ onMounted(() => {
         <button
           v-for="t in MENU" :key="t.key"
           class="item" :class="{ on: isActive(t.key) }"
+          :aria-current="isActive(t.key) ? 'page' : undefined"
           @click="go(t.path)"
         >{{ t.label }}</button>
       </div>
 
       <div class="nav-foot">
         <span class="sec-label foot-label">내 정보</span>
-        <button class="profile" :class="{ on: infoActive }" @click="goInfo">
+        <button class="profile" :class="{ on: infoActive }" :aria-current="infoActive ? 'page' : undefined" @click="goInfo">
           <span class="avatar">
             <img v-if="avatar.selected" :src="avatarSrc(avatar.selected)" alt="" />
             <template v-else>{{ avatarChar }}</template>
           </span>
           <span class="p-meta">
             <span class="p-name">{{ displayName }}</span>
-            <span class="p-sub">찜·추천·프로필·계정</span>
+            <span class="p-sub">내 정보</span>
           </span>
         </button>
         <button class="logout" @click="logout">로그아웃</button>
@@ -115,9 +126,11 @@ onMounted(() => {
 }
 .mtab {
   flex: 1;
+  min-height: 44px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   padding: 6px 4px 4px;
   font-size: 12px;

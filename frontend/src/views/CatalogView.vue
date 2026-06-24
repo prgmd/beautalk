@@ -99,7 +99,7 @@ const isEmpty = computed(() => !loading.value && filtered.value.length === 0)
 onMounted(fetchAll)
 
 function formatPrice(n) {
-  return n?.toLocaleString('ko-KR') + '원'
+  return n != null ? n.toLocaleString('ko-KR') + '원' : '가격 정보 없음'
 }
 </script>
 
@@ -115,8 +115,8 @@ function formatPrice(n) {
 
       <!-- 검색 -->
       <div class="searchbar">
-        <span class="s-ic">🔎</span>
-        <input v-model="search" placeholder="제품·브랜드 검색" />
+        <span class="s-ic" aria-hidden="true">🔎</span>
+        <input v-model="search" type="search" enterkeyhint="search" aria-label="제품·브랜드 검색" placeholder="제품·브랜드 검색" />
         <button v-if="search" class="s-clear" @click="search = ''" aria-label="검색어 지우기">×</button>
       </div>
 
@@ -144,10 +144,17 @@ function formatPrice(n) {
               <button
                 class="heart"
                 :class="{ liked: likes.isLiked(product.id) }"
+                :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
+                :aria-pressed="likes.isLiked(product.id)"
                 @click.stop="likes.toggleLike(product)"
               >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
             </div>
-            <div class="meta" @click="productDetail.open(product)">
+            <div
+              class="meta" role="button" tabindex="0"
+              @click="productDetail.open(product)"
+              @keydown.enter.prevent="productDetail.open(product)"
+              @keydown.space.prevent="productDetail.open(product)"
+            >
               <p class="brand">{{ product.brand }}</p>
               <p class="name">{{ product.name }}</p>
               <p class="price serif">{{ formatPrice(product.price) }}</p>
@@ -157,7 +164,11 @@ function formatPrice(n) {
 
         <div v-if="isEmpty" class="empty">
           <p class="empty-icon">🌿</p>
-          <p class="empty-text">표시할 제품이 없어요.</p>
+          <template v-if="search || activeCategory">
+            <p class="empty-text">조건에 맞는 제품이 없어요.</p>
+            <button class="empty-cta" @click="search = ''; selectCategory('')">검색·필터 초기화</button>
+          </template>
+          <p v-else class="empty-text">표시할 제품이 없어요.</p>
         </div>
 
         <!-- 숫자 페이지네이션 -->
@@ -246,6 +257,10 @@ function formatPrice(n) {
 .empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 56px 0; text-align: center; }
 .empty-icon { font-size: 38px; }
 .empty-text { font-size: 14px; color: var(--ink-soft); }
+.empty-cta {
+  margin-top: 4px; padding: 9px 18px; border-radius: 99px; font-size: 13px; font-weight: 600;
+  color: var(--ink); background: var(--card); border: 1px solid var(--line); box-shadow: var(--sh-sm);
+}
 
 /* 숫자 페이지네이션 */
 .pager { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; flex-wrap: wrap; }

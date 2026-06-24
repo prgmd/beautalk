@@ -66,7 +66,7 @@ img { display:block; }
 
 /* 선택/포커스 */
 ::selection { background:rgba(126,139,109,.25); color:var(--ink); }
-:focus-visible { outline:2px solid var(--sage); outline-offset:2px; border-radius:4px; }
+:focus-visible { outline:2px solid var(--sage); outline-offset:2px; }
 
 /* 스크롤바 */
 * { scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent; }
