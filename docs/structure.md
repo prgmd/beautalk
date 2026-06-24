@@ -16,7 +16,7 @@ docker-compose.yml    # 로컬 개발 인프라 (PostgreSQL 16 + pgvector 컨테
 ```
 config/
 ├── settings.py       # Django 설정 (SIMPLE_JWT, CORS, Throttling, 환경변수 로드)
-│   └── DATABASES: 환경변수 기반 (DB_ENGINE 미설정 시 SQLite 폴백, 설정 시 PostgreSQL)
+│   └── DATABASES: PostgreSQL 전용 (.env의 DB_* 주입; pgvector·ArrayField 의존으로 SQLite 폴백 제거)
 ├── urls.py           # 루트 URL 라우팅 (accounts 앱 포함)
 
 accounts/
@@ -38,8 +38,9 @@ accounts/
 
 products/
 ├── models.py         # Product, Review, Like, InUseProduct 모델
-│   └── Product.embedding: VectorField(1536) — RAG 벡터 검색용 (pgvector)
-├── serializers.py    # ProductSerializer, LikeSerializer (제품 중첩)
+│   ├── Product.embedding: VectorField(1536) — RAG 벡터 검색용 (pgvector)
+│   └── Product.form: ArrayField(제형, 복수) — 하이브리드 SQL 필터 축 (FORM_CHOICES 10종)
+├── serializers.py    # ProductSerializer(form 포함), LikeSerializer (제품 중첩)
 ├── views.py          # 제품 조회 + 찜 API
 │   ├── ProductListView          # GET /api/v1/products/ (페이지네이션, ?category 필터)
 │   ├── ProductDetailView        # GET /api/v1/products/<uuid>/
@@ -47,19 +48,20 @@ products/
 │   ├── LikeDeleteView           # DELETE /api/v1/likes/<uuid>/ (product_id 기준, IDOR 방어)
 │   └── ProductPostsView         # GET /api/v1/products/<uuid>/posts/ (역참조: 제품 태그된 글)
 ├── management/commands/
-│   └── backfill_embeddings.py   # 제품 → 임베딩 일괄 적재 (seed 미포함, 재생성)
+│   ├── backfill_embeddings.py   # 제품 → 임베딩 일괄 적재 (seed 미포함, 재생성)
+│   └── backfill_form.py         # 제품명 규칙 파싱 → Product.form 백필 (멀티값, dry-run/--apply)
 ├── urls.py           # products 앱 URL 라우팅
 ├── tests.py          # 찜·제품 API 테스트 8가지
 
 chat/
 ├── models.py         # Recommendation 모델
-├── serializers.py    # RecommendationSerializer
+├── serializers.py    # RecommendationSerializer (제품별 form·meets 충족여부 포함)
 ├── embeddings.py     # GMS 임베딩 호출 (text-embedding-3-small) — 백필·검색 공용
 ├── views.py          # 챗봇 + 추천 + 추천 기록 API
 │   ├── ChatView                     # POST /api/v1/chat/ (GMS LLM 호출, Stateless)
-│   ├── RecommendView                # POST /api/v1/recommend/ (배치 생성)
-│   │   ├── _recommend_candidates()  # 대화 임베딩 → pgvector 코사인 top-N (RAG, 실패 시 리뷰순 폴백)
-│   │   └── _build_recommend_prompt()# 검색된 후보 제품 → 시스템 프롬프트 조립
+│   ├── RecommendView                # POST /api/v1/recommend/ (배치 생성, 선택적 filters)
+│   │   ├── _recommend_candidates()  # 하이브리드: 제약추출 → SQL필터(form/price/category) → 단계적완화 → 임베딩 코사인 top-N
+│   │   └── _build_recommend_prompt()# 후보(가격·제형 포함) → 시스템 프롬프트 조립
 │   └── RecommendationListView       # GET /api/v1/recommendations/
 ├── urls.py           # chat 앱 URL 라우팅
 ├── tests.py          # 챗봇·추천(RAG 포함)·기록 테스트 (chat 22가지)

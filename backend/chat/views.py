@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 
 import requests as http
 from django.db import transaction
@@ -31,6 +32,25 @@ ERR_CONNECT = 'AI 서버 연결에 실패했습니다. 잠시 후 다시 시도�
 # 전 제품 주입 없이 작게 유지해도 충분하다(토큰 절약 + 추천 품질).
 RECOMMEND_POOL_SIZE = 15
 RECOMMEND_SUMMARY_LIMIT = 150
+
+# 하이브리드 필터 — 후보가 이 수 미만이면 제약을 단계적으로 완화한다.
+# 추천은 3개라 후보 ≥3이면 답을 만들 수 있어, 3 미만일 때만 완화(조건 위반 최소화).
+MIN_POOL = 3
+PRICE_RELAX = 10000  # 완화 1단계: 가격대 ±1만원 확장
+
+# 사용자 발화에서 제형 의도를 뽑을 키워드. backfill_form의 제품명 규칙과 키셋은 같지만,
+# 여기선 '사용자 요청 문장'을 파싱한다(브라켓·카테고리 폴백 없음).
+_SUN_KEYWORDS = ['선크림', '썬크림', '선세럼', '선블록', '선스틱', '선스크린', '썬스크린', '자차']
+_FORM_KEYWORDS = [
+    ('toner', ['토너', '스킨']),
+    ('lotion', ['로션', '에멀전', '유액']),
+    ('essence', ['에센스']),
+    ('serum', ['세럼', '앰플']),
+    ('cream', ['크림']),
+    ('mist', ['미스트']),
+    ('pad', ['패드']),
+    ('mask', ['마스크', '팩']),
+]
 
 
 # ──────────────────────────────────────────────
@@ -189,17 +209,126 @@ class ChatView(APIView):
 # 추천 — POST /api/v1/recommend/
 # ──────────────────────────────────────────────
 
-def _recommend_candidates(history):
-    """대화 맥락으로 추천 후보 제품을 추린다 (RAG 검색 단계).
+# ── 제약 추출 (규칙 기반) ────────────────────────────────
+# 자연어 발화 → 구조화 제약. 규칙으로 못 잡으면 빈손 → 필터 없이 폴백(fail-open).
 
-    임베딩이 적재돼 있으면 대화를 벡터로 변환해 코사인 거리로 가까운 제품을 검색하고,
-    임베딩이 없거나(백필 전·테스트) 임베딩 호출이 실패하면 리뷰순으로 폴백한다.
-    어떤 경우에도 추천이 멈추지 않도록 항상 후보 리스트를 반환한다.
+def _extract_price(text: str):
+    """발화에서 가격 하한/상한(원)을 추출한다. 못 잡으면 (None, None)."""
+    t = text.replace(',', '').replace(' ', '')
+    m = re.search(r'(\d+)\s*[~\-]\s*(\d+)\s*만원', t)     # "2~3만원"
+    if m:
+        return int(m.group(1)) * 10000, int(m.group(2)) * 10000
+    m = re.search(r'(\d+)\s*만원\s*대', t)                 # "3만원대" → 3.0~3.9만
+    if m:
+        base = int(m.group(1)) * 10000
+        return base, base + 9999
+    m = re.search(r'(\d+)\s*만원\s*(이하|미만|아래|안쪽|이내)', t)
+    if m:
+        return None, int(m.group(1)) * 10000
+    m = re.search(r'(\d+)\s*만원\s*(이상|초과|넘|부터)', t)
+    if m:
+        return int(m.group(1)) * 10000, None
+    return None, None
+
+
+def _extract_forms(text: str) -> list:
+    """발화에서 제형 키 리스트를 추출한다. 선크림류를 먼저 처리해 '크림' 오인을 막는다."""
+    t = text.replace(' ', '').replace('스킨케어', '').lower()  # '스킨케어'는 토너(스킨) 오인 방지
+    forms = []
+    if any(k in t for k in _SUN_KEYWORDS):
+        forms.append('suncream')
+        for k in _SUN_KEYWORDS:
+            t = t.replace(k, '')   # 선크림류 제거 후 '크림/세럼' 가산 매칭
+    if any(k in t for k in ['클렌저', '클렌징', '클렌즈']):
+        forms.append('cleanser')
+    for form, keywords in _FORM_KEYWORDS:
+        if form not in forms and any(k in t for k in keywords):
+            forms.append(form)
+    return forms
+
+
+def _resolve_constraints(history, filters) -> dict:
+    """제약을 확정한다. 명시 filters가 추출값보다 우선하고, 빈 축만 발화 추출로 보강한다.
+    enum 밖 form·뒤집힌 가격은 버린다(검증; 잘못된 추출이 엉뚱한 필터를 만들지 않게).
     """
-    base = Product.objects.exclude(ai_summary='')
-    embedded = base.exclude(embedding__isnull=True)
+    text = ' '.join(h['content'] for h in history if h.get('role') == 'user')
+    pmin, pmax = _extract_price(text)
+    ex = {'forms': _extract_forms(text), 'price_min': pmin, 'price_max': pmax, 'categories': []}
 
-    # 임베딩이 하나도 없으면 GMS를 부르지 않고 바로 폴백 (불필요한 비용·네트워크 방지)
+    f = filters or {}
+    valid_forms = {k for k, _ in Product.FORM_CHOICES}
+    out = {
+        'forms': [x for x in (f.get('forms') or ex['forms']) if x in valid_forms],
+        'price_min': f.get('price_min') if f.get('price_min') is not None else ex['price_min'],
+        'price_max': f.get('price_max') if f.get('price_max') is not None else ex['price_max'],
+        'categories': list(f.get('categories') or ex['categories']),
+    }
+    # 가격이 뒤집혔으면(min>max) 둘 다 버림 — 잘못된 입력으로 0건 만들지 않게.
+    if out['price_min'] is not None and out['price_max'] is not None \
+            and out['price_min'] > out['price_max']:
+        out['price_min'] = out['price_max'] = None
+    return out
+
+
+# ── SQL 필터 + 단계적 완화 ───────────────────────────────
+
+def _filtered_qs(base, c):
+    """제약 dict로 QuerySet을 거른다. 보낸 축만 적용."""
+    qs = base
+    if c.get('price_min') is not None:
+        qs = qs.filter(price__gte=c['price_min'])
+    if c.get('price_max') is not None:
+        qs = qs.filter(price__lte=c['price_max'])
+    if c.get('forms'):
+        qs = qs.filter(form__overlap=c['forms'])   # 요청 제형과 교집합(OR 매칭)
+    if c.get('categories'):
+        qs = qs.filter(category__in=c['categories'])
+    return qs
+
+
+def _apply_degradation(base, requested):
+    """후보가 MIN_POOL 미만이면 가격확장→제형해제→카테고리해제 순으로 완화한다.
+    반환: (필터된 QuerySet, 실제 적용된 제약 applied, 완화한 축 리스트 relaxed_axes).
+    """
+    applied = dict(requested)
+    relaxed = []
+
+    def enough(c):
+        return _filtered_qs(base, c).count() >= MIN_POOL
+
+    if enough(applied):
+        return _filtered_qs(base, applied), applied, relaxed
+
+    # 1) 가격대 ±확장 (예산 최대한 존중)
+    if applied.get('price_min') is not None or applied.get('price_max') is not None:
+        applied = dict(applied)
+        if applied.get('price_min') is not None:
+            applied['price_min'] = max(0, applied['price_min'] - PRICE_RELAX)
+        if applied.get('price_max') is not None:
+            applied['price_max'] += PRICE_RELAX
+        relaxed.append('price')
+        if enough(applied):
+            return _filtered_qs(base, applied), applied, relaxed
+
+    # 2) 제형 해제
+    if applied.get('forms'):
+        applied = dict(applied, forms=[])
+        relaxed.append('form')
+        if enough(applied):
+            return _filtered_qs(base, applied), applied, relaxed
+
+    # 3) 카테고리 해제
+    if applied.get('categories'):
+        applied = dict(applied, categories=[])
+        relaxed.append('category')
+
+    # 다 풀어도 부족할 수 있으나(작은 DB) 있는 만큼 반환 — 추천이 멈추지 않게.
+    return _filtered_qs(base, applied), applied, relaxed
+
+
+def _rank_candidates(qs, history):
+    """필터된 후보를 대화 임베딩 코사인순으로 정렬한다. 임베딩 없거나 실패 시 리뷰순 폴백."""
+    embedded = qs.exclude(embedding__isnull=True)
     if embedded.exists():
         query_text = ' '.join(
             h['content'] for h in history if h.get('role') == 'user'
@@ -211,8 +340,39 @@ def _recommend_candidates(history):
             )
         except Exception as e:
             logger.warning('임베딩 검색 실패, 리뷰순 폴백: %s', e)
+    return list(qs.order_by('-review_count')[:RECOMMEND_POOL_SIZE])
 
-    return list(base.order_by('-review_count')[:RECOMMEND_POOL_SIZE])
+
+def _recommend_candidates(history, filters=None):
+    """대화(+선택적 filters)로 추천 후보를 추린다 — 하이브리드 검색의 핵심.
+
+    ① 제약 추출(규칙) → ② SQL 필터(가격/제형/카테고리) → ③ 부족하면 단계적 완화
+    → ④ 걸러진 후보를 임베딩 코사인순 정렬. 하드 제약은 SQL이 거르므로 LLM은 위반
+    제품을 볼 수조차 없다(정형 제약 보장). 의미적 미세 정렬만 임베딩이 맡는다.
+
+    반환: (후보 리스트, constraints 메타). 메타는 응답의 완화 배너·충족 배지에 쓰인다.
+    """
+    requested = _resolve_constraints(history, filters)
+    base = Product.objects.exclude(ai_summary='')
+    qs, applied, relaxed_axes = _apply_degradation(base, requested)
+    candidates = _rank_candidates(qs, history)
+
+    constraints = {
+        'requested': requested,
+        'applied': applied,
+        'relaxed': bool(relaxed_axes),
+        'relaxed_axes': relaxed_axes,
+    }
+    return candidates, constraints
+
+
+def _relaxation_note(relaxed_axes) -> str:
+    """완화한 축을 사용자에게 알리는 안내문(템플릿). 완화 없으면 빈 문자열."""
+    if not relaxed_axes:
+        return ''
+    labels = {'price': '가격대', 'form': '제형', 'category': '카테고리'}
+    axes = '·'.join(labels[a] for a in relaxed_axes if a in labels)
+    return f'요청하신 조건({axes})에 딱 맞는 제품이 부족해, 해당 조건을 완화해 비슷한 제품으로 추천드려요.'
 
 
 def _build_recommend_prompt(user, products) -> str:
@@ -220,7 +380,8 @@ def _build_recommend_prompt(user, products) -> str:
     LLM이 그 목록의 '정확한 id 3개'를 고르도록 강제한다(환각 방지).
     """
     product_lines = [
-        f"id={p.id} | [{p.category}] {p.brand} {p.name}: "
+        f"id={p.id} | [{p.category}] {p.brand} {p.name} | "
+        f"{p.price:,}원 | 제형:{'/'.join(p.form) or '-'}: "
         f"{p.ai_summary[:RECOMMEND_SUMMARY_LIMIT]}"
         for p in products
     ]
@@ -262,7 +423,7 @@ class RecommendView(APIView):
     def post(self, request):
         history = _clean_history(request.data.get('history', []))
 
-        candidates = _recommend_candidates(history)
+        candidates, constraints = _recommend_candidates(history, request.data.get('filters'))
         messages = [{'role': 'system', 'content': _build_recommend_prompt(request.user, candidates)}]
         messages.extend(history)
         messages.append({'role': 'user', 'content': '지금까지의 대화를 바탕으로 제품을 추천해줘.'})
@@ -309,7 +470,13 @@ class RecommendView(APIView):
             .prefetch_related('products__product')
             .get(pk=batch.pk)
         )
-        return Response(RecommendationSerializer(batch).data, status=status.HTTP_201_CREATED)
+        # 원본 제약을 context로 넘겨 제품별 meets를 함께 직렬화한다.
+        data = RecommendationSerializer(
+            batch, context={'requested': constraints['requested']}
+        ).data
+        # 완화 메타(constraints)를 가산적으로 덧붙인다 — 없으면 FE는 배너 미표시.
+        data['constraints'] = dict(constraints, note=_relaxation_note(constraints['relaxed_axes']))
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 # ──────────────────────────────────────────────

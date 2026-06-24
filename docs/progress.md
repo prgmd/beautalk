@@ -116,8 +116,15 @@
 - [x] 임베딩 백필 관리 명령 (`backfill_embeddings`, ai_summary 보유 69건 적재)
 - [x] **추천 검색 교체** (대화 임베딩 → 코사인 top-N → 그 N개만 프롬프트, 실패 시 리뷰순 폴백)
 - [x] RAG 검색 테스트 (벡터 경로/폴백 경로/임베딩 정렬 — 전체 38개 통과)
-- [ ] LangChain 파이프라인화 (ChatOpenAI+GMS, PGVector retriever, 체인 구성)
-- [ ] LLM 관측/추적 도입 (LangSmith 또는 Langfuse — 프롬프트·토큰·지연·검색결과 추적)
+- [x] **하이브리드 추천 (정형 제약 SQL 필터 + RAG)** — 설계: docs/README.md §3-A, docs/recommend-hybrid-contract.md
+  - [x] `Product.form`(ArrayField, 복수 제형) + 규칙 백필 `backfill_form` (96건, 멀티값 4건)
+  - [x] 제약 추출(규칙: 가격·제형) → SQL 필터(`form__overlap`/price/category) → 단계적 완화(MIN_POOL=3, 가격±1만→제형→카테고리)
+  - [x] `constraints` 메타(완화 추적·note) + 제품별 `form`·`meets`(충족여부) 직렬화
+  - [x] 추천 프롬프트에 가격·제형 노출 (A7)
+  - [x] PostgreSQL 전용화 (SQLite 폴백 제거 — ArrayField/pgvector 의존)
+  - [ ] A8 계약서 보완(추출 1급 승격·우선순위·하드/소프트 분리) / 라이브 회귀 테스트 보강
+- [ ] ~~LangChain 파이프라인화~~ — 도입 보류(직접 호출이 더 단순, README §3-B)
+- [ ] LLM 관측/추적 도입 (LangSmith `@traceable` — 프롬프트·추출·검색결과 추적, README §3-B)
 
 ### 커뮤니티 — 용도별 게시판 (F1303 필수 요건) ✅ 백엔드 완료
 > 명세서 F1303(유저 소통)·F1304(RESTful)·NF1304(5페이지+) 충족용.

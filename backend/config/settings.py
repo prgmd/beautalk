@@ -102,16 +102,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# DB_ENGINE 미설정 시 SQLite로 폴백 (팀원 로컬 환경 보호).
-# PostgreSQL 사용 시 .env 에 DB_ENGINE=django.db.backends.postgresql 등 지정.
+# PostgreSQL 전용. pgvector(임베딩)·ArrayField(form) 등 PG 기능에 의존하므로
+# SQLite 폴백은 두지 않는다. 접속정보는 .env 의 DB_* 값으로 주입한다.
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('DB_NAME', BASE_DIR / 'db.sqlite3'),
-        'USER': os.environ.get('DB_USER', ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', ''),
-        'PORT': os.environ.get('DB_PORT', ''),
+        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 

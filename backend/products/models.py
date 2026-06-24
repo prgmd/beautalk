@@ -1,8 +1,25 @@
 import uuid
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from pgvector.django import VectorField
 
 class Product(models.Model):
+    # 제형(form) enum — 하이브리드 추천의 SQL 필터 축.
+    # 백필·검증·시리얼라이저가 같은 정의를 공유하도록 모델에 단일 출처로 둔다.
+    # (key=영문 enum, label=FE 칩 한글 라벨. docs/recommend-hybrid-contract.md §4와 일치)
+    FORM_CHOICES = [
+        ('toner', '스킨/토너'),
+        ('lotion', '로션/에멀전'),
+        ('essence', '에센스'),
+        ('serum', '세럼/앰플'),
+        ('cream', '크림'),
+        ('mist', '미스트'),
+        ('suncream', '선크림'),
+        ('cleanser', '클렌저'),
+        ('pad', '패드'),
+        ('mask', '마스크/팩'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     brand = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
@@ -12,6 +29,14 @@ class Product(models.Model):
     oliveyoung_url = models.URLField(max_length=500)
     image_url = models.URLField(max_length=500)
     category = models.CharField(max_length=50)
+    # 제형(복수 가능). 제품명 규칙 파싱으로 백필한다(backfill_form).
+    # "크림앤세럼"=[cream, serum], "스킨로션"=[toner, lotion]처럼 한 제품이 여러 제형일 수 있어
+    # ArrayField로 둔다. 미분류는 빈 배열([]). form 필터는 form__overlap(요청 제형과 교집합)으로 건다.
+    form = ArrayField(
+        models.CharField(max_length=20, choices=FORM_CHOICES),
+        default=list,
+        blank=True,
+    )
     ai_summary = models.TextField(blank=True)
     average_rating = models.FloatField(null=True, blank=True)
     review_count = models.IntegerField(default=0)
