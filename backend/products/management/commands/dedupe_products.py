@@ -61,7 +61,10 @@ class Command(BaseCommand):
                 # 참조를 대표로 재연결 (신규 크롤 복사본엔 보통 참조가 없어 0건이지만 안전하게)
                 Like.objects.filter(product_id__in=drop_ids).update(product=keep)
                 RecommendedProduct.objects.filter(product_id__in=drop_ids).update(product=keep)
-                Post.objects.filter(product_id__in=drop_ids).update(product=keep)
+                # board.Post는 M2M(products) — drop을 태그한 글에 keep을 추가.
+                # (drop 제품 삭제 시 through 행은 자동 제거되므로 keep만 이어주면 태그가 보존됨)
+                for post in Post.objects.filter(products__in=drop_ids).distinct():
+                    post.products.add(keep)
 
                 self.stdout.write(f'  [{g}] 유지: {keep.name[:34]}  (-{len(drops)})')
                 if apply:
