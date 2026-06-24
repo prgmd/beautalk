@@ -6,6 +6,7 @@ import { useCommunityStore, CATEGORIES } from '@/stores/community'
 import { useConfirmStore } from '@/stores/confirm'
 import { normalizeProduct } from '@/utils/product'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
+import Icon from '@/components/Icon.vue'
 
 const confirm = useConfirmStore()
 const saved = ref(false)
@@ -190,17 +191,18 @@ onMounted(() => {
               <div v-for="sp in selectedProducts" :key="sp.id" class="picked">
                 <div class="picked-img">
                   <img v-if="sp.image" :src="sp.image" :alt="sp.name" />
-                  <span v-else class="picked-ph">🧴</span>
+                  <span v-else class="picked-ph"><Icon name="leaf" :size="22" /></span>
                 </div>
                 <div class="picked-meta">
                   <p class="picked-brand">{{ sp.brand }}</p>
                   <p class="picked-name">{{ sp.name }}</p>
                 </div>
-                <button class="picked-clear" @click="removeProduct(sp.id)" aria-label="태그 제거">×</button>
+                <button class="picked-clear" @click="removeProduct(sp.id)" aria-label="태그 제거"><Icon name="x" :size="14" /></button>
               </div>
             </div>
 
             <div class="picker">
+              <Icon name="search" :size="16" class="picker-ic" />
               <input
                 v-model="productQuery"
                 class="picker-input"
@@ -269,6 +271,8 @@ onMounted(() => {
 .title-input::placeholder, .content-input::placeholder, .picker-input::placeholder { color: var(--ink-faint); }
 
 .picker { position: relative; }
+.picker-ic { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); color: var(--ink-faint); pointer-events: none; z-index: 1; }
+.picker .picker-input { padding-left: 40px; }
 .picker-results {
   position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 6;
   background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sh-lg);
@@ -294,11 +298,11 @@ onMounted(() => {
   background: var(--card); display: flex; align-items: center; justify-content: center;
 }
 .picked-img img { width: 100%; height: 100%; object-fit: cover; }
-.picked-ph { font-size: 22px; }
+.picked-ph { display: flex; color: var(--sage); opacity: .55; }
 .picked-meta { flex: 1; min-width: 0; }
 .picked-brand { font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-faint); }
 .picked-name { font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.picked-clear { width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.06); color: var(--ink-soft); font-size: 17px; flex-shrink: 0; }
+.picked-clear { width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.06); color: var(--ink-soft); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
 .err { font-size: 13px; color: var(--danger); }
 

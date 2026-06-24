@@ -4,6 +4,7 @@ import { api } from '@/services/api'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { normalizeProduct } from '@/utils/product'
+import Icon from '@/components/Icon.vue'
 
 const likes = useLikesStore()
 const productDetail = useProductDetailStore()
@@ -53,10 +54,16 @@ function formatDate(dateStr) {
     </header>
 
     <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
-    <p v-if="loading" class="loading-msg">
-      <span class="dots"><i></i><i></i><i></i></span>
-      추천 내역을 불러오는 중...
-    </p>
+    <div v-if="loading" class="product-grid" aria-hidden="true">
+      <article v-for="n in 6" :key="n" class="product-card skel">
+        <div class="product-image sk" />
+        <div class="product-body">
+          <div class="sk-line sk" style="width:40%" />
+          <div class="sk-line sk" style="width:80%" />
+          <div class="sk-line sk" style="width:55%" />
+        </div>
+      </article>
+    </div>
 
     <!-- 배치 타임라인 -->
     <div v-if="batches.length" class="timeline">
@@ -68,31 +75,31 @@ function formatDate(dateStr) {
         </div>
 
         <div class="product-grid">
-          <article v-for="product in batch.products" :key="`${batch.id}-${product.id}`" class="product-card">
+          <article v-for="(product, i) in batch.products" :key="`${batch.id}-${product.id}`" class="product-card" :style="{ '--d': i * 40 + 'ms' }">
             <div class="product-image clickable" @click="productDetail.open(product)">
               <img v-if="product.image" :src="product.image" :alt="product.name" />
-              <div v-else class="img-placeholder">🧴</div>
+              <Icon v-else name="leaf" :size="36" class="img-placeholder" />
             </div>
             <div class="product-body">
               <div class="clickable" @click="productDetail.open(product)">
                 <p class="brand">{{ product.brand }}</p>
                 <p class="name">{{ product.name }}</p>
               </div>
-              <p v-if="product.reason" class="reason"><span class="reason-mark">💡</span>{{ product.reason }}</p>
+              <p v-if="product.reason" class="reason"><span class="reason-mark"><Icon name="sparkle" :size="13" /></span>{{ product.reason }}</p>
               <div class="row">
                 <p class="price serif">{{ formatPrice(product.price) }}</p>
                 <div class="actions">
                   <a
                     v-if="product.oliveyoungUrl && product.oliveyoungUrl !== '#'"
                     :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer"
-                    class="link-btn" aria-label="올리브영에서 보기">↗</a>
+                    class="link-btn" aria-label="올리브영에서 보기"><Icon name="external" :size="14" /></a>
                   <button
                     class="heart"
                     :class="{ liked: likes.isLiked(product.id) }"
                     :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
                     :aria-pressed="likes.isLiked(product.id)"
                     @click="likes.toggleLike(product)"
-                  >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
+                  ><Icon :name="likes.isLiked(product.id) ? 'heart-fill' : 'heart'" :size="15" /></button>
                 </div>
               </div>
             </div>
@@ -102,7 +109,7 @@ function formatDate(dateStr) {
     </div>
 
     <div v-else-if="!loading && !errorMsg" class="empty">
-      <p class="empty-icon">💬</p>
+      <span class="empty-art"><Icon name="leaf" :size="40" /></span>
       <p class="empty-text serif">아직 추천받은 제품이 없어요.</p>
       <p class="empty-sub">챗봇에게 화장품을 추천받아 보세요.</p>
     </div>
@@ -137,25 +144,20 @@ function formatDate(dateStr) {
 }
 
 .error-msg { font-size: 13px; color: var(--rose-ink); margin-bottom: 12px; }
-.loading-msg {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--ink-soft);
-  padding: 48px 0;
-  text-align: center;
+
+/* Skeleton */
+.skel { pointer-events: none; animation: none; }
+.sk { position: relative; overflow: hidden; background: var(--panel); }
+.sk::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.65) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: shimmer 1.3s infinite;
 }
-.dots { display: inline-flex; gap: 5px; }
-.dots i {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--sage);
-  animation: bt-pop 0.9s var(--ease) infinite;
-}
-.dots i:nth-child(2) { animation-delay: 0.15s; opacity: 0.7; }
-.dots i:nth-child(3) { animation-delay: 0.3s; opacity: 0.45; }
+.sk-line { height: 11px; border-radius: 6px; margin: 7px 0; }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
 
 /* 배치 타임라인 */
 .timeline {
@@ -227,15 +229,18 @@ function formatDate(dateStr) {
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--line-soft);
-  box-shadow: var(--sh-sm);
+  box-shadow: var(--sh-soft);
   transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
   display: flex;
   flex-direction: column;
+  animation: card-in 0.5s var(--ease) both;
+  animation-delay: var(--d, 0ms);
 }
 .product-card:active { transform: scale(0.985); }
 @media (hover: hover) {
-  .product-card:hover { transform: translateY(-3px); box-shadow: var(--sh-md); }
+  .product-card:hover { transform: translateY(-4px); box-shadow: var(--sh-hover); }
 }
+@keyframes card-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 /* Arch frame image */
 .product-image {
@@ -254,14 +259,14 @@ function formatDate(dateStr) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--t-slow) var(--ease);
+  transition: transform .6s var(--ease);
 }
 @media (hover: hover) {
   .product-card:hover .product-image img { transform: scale(1.05); }
 }
 .clickable { cursor: pointer; }
 .product-body .clickable:hover .name { text-decoration: underline; }
-.img-placeholder { font-size: 46px; position: relative; z-index: 1; }
+.img-placeholder { color: var(--sage); opacity: .5; position: relative; z-index: 1; }
 
 .product-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .brand {
@@ -281,7 +286,7 @@ function formatDate(dateStr) {
   border-radius: var(--radius-sm);
   padding: 8px 10px;
 }
-.reason-mark { margin-right: 4px; }
+.reason-mark { display: inline-flex; vertical-align: -2px; margin-right: 4px; color: var(--sage-ink); }
 
 .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 4px; }
 .price { font-size: 15px; font-weight: 600; color: var(--ink); white-space: nowrap; }
@@ -338,9 +343,19 @@ function formatDate(dateStr) {
   text-align: center;
   animation: bt-rise 0.5s var(--ease) both;
 }
-.empty-icon { font-size: 42px; }
+.empty-art {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sage-soft); color: var(--sage-ink);
+}
 .empty-text { font-size: 18px; font-weight: 600; color: var(--ink); }
 .empty-sub { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .product-card { animation: none; }
+  .sk::after { animation: none; }
+  .product-card:hover .product-image img { transform: none; }
+}
 
 /* ===== Desktop (≥900px) ===== */
 @media (min-width: 900px) {

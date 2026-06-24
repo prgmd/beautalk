@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { useToastStore } from '@/stores/toast'
+import Icon from '@/components/Icon.vue'
 
 const profile = useProfileStore()
 const toast = useToastStore()
@@ -162,7 +163,7 @@ function removeAvoid(item) {
         <div class="avoid-tags">
           <span v-for="item in editAvoidList" :key="item" class="avoid-tag">
             {{ item }}
-            <button class="remove-tag" @click="removeAvoid(item)">×</button>
+            <button class="remove-tag" :aria-label="`${item} 삭제`" @click="removeAvoid(item)"><Icon name="x" :size="14" /></button>
           </span>
         </div>
         <div class="avoid-input-row">
@@ -256,7 +257,7 @@ function removeAvoid(item) {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  box-shadow: var(--sh-sm);
+  box-shadow: var(--sh-soft);
   animation: bt-rise 0.45s var(--ease) both;
 }
 .profile-card:nth-child(1) { animation-delay: 0.04s; }
@@ -341,11 +342,13 @@ function removeAvoid(item) {
   animation: bt-pop 0.25s var(--ease-back) both;
 }
 .remove-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background: none;
   color: var(--sage-ink);
   opacity: 0.6;
-  font-size: 16px;
   line-height: 1;
   cursor: pointer;
   transition: opacity var(--t-fast) var(--ease);

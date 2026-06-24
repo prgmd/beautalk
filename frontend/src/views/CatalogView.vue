@@ -108,9 +108,8 @@ function formatPrice(n) {
   <div class="screen">
     <div class="main">
       <header class="appbar">
-        <span class="eyebrow">Browse the shelf</span>
-        <h1 class="title serif">오늘의 <em>화장대</em></h1>
-        <p class="lead">큐레이션된 제품을 천천히 둘러보세요.</p>
+        <span class="eyebrow">browse</span>
+        <h1 class="title serif">둘러보기</h1>
       </header>
 
       <!-- 검색 -->

@@ -10,6 +10,7 @@ import { useConfirmStore } from '@/stores/confirm'
 import { normalizeProduct } from '@/utils/product'
 import { formatRelative } from '@/utils/datetime'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
+import Icon from '@/components/Icon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -128,7 +129,7 @@ onMounted(load)
   <div class="screen">
     <div class="main">
       <header class="topbar">
-        <button class="back" @click="back" aria-label="뒤로">‹</button>
+        <button class="back" @click="back" aria-label="뒤로"><Icon name="arrow-left" :size="20" /></button>
         <span class="topbar-title">게시글</span>
         <div v-if="isMine" class="owner-actions">
           <button class="oa" @click="editPost">수정</button>
@@ -154,27 +155,27 @@ onMounted(load)
 
           <!-- 태그된 제품(복수) -->
           <div v-if="post.products?.length" class="product-list">
-            <span class="pc-tag">🏷 태그된 제품 {{ post.products.length }}</span>
+            <span class="pc-tag"><Icon name="tag" :size="13" /> 태그된 제품 {{ post.products.length }}</span>
             <button
               v-for="prod in post.products" :key="prod.id"
               class="product-card" @click="openProduct(prod)"
             >
               <div class="pc-img">
                 <img v-if="prod.image_url || prod.image" :src="prod.image_url || prod.image" :alt="prod.name" />
-                <span v-else class="pc-ph">🧴</span>
+                <span v-else class="pc-ph"><Icon name="leaf" :size="24" /></span>
               </div>
               <div class="pc-meta">
                 <p class="pc-brand">{{ prod.brand }}</p>
                 <p class="pc-name">{{ prod.name }}</p>
               </div>
-              <span class="pc-arrow">›</span>
+              <span class="pc-arrow"><Icon name="chevron-right" :size="18" /></span>
             </button>
           </div>
 
           <!-- 좋아요 -->
           <div class="like-row">
             <button class="like-btn" :class="{ on: liked }" :disabled="likeBusy" @click="toggleLike">
-              <span class="lh">{{ liked ? '♥' : '♡' }}</span> 좋아요 {{ likeCount }}
+              <span class="lh"><Icon :name="liked ? 'heart-fill' : 'heart'" :size="15" /></span> 좋아요 {{ likeCount }}
             </button>
           </div>
 
@@ -190,7 +191,7 @@ onMounted(load)
                   <button
                     v-if="myName && c.author === myName"
                     class="c-del" @click="removeComment(c.id)" aria-label="댓글 삭제"
-                  >×</button>
+                  ><Icon name="x" :size="14" /></button>
                 </div>
                 <p class="c-text">{{ c.content }}</p>
               </li>
@@ -224,7 +225,7 @@ onMounted(load)
   flex-shrink: 0; display: flex; align-items: center; gap: 8px;
   padding: calc(10px + env(safe-area-inset-top)) 12px 10px; border-bottom: 1px solid var(--line-soft);
 }
-.back { width: 36px; height: 36px; font-size: 24px; color: var(--ink); display: flex; align-items: center; justify-content: center; }
+.back { width: 36px; height: 36px; color: var(--ink); display: flex; align-items: center; justify-content: center; }
 .topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
 .owner-actions { margin-left: auto; display: flex; gap: 4px; }
 .oa-spacer { margin-left: auto; }
@@ -252,24 +253,24 @@ onMounted(load)
 }
 
 .product-list { display: flex; flex-direction: column; gap: 9px; }
-.product-list .pc-tag { display: block; margin-bottom: 1px; }
+.product-list .pc-tag { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 1px; }
 .product-card {
   width: 100%; display: flex; align-items: center; gap: 13px; text-align: left;
   padding: 12px; border-radius: var(--radius-lg); background: var(--sheet); border: 1px solid var(--line);
-  box-shadow: var(--sh-sm); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast);
+  box-shadow: var(--sh-soft); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast);
 }
-.product-card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.product-card:hover { transform: translateY(-2px); box-shadow: var(--sh-hover); }
 .pc-img {
   width: 56px; height: 56px; flex-shrink: 0; border-radius: 12px; overflow: hidden;
   background: linear-gradient(170deg,#EFE7DB,#DEE7DF); display: flex; align-items: center; justify-content: center;
 }
 .pc-img img { width: 100%; height: 100%; object-fit: cover; }
-.pc-ph { font-size: 26px; }
+.pc-ph { display: flex; color: var(--sage); opacity: .55; }
 .pc-meta { flex: 1; min-width: 0; }
 .pc-tag { font-size: 10.5px; font-weight: 700; color: var(--sage); }
 .pc-brand { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-faint); margin-top: 3px; }
 .pc-name { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-arrow { font-size: 22px; color: var(--ink-faint); flex-shrink: 0; }
+.pc-arrow { display: flex; color: var(--ink-faint); flex-shrink: 0; }
 
 .like-row { margin: 22px 0; display: flex; justify-content: center; }
 .like-btn {
@@ -278,7 +279,7 @@ onMounted(load)
   box-shadow: var(--sh-sm); transition: all var(--t-fast) var(--ease);
 }
 .like-btn:active { transform: scale(.97); }
-.like-btn .lh { font-size: 15px; color: var(--rose); }
+.like-btn .lh { display: inline-flex; color: var(--rose); }
 .like-btn.on { background: var(--rose-soft); border-color: transparent; color: var(--rose-ink); }
 .like-btn.on .lh { color: var(--rose); }
 
@@ -290,7 +291,7 @@ onMounted(load)
 .c-top { display: flex; align-items: center; gap: 8px; }
 .c-author { font-size: 12.5px; font-weight: 600; color: var(--ink); }
 .c-date { font-size: 11.5px; color: var(--ink-faint); }
-.c-del { margin-left: auto; width: 22px; height: 22px; border-radius: 50%; color: var(--ink-faint); font-size: 15px; }
+.c-del { margin-left: auto; width: 22px; height: 22px; border-radius: 50%; color: var(--ink-faint); display: flex; align-items: center; justify-content: center; }
 .c-del:hover { background: var(--danger-bg); color: var(--danger); }
 .c-text { margin-top: 5px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); white-space: pre-line; }
 .c-empty { font-size: 13px; color: var(--ink-faint); padding: 8px 0; }
