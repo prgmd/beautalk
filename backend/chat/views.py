@@ -25,6 +25,9 @@ logger = logging.getLogger(__name__)
 GMS_API_URL = os.environ.get('GMS_API_URL', 'https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions')
 GMS_API_KEY = os.environ.get('GMS_API_KEY')
 GMS_MODEL   = os.environ.get('GMS_MODEL', 'gpt-5-nano')
+# gpt-5 계열은 응답 전 '추론'에 시간을 크게 쓴다(기본 ~20s). 추천·대화는 깊은 추론이
+# 필요 없어 reasoning_effort를 낮춰 지연을 줄인다(low≈5s, minimal≈3.5s). 빈값이면 미적용.
+GMS_REASONING_EFFORT = os.environ.get('GMS_REASONING_EFFORT', 'low')
 
 ERR_TIMEOUT = 'AI 응답 시간 초과. 잠시 후 다시 시도해주세요.'
 ERR_CONNECT = 'AI 서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
@@ -80,12 +83,18 @@ def _skin_block(user) -> str:
 
 
 @traceable(name='gms_call')
-def _call_gms(messages, *, timeout=60):
+def _call_gms(messages, *, timeout=60, reasoning_effort=None):
     """GMS Chat Completions 호출. 성공 시 message content 문자열을 반환한다.
 
     실패는 (None, error_response) 형태로 돌려준다. 호출 측에서 그대로 return.
+    reasoning_effort(gpt-5 계열)로 추론 깊이를 낮춰 지연을 줄인다(미지정 시 환경 기본값).
     """
+    # reasoning_effort는 추론 모델(gpt-5 계열·o 시리즈)만 지원한다. gpt-4 계열(4o/4.1 등)에
+    # 보내면 400이 날 수 있어, 모델을 보고 자동으로 붙일지 결정한다(모델 교체 시 안전).
+    effort = reasoning_effort or GMS_REASONING_EFFORT
     payload = {'model': GMS_MODEL, 'messages': messages}
+    if effort and (GMS_MODEL.startswith('gpt-5') or GMS_MODEL.startswith('o')):
+        payload['reasoning_effort'] = effort
 
     # 한글이 섞인 payload를 명시적으로 UTF-8로 인코딩 (서버 기본 인코딩에 의존하지 않음)
     payload_json = json.dumps(payload, ensure_ascii=False).encode('utf-8')
@@ -232,7 +241,8 @@ class ChatView(APIView):
         messages.extend(history)
         messages.append({'role': 'user', 'content': content})
 
-        raw, error = _call_gms(messages)
+        # 대화는 단순·인터랙티브 → 추론 최소화로 응답 속도 우선(minimal).
+        raw, error = _call_gms(messages, reasoning_effort='minimal')
         if error:
             return error
 

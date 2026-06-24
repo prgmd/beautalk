@@ -10,6 +10,8 @@ import os
 
 import requests as http
 
+from .observability import traceable
+
 logger = logging.getLogger(__name__)
 
 # GMS_API_URL은 .../chat/completions 를 가리키므로 같은 베이스의 /embeddings 로 치환한다.
@@ -22,6 +24,7 @@ EMBED_MODEL = os.environ.get('GMS_EMBED_MODEL', 'text-embedding-3-small')
 EMBED_DIM = 1536
 
 
+@traceable(name='embed')
 def embed_texts(texts, *, timeout=60):
     """여러 텍스트를 한 번에 임베딩한다. OpenAI embeddings는 input 배열을 지원하므로
     제품 N개를 한 번의 호출로 처리할 수 있다(백필 효율).

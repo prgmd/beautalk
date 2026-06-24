@@ -94,8 +94,10 @@ requirements.txt      # 의존성 (psycopg2-binary, pgvector — PostgreSQL + �
 │   GMS_API_KEY=...
 │   GMS_API_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions
 │   GMS_MODEL=gpt-5-nano
+│   GMS_REASONING_EFFORT=low   # gpt-5 추론 깊이(minimal|low|medium|high). 낮출수록 응답 빠름. 미설정 시 low
 │   GMS_EMBED_MODEL=text-embedding-3-small   # RAG 임베딩 모델 (미설정 시 기본값)
-│   DB_ENGINE=django.db.backends.postgresql   # 미설정 시 SQLite 폴백
+│   # 선택: LANGSMITH_TRACING=true / LANGSMITH_API_KEY=... / LANGSMITH_PROJECT=beautalk (LLM 관측)
+│   DB_ENGINE=django.db.backends.postgresql   # PostgreSQL 전용 (SQLite 폴백 제거)
 │   DB_NAME / DB_USER / DB_PASSWORD / DB_HOST / DB_PORT
 ```
 

@@ -29,6 +29,7 @@
 | [rag.md](rag.md) | RAG(pgvector + 임베딩) 구현 정리 | 완료 |
 | [data-cleanup.md](data-cleanup.md) | 데이터 정제 (중복 53건·요약 백필) | 완료 |
 | [chatbot-quality-troubleshooting.md](chatbot-quality-troubleshooting.md) | 챗봇 대화 품질 진단·해결 (§3-F Phase 1~3) | 완료 |
+| [model-selection-report.md](model-selection-report.md) | GMS 모델 실측 비교·권장 조합 (gpt-4o 권장) | 완료 |
 | [review-findings.md](review-findings.md) | 코드 전수 리뷰 결과 | 반영 완료 |
 
 > 기록 문서는 "왜 이렇게 짰나"를 추적할 때만 열면 된다. 새 작업은 항상 🔵·이 파일에서 시작.
