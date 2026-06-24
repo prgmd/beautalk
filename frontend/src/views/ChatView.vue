@@ -208,12 +208,16 @@ function formatPrice(n) {
           </div>
           <h1 class="empty-title serif">맑게 비치는<br><em>당신의 피부</em></h1>
           <p class="empty-desc">피부 고민을 편하게 적어주세요. 저장된 프로필을 참고해 맞춤 추천을 드려요.</p>
+          <p class="ex-label">이렇게 물어보세요</p>
           <div class="examples">
             <button
               v-for="p in EXAMPLE_PROMPTS" :key="p"
               class="example"
               @click="sendMessage(p)"
-            >{{ p }}</button>
+            >
+              <Icon name="chat" :size="15" class="ex-ic" />
+              <span class="ex-text">“{{ p }}”</span>
+            </button>
           </div>
         </div>
 
@@ -336,13 +340,21 @@ function formatPrice(n) {
 .empty-title { font-size: 26px; font-weight: 400; line-height: 1.25; letter-spacing: -.3px; }
 .empty-title em { font-style: italic; }
 .empty-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; max-width: 300px; }
-.examples { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 8px; }
-.example {
-  padding: 13px 16px; background: var(--card); border: 1px solid var(--line-soft);
-  border-radius: var(--radius); font-size: 14px; text-align: left; box-shadow: var(--sh-sm);
-  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+.ex-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--ink-faint);
+  margin-top: 14px; margin-bottom: 2px;
 }
-.example:active { transform: scale(.98); box-shadow: var(--sh-sm); }
+.examples { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.example {
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 15px; background: var(--sheet); border: 1px dashed var(--line-strong);
+  border-radius: var(--radius); text-align: left;
+  transition: transform var(--t) var(--ease), background var(--t-fast), border-color var(--t-fast);
+}
+.example .ex-ic { color: var(--sage); flex-shrink: 0; }
+.example .ex-text { font-size: 13.5px; color: var(--ink-soft); }
+.example:hover { background: var(--card); border-color: var(--sage); }
+.example:active { transform: scale(.98); }
 
 /* ── 메시지 ── */
 .msg { display: flex; gap: 9px; margin-bottom: 14px; align-items: flex-end; animation: bt-rise .35s var(--ease) both; }

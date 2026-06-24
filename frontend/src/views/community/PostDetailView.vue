@@ -34,6 +34,11 @@ const likeBusy = ref(false)
 const commentText = ref('')
 const commentBusy = ref(false)
 
+// 아바타 이니셜(작성자명 첫 글자)
+function initial(name) {
+  return (name || '?').trim().charAt(0).toUpperCase()
+}
+
 // 작성자 표시명 = 이메일 로컬파트(백엔드 _author_name 규칙과 동일). 소유 판별에 사용.
 const myName = computed(() => (auth.user?.email ? auth.user.email.split('@')[0] : null))
 const isMine = computed(() => post.value && myName.value && post.value.author === myName.value)
@@ -145,11 +150,14 @@ onMounted(load)
         <article v-else-if="post" class="article">
           <span class="cat" :class="post.category">{{ post.category_label }}</span>
           <h1 class="title">{{ post.title }}</h1>
-          <div class="meta">
-            <span class="author">{{ post.author }}</span>
-            <span class="dot">·</span>
-            <span>{{ formatRelative(post.created_at) }}</span>
+          <div class="author-row">
+            <span class="avatar" aria-hidden="true">{{ initial(post.author) }}</span>
+            <div class="author-meta">
+              <span class="author-name">{{ post.author }}</span>
+              <span class="author-time">{{ formatRelative(post.created_at) }}</span>
+            </div>
           </div>
+          <hr class="rule" />
 
           <div class="content">{{ post.content }}</div>
 
@@ -183,20 +191,26 @@ onMounted(load)
           <section class="comments">
             <h2 class="c-head">댓글 <span class="c-count">{{ post.comments.length }}</span></h2>
 
-            <ul v-if="post.comments.length" class="c-list">
-              <li v-for="c in post.comments" :key="c.id" class="c-item">
-                <div class="c-top">
-                  <span class="c-author">{{ c.author }}</span>
-                  <span class="c-date">{{ formatRelative(c.created_at) }}</span>
-                  <button
-                    v-if="myName && c.author === myName"
-                    class="c-del" @click="removeComment(c.id)" aria-label="댓글 삭제"
-                  ><Icon name="x" :size="14" /></button>
+            <div v-if="post.comments.length" class="c-panel">
+              <div v-for="c in post.comments" :key="c.id" class="c-item">
+                <span class="c-avatar" aria-hidden="true">{{ initial(c.author) }}</span>
+                <div class="c-body">
+                  <div class="c-top">
+                    <span class="c-author">{{ c.author }}</span>
+                    <span class="c-date">{{ formatRelative(c.created_at) }}</span>
+                    <button
+                      v-if="myName && c.author === myName"
+                      class="c-del" @click="removeComment(c.id)" aria-label="댓글 삭제"
+                    ><Icon name="x" :size="14" /></button>
+                  </div>
+                  <p class="c-text">{{ c.content }}</p>
                 </div>
-                <p class="c-text">{{ c.content }}</p>
-              </li>
-            </ul>
-            <p v-else class="c-empty">첫 댓글을 남겨보세요.</p>
+              </div>
+            </div>
+            <div v-else class="c-empty">
+              <Icon name="chat" :size="26" />
+              <p>첫 댓글을 남겨보세요.</p>
+            </div>
           </section>
         </article>
       </div>
@@ -243,16 +257,24 @@ onMounted(load)
 }
 .cat.qna { background: var(--rose-soft); color: var(--rose-ink); }
 .cat.sale { background: #F5E6C8; color: #8A6A2A; }
-.title { font-size: 22px; font-weight: 600; line-height: 1.35; letter-spacing: -.3px; margin: 12px 0 8px; color: var(--ink); }
-.meta { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-faint); }
-.meta .author { font-weight: 600; color: var(--ink-soft); }
-.meta .dot { opacity: .5; }
+.title { font-size: 23px; font-weight: 700; line-height: 1.35; letter-spacing: -.4px; margin: 12px 0 16px; color: var(--ink); }
 
+.author-row { display: flex; align-items: center; gap: 11px; }
+.avatar {
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%;
+  background: var(--sage-soft); color: var(--sage-ink); font-weight: 700; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.author-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.author-name { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.author-time { font-size: 12px; color: var(--ink-faint); }
+.rule { border: none; border-top: 1px solid var(--line-soft); margin: 18px 0 0; }
 .content {
-  margin: 20px 0 22px; font-size: 14.5px; line-height: 1.78; color: var(--ink); white-space: pre-line;
+  margin: 20px 0 0; font-size: 15px; line-height: 1.85; color: var(--ink);
+  white-space: pre-line; overflow-wrap: anywhere;
 }
 
-.product-list { display: flex; flex-direction: column; gap: 9px; }
+.product-list { display: flex; flex-direction: column; gap: 9px; margin-top: 18px; }
 .product-list .pc-tag { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 1px; }
 .product-card {
   width: 100%; display: flex; align-items: center; gap: 13px; text-align: left;
@@ -272,29 +294,50 @@ onMounted(load)
 .pc-name { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pc-arrow { display: flex; color: var(--ink-faint); flex-shrink: 0; }
 
-.like-row { margin: 22px 0; display: flex; justify-content: center; }
+.like-row {
+  margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-soft);
+  display: flex; justify-content: center;
+}
 .like-btn {
   display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: 99px;
   background: var(--card); border: 1px solid var(--line); color: var(--ink-soft); font-size: 14px; font-weight: 600;
   box-shadow: var(--sh-sm); transition: all var(--t-fast) var(--ease);
 }
+.like-btn:hover { border-color: var(--rose); color: var(--rose-ink); box-shadow: var(--sh-md); transform: translateY(-1px); }
+.like-btn.on:hover { background: var(--rose); color: #fff; }
+.like-btn.on:hover .lh { color: #fff; }
 .like-btn:active { transform: scale(.97); }
+.like-btn:disabled { opacity: .6; cursor: default; }
 .like-btn .lh { display: inline-flex; color: var(--rose); }
 .like-btn.on { background: var(--rose-soft); border-color: transparent; color: var(--rose-ink); }
 .like-btn.on .lh { color: var(--rose); }
 
-.comments { border-top: 1px solid var(--line-soft); padding-top: 20px; }
-.c-head { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
-.c-count { color: var(--sage); }
-.c-list { display: flex; flex-direction: column; gap: 16px; }
-.c-item { }
+.comments { margin-top: 30px; }
+.c-head { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
+.c-count { color: var(--sage); margin-left: 2px; }
+.c-panel {
+  background: var(--sheet); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
+  padding: 2px 16px;
+}
+.c-item { display: flex; gap: 11px; padding: 15px 0; border-bottom: 1px solid var(--line-soft); }
+.c-item:last-child { border-bottom: none; }
+.c-avatar {
+  width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%;
+  background: var(--sage-soft); color: var(--sage-ink); font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.c-body { flex: 1; min-width: 0; }
 .c-top { display: flex; align-items: center; gap: 8px; }
-.c-author { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.c-author { font-size: 13px; font-weight: 600; color: var(--ink); }
 .c-date { font-size: 11.5px; color: var(--ink-faint); }
-.c-del { margin-left: auto; width: 22px; height: 22px; border-radius: 50%; color: var(--ink-faint); display: flex; align-items: center; justify-content: center; }
+.c-del { margin-left: auto; width: 24px; height: 24px; border-radius: 50%; color: var(--ink-faint); display: flex; align-items: center; justify-content: center; transition: background var(--t-fast), color var(--t-fast); }
 .c-del:hover { background: var(--danger-bg); color: var(--danger); }
-.c-text { margin-top: 5px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); white-space: pre-line; }
-.c-empty { font-size: 13px; color: var(--ink-faint); padding: 8px 0; }
+.c-text { margin-top: 4px; font-size: 14px; line-height: 1.62; color: var(--ink-soft); white-space: pre-line; overflow-wrap: anywhere; }
+.c-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 32px 0; color: var(--ink-faint); font-size: 13px;
+  background: var(--sheet); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
+}
 
 .composer {
   flex-shrink: 0; display: flex; gap: 8px; align-items: center;
