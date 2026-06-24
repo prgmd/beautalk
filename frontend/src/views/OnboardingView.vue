@@ -106,7 +106,7 @@ async function finishOnboarding() {
   // 피부 타입을 '잘 모르겠어요'로 건너뛴 경우 백엔드 skin_type이 필수라 저장 없이 진행한다.
   // (프로필은 나중에 '내 정보 > 피부 프로필'에서 채울 수 있다.)
   if (!selectedSkinType.value) {
-    showComplete()
+    showComplete(false)
     return
   }
 
@@ -131,13 +131,15 @@ async function finishOnboarding() {
   showComplete()
 }
 
-function showComplete() {
+function showComplete(saved = true) {
   setTimeout(async () => {
     messages.value.push({
       id: Date.now(),
       role: 'ai',
       type: 'complete',
-      text: '프로필 작성 완료! 이제 어떤 제품이 필요한지 말씀해 주세요.\n예: "여드름에 좋은 토너 추천해줘"',
+      text: saved
+        ? '프로필 작성 완료! 이제 어떤 제품이 필요한지 말씀해 주세요.\n예: "여드름에 좋은 토너 추천해줘"'
+        : '피부 타입은 나중에 "내 정보 > 피부 프로필"에서 채울 수 있어요.\n지금 바로 추천을 받아볼까요?',
     })
     step.value = 4
     await nextTick()
@@ -160,7 +162,7 @@ function goChat() {
     <!-- 앱바 + 진행 -->
     <header class="appbar">
       <div class="ab-top">
-        <span class="eyebrow">your profile</span>
+        <span class="eyebrow">프로필 설정</span>
         <div class="ab-right">
           <span class="ab-step">{{ Math.min(step, 3) }} <span class="ab-of">/ 3</span></span>
           <button v-if="step < 4" class="skip-btn" @click="skipOnboarding">건너뛰기 ›</button>

@@ -1,13 +1,32 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useLikesStore } from '@/stores/likes'
 import { api } from '@/services/api'
+import Icon from '@/components/Icon.vue'
 
 const store = useProductDetailStore()
 const likes = useLikesStore()
 const router = useRouter()
+
+// Esc로 닫기 + 열려있는 동안 배경 스크롤 잠금
+function onKey(e) {
+  if (e.key === 'Escape') store.close()
+}
+watch(() => store.isOpen, (open) => {
+  if (open) {
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKey)
+  } else {
+    document.body.style.overflow = ''
+    window.removeEventListener('keydown', onKey)
+  }
+})
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', onKey)
+})
 
 const product = computed(() => store.product)
 const detail = computed(() => store.detail)
@@ -47,7 +66,7 @@ const satisfactionList = computed(() => {
 })
 
 function formatPrice(n) {
-  return n?.toLocaleString('ko-KR') + '원'
+  return n != null ? n.toLocaleString('ko-KR') + '원' : '가격 정보 없음'
 }
 
 function stars(rating) {
@@ -71,14 +90,14 @@ function stars(rating) {
         <div class="head">
           <div class="image">
             <img v-if="product?.image" :src="product.image" :alt="product?.name" class="detail-img" />
-            <div v-else class="img-placeholder">🧴</div>
+            <div v-else class="img-placeholder"><Icon name="leaf" :size="44" /></div>
           </div>
           <div class="head-info">
             <p class="brand">{{ product?.brand }}</p>
             <h2 class="name serif">{{ product?.name }}</h2>
             <div class="rating-row" v-if="detail">
               <span class="stars">{{ stars(detail.average_rating) }}</span>
-              <span class="rating-num">{{ detail.average_rating }}</span>
+              <span class="rating-num">{{ Number(detail.average_rating).toFixed(1) }}</span>
               <span class="review-count">리뷰 {{ detail.review_count.toLocaleString('ko-KR') }}개</span>
             </div>
             <p class="price serif">{{ formatPrice(product?.price) }}</p>
@@ -87,10 +106,11 @@ function stars(rating) {
                 class="like-btn"
                 :class="{ liked: likes.isLiked(product?.id) }"
                 @click="likes.toggleLike(product)"
-              >{{ likes.isLiked(product?.id) ? '♥ 찜함' : '♡ 찜하기' }}</button>
-              <a :href="product?.oliveyoungUrl" target="_blank" class="oliveyoung-btn">
-                올리브영에서 보기 ↗
-              </a>
+              ><Icon :name="likes.isLiked(product?.id) ? 'heart-fill' : 'heart'" :size="15" />{{ likes.isLiked(product?.id) ? ' 찜함' : ' 찜하기' }}</button>
+              <a
+                v-if="product?.oliveyoungUrl && product.oliveyoungUrl !== '#'"
+                :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer" class="oliveyoung-btn"
+              >올리브영에서 보기 <Icon name="external" :size="14" /></a>
             </div>
           </div>
         </div>
@@ -98,13 +118,13 @@ function stars(rating) {
         <div class="body" v-if="detail">
           <!-- 추천 이유 (추천/히스토리 카드에서 열었을 때만) -->
           <section v-if="product?.reason" class="section reason-section">
-            <h3 class="section-title serif">💡 추천 이유</h3>
+            <h3 class="section-title serif"><Icon name="sparkle" :size="16" /> 추천 이유</h3>
             <p class="reason-text">{{ product.reason }}</p>
           </section>
 
           <!-- AI 요약 -->
           <section class="section ai-section">
-            <h3 class="section-title serif">✨ AI 리뷰 요약</h3>
+            <h3 class="section-title serif"><Icon name="sparkle" :size="16" /> AI 리뷰 요약</h3>
             <p class="ai-summary">{{ detail.ai_summary }}</p>
           </section>
 
@@ -120,9 +140,9 @@ function stars(rating) {
             </div>
           </section>
 
-          <!-- 리뷰 -->
+          <!-- 리뷰 (예시 데이터 — 실제 리뷰 API 연동 전) -->
           <section class="section">
-            <h3 class="section-title serif">실제 리뷰</h3>
+            <h3 class="section-title serif">리뷰 미리보기 <span class="sample-tag">예시</span></h3>
             <div class="review-list">
               <div v-for="review in detail.reviews" :key="review.id" class="review-card">
                 <div class="review-head">
@@ -139,7 +159,7 @@ function stars(rating) {
 
           <!-- 이 제품 관련 커뮤니티 글 -->
           <section v-if="relatedPosts.length" class="section">
-            <h3 class="section-title serif">🌿 이 제품 관련 글 {{ relatedPosts.length }}개</h3>
+            <h3 class="section-title serif"><Icon name="tag" :size="16" /> 이 제품 관련 글 {{ relatedPosts.length }}개</h3>
             <ul class="related-list">
               <li v-for="post in relatedPosts" :key="post.id" class="related-item" @click="openPost(post.id)">
                 <div class="ri-top">
@@ -230,10 +250,12 @@ function stars(rating) {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: var(--sh-sm);
+  box-shadow: var(--sh-soft);
   border: 1px solid var(--line);
   overflow: hidden;
+  transition: box-shadow var(--t) var(--ease);
 }
+.image:hover { box-shadow: var(--sh-hover); }
 .detail-img { width: 100%; height: 100%; object-fit: cover; }
 .img-placeholder { font-size: 52px; }
 
@@ -250,6 +272,9 @@ function stars(rating) {
 
 .head-actions { display: flex; gap: 8px; margin-top: 12px; }
 .like-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   padding: 10px 16px;
   border: 1px solid var(--rose-soft);
   border-radius: var(--radius-sm);
@@ -280,7 +305,11 @@ function stars(rating) {
 .body { padding: 24px; display: flex; flex-direction: column; gap: 26px; }
 
 .section { display: flex; flex-direction: column; gap: 12px; }
-.section-title { font-size: 16px; font-weight: 600; color: var(--ink); }
+.section-title { display: flex; align-items: center; gap: 7px; font-size: 16px; font-weight: 600; color: var(--ink); }
+.sample-tag {
+  font-size: 10px; font-weight: 700; vertical-align: middle; margin-left: 6px;
+  padding: 2px 7px; border-radius: 99px; background: var(--panel); color: var(--ink-faint);
+}
 
 .ai-section .ai-summary {
   background: var(--sage-soft);
@@ -344,10 +373,10 @@ function stars(rating) {
 .related-list { display: flex; flex-direction: column; gap: 10px; }
 .related-item {
   background: var(--sheet); border: 1px solid var(--line-soft); border-radius: var(--radius);
-  padding: 12px 14px; cursor: pointer; box-shadow: var(--sh-sm);
+  padding: 12px 14px; cursor: pointer; box-shadow: var(--sh-soft);
   transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
-.related-item:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.related-item:hover { transform: translateY(-2px); box-shadow: var(--sh-hover); }
 .ri-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .ri-cat { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--sage-soft); color: var(--sage-ink); }
 .ri-stats { font-size: 11.5px; color: var(--ink-faint); }

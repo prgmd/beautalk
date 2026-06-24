@@ -13,6 +13,7 @@ import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useProfileStore } from '@/stores/profile'
+import { API_BASE } from '@/services/config'
 import DewyLoader from '@/components/DewyLoader.vue'
 
 const router = useRouter()
@@ -33,7 +34,7 @@ onMounted(async () => {
   // - refresh 토큰 → HttpOnly 쿠키 (브라우저가 자동 관리)
   let access
   try {
-    const res = await fetch('http://localhost:8000/api/v1/auth/exchange/', {
+    const res = await fetch(`${API_BASE}/auth/exchange/`, {
       method: 'GET',
       credentials: 'include',
     })

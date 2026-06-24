@@ -1,7 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import Icon from '@/components/Icon.vue'
 
 const emit = defineEmits(['close'])
+
+function onKey(e) { if (e.key === 'Escape') emit('close') }
+onMounted(() => {
+  document.body.style.overflow = 'hidden'
+  window.addEventListener('keydown', onKey)
+})
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', onKey)
+})
 
 // 결제 단계: 'plans'(요금제 선택) | 'pending'(결제 준비 중 목업)
 const step = ref('plans')
@@ -38,12 +49,12 @@ function selectPlan(plan) {
     <div class="overlay" @click="emit('close')">
       <div class="sheet" @click.stop>
         <div class="grab" />
-        <button class="close-btn" @click="emit('close')">×</button>
+        <button class="close-btn" @click="emit('close')" aria-label="닫기"><Icon name="x" :size="18" /></button>
 
         <!-- 요금제 선택 -->
         <template v-if="step === 'plans'">
           <div class="head">
-            <div class="head-icon">✨</div>
+            <div class="head-icon"><Icon name="sparkle" :size="40" /></div>
             <h2 class="title serif">오늘의 무료 대화를 모두 사용했어요</h2>
             <p class="subtitle">프리미엄으로 업그레이드하면 무제한으로 대화할 수 있어요.</p>
           </div>
@@ -82,7 +93,7 @@ function selectPlan(plan) {
         <!-- 결제 준비 중 (목업) -->
         <template v-else>
           <div class="pending">
-            <div class="head-icon">🚧</div>
+            <div class="head-icon"><Icon name="info" :size="40" /></div>
             <h2 class="title serif">결제 기능 준비 중</h2>
             <p class="subtitle">
               결제 연동은 현재 준비 중이에요.<br />
@@ -132,7 +143,10 @@ function selectPlan(plan) {
 }
 
 .head-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sage);
   animation: bt-pop var(--t) var(--ease-back);
 }
 
