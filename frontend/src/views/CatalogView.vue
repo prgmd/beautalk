@@ -228,18 +228,16 @@ function formatPrice(n) {
   background: linear-gradient(170deg,#EFE7DB,#E6E3D0 60%,#DEE7DF); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.arch::before {
-  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 44%;
-  background: repeating-linear-gradient(180deg, transparent 0 8px, rgba(34,42,46,.05) 8px 9px);
-}
 .arch img { width: 100%; height: 100%; object-fit: cover; }
 .ph { font-size: 36px; position: relative; }
 .heart {
-  position: absolute; top: 9px; right: 9px; width: 30px; height: 30px; border-radius: 50%;
-  background: rgba(255,255,255,.9); box-shadow: var(--sh-sm); font-size: 13px; color: var(--rose);
+  position: absolute; top: 9px; right: 9px; width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(28,22,16,.42); border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,.28); backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); font-size: 15px; color: #fff;
   display: flex; align-items: center; justify-content: center;
 }
-.heart.liked { background: var(--rose); color: #fff; }
+.heart.liked { background: var(--rose); border-color: transparent; color: #fff; }
 .meta { padding: 11px 6px 4px; cursor: pointer; }
 .brand { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-faint); }
 .name { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin: 4px 0 6px; }

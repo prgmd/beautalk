@@ -68,7 +68,8 @@ function stars(rating) {
         <!-- 상단: 이미지 + 기본 정보 -->
         <div class="head">
           <div class="image">
-            <div class="img-placeholder">🧴</div>
+            <img v-if="product?.image" :src="product.image" :alt="product?.name" class="detail-img" />
+            <div v-else class="img-placeholder">🧴</div>
           </div>
           <div class="head-info">
             <p class="brand">{{ product?.brand }}</p>
@@ -228,7 +229,9 @@ function stars(rating) {
   flex-shrink: 0;
   box-shadow: var(--sh-sm);
   border: 1px solid var(--line);
+  overflow: hidden;
 }
+.detail-img { width: 100%; height: 100%; object-fit: cover; }
 .img-placeholder { font-size: 52px; }
 
 .head-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
