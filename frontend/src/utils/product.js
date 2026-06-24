@@ -10,6 +10,8 @@ export function normalizeProduct(p) {
     image: p.image_url ?? p.image ?? null,
     oliveyoungUrl: p.oliveyoung_url ?? p.oliveyoungUrl ?? '#',
     category: p.category,
+    form: p.form ?? [], // 제형 키 배열(하이브리드 추천). 없으면 빈 배열
+    meets: p.meets ?? null, // 제약별 충족 여부 { price, form, category } (추천 응답에만)
     ai_summary: p.ai_summary,
     average_rating: p.average_rating,
     review_count: p.review_count,

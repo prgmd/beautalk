@@ -65,16 +65,21 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // POST /recommend/ — 지금까지의 대화로 제품 추천(배치 저장은 서버가 처리)
-  async function requestRecommend() {
+  // filters(선택): { forms[], price_min, price_max, categories[] } — 하이브리드 SQL 필터.
+  // 없으면 백엔드가 대화에서 추출/폴백(가산적이라 기존 동작 유지).
+  async function requestRecommend(filters) {
     mode.value = 'result'
     isRecommending.value = true
     recommendError.value = ''
     recommendBatch.value = null
     try {
-      const { data } = await api.post('/recommend/', { history: history.value })
+      const body = { history: history.value }
+      if (filters && Object.keys(filters).length) body.filters = filters
+      const { data } = await api.post('/recommend/', body)
       recommendBatch.value = {
         id: data.id,
         content: data.content,
+        constraints: data.constraints || null, // { requested, applied, relaxed, relaxed_axes, note }
         products: (data.products || []).map(normalizeProduct),
       }
     } catch (e) {

@@ -5,6 +5,7 @@ import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import DewyLoader from '@/components/DewyLoader.vue'
+import { FORM_OPTIONS, PRICE_BANDS, formLabel } from '@/utils/forms'
 
 const chat = useChatStore()
 const likes = useLikesStore()
@@ -37,8 +38,36 @@ function onEnterKey(e) {
   sendMessage()
 }
 
+// ── 추천 조건(제형·가격대) ──
+const showFilters = ref(false)
+const selForms = ref([]) // 제형 키(복수)
+const selBand = ref(null) // 가격대 키(단일)
+
+const activeCount = computed(() => selForms.value.length + (selBand.value ? 1 : 0))
+
+function toggleForm(key) {
+  const i = selForms.value.indexOf(key)
+  if (i === -1) selForms.value.push(key)
+  else selForms.value.splice(i, 1)
+}
+function toggleBand(key) {
+  selBand.value = selBand.value === key ? null : key
+}
+
+// 선택값 → 백엔드 filters. 아무것도 안 골랐으면 undefined(=기존 동작).
+function buildFilters() {
+  const f = {}
+  if (selForms.value.length) f.forms = [...selForms.value]
+  const band = PRICE_BANDS.find((b) => b.key === selBand.value)
+  if (band) {
+    if (band.min != null) f.price_min = band.min
+    if (band.max != null) f.price_max = band.max
+  }
+  return Object.keys(f).length ? f : undefined
+}
+
 function getRecommendations() {
-  chat.requestRecommend()
+  chat.requestRecommend(buildFilters())
 }
 
 function newChat() {
@@ -91,6 +120,11 @@ function formatPrice(n) {
 
       <!-- 결과 -->
       <template v-else-if="chat.recommendBatch">
+        <!-- 완화 안내: 조건이 부족해 일부 풀었을 때 -->
+        <div v-if="chat.recommendBatch.constraints?.relaxed" class="relax-banner">
+          <span class="rb-ic">ⓘ</span>{{ chat.recommendBatch.constraints.note }}
+        </div>
+
         <div class="result-head">
           <span class="eyebrow">your edit</span>
           <p class="result-summary serif">{{ chat.recommendBatch.content }}</p>
@@ -112,6 +146,20 @@ function formatPrice(n) {
               <p class="rec-name">{{ product.name }}</p>
               <p class="rec-price serif">{{ formatPrice(product.price) }}</p>
             </div>
+
+            <!-- 제형 + 제약 충족 배지 -->
+            <div v-if="product.form?.length || product.meets" class="rec-badges">
+              <span v-for="fk in product.form" :key="fk" class="badge form">{{ formLabel(fk) }}</span>
+              <span
+                v-if="product.meets && 'price' in product.meets"
+                class="badge" :class="product.meets.price ? 'ok' : 'no'"
+              >가격 {{ product.meets.price ? '✓' : '✗' }}</span>
+              <span
+                v-if="product.meets && 'form' in product.meets"
+                class="badge" :class="product.meets.form ? 'ok' : 'no'"
+              >제형 {{ product.meets.form ? '✓' : '✗' }}</span>
+            </div>
+
             <p v-if="product.reason" class="rec-reason">{{ product.reason }}</p>
             <a :href="product.oliveyoungUrl" target="_blank" class="rec-link">올리브영에서 보기 ↗</a>
           </article>
@@ -167,6 +215,34 @@ function formatPrice(n) {
 
       <!-- 추천받기 -->
       <div v-if="!isEmpty" class="reco-bar">
+        <button class="filters-toggle" :class="{ open: showFilters }" @click="showFilters = !showFilters">
+          <span>조건 좁히기 <span class="opt">선택</span><span v-if="activeCount" class="cnt">{{ activeCount }}</span></span>
+          <span class="chev">{{ showFilters ? '▾' : '▸' }}</span>
+        </button>
+
+        <div v-if="showFilters" class="filters-panel">
+          <div class="f-group">
+            <span class="f-label">제형</span>
+            <div class="chips">
+              <button
+                v-for="o in FORM_OPTIONS" :key="o.key"
+                class="chip" :class="{ on: selForms.includes(o.key) }"
+                @click="toggleForm(o.key)"
+              >{{ o.label }}</button>
+            </div>
+          </div>
+          <div class="f-group">
+            <span class="f-label">가격대</span>
+            <div class="chips">
+              <button
+                v-for="b in PRICE_BANDS" :key="b.key"
+                class="chip" :class="{ on: selBand === b.key }"
+                @click="toggleBand(b.key)"
+              >{{ b.label }}</button>
+            </div>
+          </div>
+        </div>
+
         <button class="reco-btn" :class="{ ready: chat.ready }" @click="getRecommendations()">
           <span class="lf">✦</span> 추천 3개 받기{{ chat.ready ? ' · 준비됐어요' : '' }}
         </button>
@@ -256,8 +332,33 @@ function formatPrice(n) {
 .dot:nth-child(2) { animation-delay: .2s; }
 .dot:nth-child(3) { animation-delay: .4s; }
 
-/* ── 추천받기 ── */
+/* ── 추천 조건 패널 ── */
 .reco-bar { flex-shrink: 0; padding: 8px 20px 4px; }
+.filters-toggle {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 6px 8px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft);
+}
+.filters-toggle .opt { font-weight: 500; color: var(--ink-faint); margin-left: 4px; }
+.filters-toggle .cnt {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px;
+  margin-left: 6px; padding: 0 4px; border-radius: 99px; background: var(--sage); color: #fff; font-size: 10.5px;
+}
+.filters-toggle .chev { color: var(--ink-faint); font-size: 11px; }
+.filters-panel {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 12px 12px 14px; margin-bottom: 8px;
+  background: var(--sheet); border: 1px solid var(--line-soft); border-radius: var(--radius);
+  animation: bt-rise .25s var(--ease) both;
+}
+.f-group { display: flex; flex-direction: column; gap: 8px; }
+.f-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  padding: 7px 13px; border-radius: 99px; font-size: 12.5px; font-weight: 500;
+  color: var(--ink-soft); background: var(--card); border: 1px solid var(--line); transition: all var(--t-fast);
+}
+.chip:active { transform: scale(.97); }
+.chip.on { background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-sm); }
 .reco-btn {
   width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   border: 1px solid var(--ink); background: var(--card); color: var(--ink);
@@ -303,6 +404,25 @@ function formatPrice(n) {
 .err-icon { font-size: 34px; }
 .err-text { font-size: 14px; color: var(--ink-soft); }
 .err-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+/* 완화 안내 배너 */
+.relax-banner {
+  display: flex; align-items: flex-start; gap: 7px;
+  margin: 4px 0 14px; padding: 11px 14px; border-radius: var(--radius);
+  background: var(--rose-soft); color: var(--rose-ink);
+  font-size: 12.5px; line-height: 1.55; animation: bt-rise .35s var(--ease) both;
+}
+.relax-banner .rb-ic { flex-shrink: 0; font-size: 13px; }
+
+/* 제형·충족 배지 */
+.rec-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 6px 0; }
+.badge {
+  font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 99px;
+  background: var(--panel); color: var(--ink-soft);
+}
+.badge.form { background: var(--sage-soft); color: var(--sage-ink); }
+.badge.ok { background: var(--sage-soft); color: var(--sage-ink); }
+.badge.no { background: var(--danger-bg); color: var(--danger); }
 
 .result-head { margin: 6px 2px 18px; animation: bt-rise .4s var(--ease) both; }
 .result-summary { font-size: 19px; font-weight: 400; line-height: 1.4; margin-top: 8px; }
