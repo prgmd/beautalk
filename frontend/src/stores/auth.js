@@ -64,8 +64,19 @@ export const useAuthStore = defineStore('auth', () => {
         ...user.value,
         email: data.email,
         authProvider: data.auth_provider,
+        nickname: data.nickname || '',
         joinedAt: data.created_at,
       }
+      localStorage.setItem('bt_user', JSON.stringify(user.value))
+    }
+    return data
+  }
+
+  // PATCH /account/ — 닉네임 수정. 성공 시 로컬 user에 반영.
+  async function saveNickname(nickname) {
+    const { data } = await api.patch('/account/', { nickname })
+    if (data) {
+      user.value = { ...user.value, nickname: data.nickname || '' }
       localStorage.setItem('bt_user', JSON.stringify(user.value))
     }
     return data
@@ -80,6 +91,6 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     user, accessToken, isLoggedIn, hasProfile,
     login, setAccessToken, logout, serverLogout, setProfileComplete,
-    fetchAccount, withdraw,
+    fetchAccount, saveNickname, withdraw,
   }
 })

@@ -41,7 +41,7 @@ async function logout() {
   router.push('/login')
 }
 
-const displayName = computed(() => (auth.user?.email ? auth.user.email.split('@')[0] : '게스트'))
+const displayName = computed(() => auth.user?.nickname || (auth.user?.email ? auth.user.email.split('@')[0] : '게스트'))
 const avatarChar = computed(() => displayName.value.charAt(0).toUpperCase() || '?')
 
 onMounted(() => {

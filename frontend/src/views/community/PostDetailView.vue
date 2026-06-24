@@ -107,8 +107,8 @@ function editPost() {
   router.push(`/community/${post.value.id}/edit`)
 }
 
-function openProduct() {
-  if (post.value?.product) productDetail.open(normalizeProduct(post.value.product))
+function openProduct(p) {
+  if (p) productDetail.open(normalizeProduct(p))
 }
 
 function back() {
@@ -146,19 +146,24 @@ onMounted(load)
 
           <div class="content">{{ post.content }}</div>
 
-          <!-- 태그된 제품 -->
-          <button v-if="post.product" class="product-card" @click="openProduct">
-            <div class="pc-img">
-              <img v-if="post.product.image_url || post.product.image" :src="post.product.image_url || post.product.image" :alt="post.product.name" />
-              <span v-else class="pc-ph">🧴</span>
-            </div>
-            <div class="pc-meta">
-              <span class="pc-tag">🏷 태그된 제품</span>
-              <p class="pc-brand">{{ post.product.brand }}</p>
-              <p class="pc-name">{{ post.product.name }}</p>
-            </div>
-            <span class="pc-arrow">›</span>
-          </button>
+          <!-- 태그된 제품(복수) -->
+          <div v-if="post.products?.length" class="product-list">
+            <span class="pc-tag">🏷 태그된 제품 {{ post.products.length }}</span>
+            <button
+              v-for="prod in post.products" :key="prod.id"
+              class="product-card" @click="openProduct(prod)"
+            >
+              <div class="pc-img">
+                <img v-if="prod.image_url || prod.image" :src="prod.image_url || prod.image" :alt="prod.name" />
+                <span v-else class="pc-ph">🧴</span>
+              </div>
+              <div class="pc-meta">
+                <p class="pc-brand">{{ prod.brand }}</p>
+                <p class="pc-name">{{ prod.name }}</p>
+              </div>
+              <span class="pc-arrow">›</span>
+            </button>
+          </div>
 
           <!-- 좋아요 -->
           <div class="like-row">
@@ -240,6 +245,8 @@ onMounted(load)
   margin: 20px 0 22px; font-size: 14.5px; line-height: 1.78; color: var(--ink); white-space: pre-line;
 }
 
+.product-list { display: flex; flex-direction: column; gap: 9px; }
+.product-list .pc-tag { display: block; margin-bottom: 1px; }
 .product-card {
   width: 100%; display: flex; align-items: center; gap: 13px; text-align: left;
   padding: 12px; border-radius: var(--radius-lg); background: var(--sheet); border: 1px solid var(--line);

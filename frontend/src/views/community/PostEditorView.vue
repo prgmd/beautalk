@@ -16,7 +16,7 @@ const isEdit = computed(() => !!editId.value)
 const category = ref('free')
 const title = ref('')
 const content = ref('')
-const selectedProduct = ref(null) // { id, brand, name, image }
+const selectedProducts = ref([]) // [{ id, brand, name, image }] — 복수 태그
 
 const saving = ref(false)
 const error = ref('')
@@ -31,8 +31,9 @@ const pickerOpen = ref(false)
 const productResults = computed(() => {
   const q = productQuery.value.trim().toLowerCase()
   if (!q) return []
+  const picked = new Set(selectedProducts.value.map((p) => p.id))
   return allProducts.value
-    .filter((p) => `${p.name} ${p.brand}`.toLowerCase().includes(q))
+    .filter((p) => !picked.has(p.id) && `${p.name} ${p.brand}`.toLowerCase().includes(q))
     .slice(0, 8)
 })
 
@@ -70,12 +71,12 @@ function focusPicker() {
   ensureProducts()
 }
 function pickProduct(p) {
-  selectedProduct.value = p
+  if (!selectedProducts.value.some((s) => s.id === p.id)) selectedProducts.value.push(p)
   productQuery.value = ''
-  pickerOpen.value = false
+  // 계속 추가할 수 있도록 picker는 열어둔다
 }
-function clearProduct() {
-  selectedProduct.value = null
+function removeProduct(id) {
+  selectedProducts.value = selectedProducts.value.filter((p) => p.id !== id)
 }
 
 const canSubmit = computed(() => title.value.trim() && content.value.trim() && !saving.value)
@@ -88,7 +89,7 @@ async function submit() {
     category: category.value,
     title: title.value.trim(),
     content: content.value.trim(),
-    product_id: selectedProduct.value?.id || null,
+    product_ids: selectedProducts.value.map((p) => p.id),
   }
   try {
     const data = isEdit.value
@@ -113,7 +114,7 @@ async function loadForEdit() {
     category.value = data.category
     title.value = data.title
     content.value = data.content
-    if (data.product) selectedProduct.value = normalizeProduct(data.product)
+    selectedProducts.value = (data.products || []).map(normalizeProduct)
   } catch {
     error.value = '글을 불러오지 못했어요.'
   } finally {
@@ -163,27 +164,29 @@ onMounted(() => {
             <textarea v-model="content" class="content-input" placeholder="내용을 입력하세요" rows="9" />
           </div>
 
-          <!-- 제품 태그(선택) -->
+          <!-- 제품 태그(선택, 여러 개 가능) -->
           <div class="field">
-            <span class="label">제품 태그 <span class="optional">선택</span></span>
+            <span class="label">제품 태그 <span class="optional">선택 · 여러 개 가능</span></span>
 
-            <div v-if="selectedProduct" class="picked">
-              <div class="picked-img">
-                <img v-if="selectedProduct.image" :src="selectedProduct.image" :alt="selectedProduct.name" />
-                <span v-else class="picked-ph">🧴</span>
+            <div v-if="selectedProducts.length" class="picked-list">
+              <div v-for="sp in selectedProducts" :key="sp.id" class="picked">
+                <div class="picked-img">
+                  <img v-if="sp.image" :src="sp.image" :alt="sp.name" />
+                  <span v-else class="picked-ph">🧴</span>
+                </div>
+                <div class="picked-meta">
+                  <p class="picked-brand">{{ sp.brand }}</p>
+                  <p class="picked-name">{{ sp.name }}</p>
+                </div>
+                <button class="picked-clear" @click="removeProduct(sp.id)" aria-label="태그 제거">×</button>
               </div>
-              <div class="picked-meta">
-                <p class="picked-brand">{{ selectedProduct.brand }}</p>
-                <p class="picked-name">{{ selectedProduct.name }}</p>
-              </div>
-              <button class="picked-clear" @click="clearProduct" aria-label="태그 제거">×</button>
             </div>
 
-            <div v-else class="picker">
+            <div class="picker">
               <input
                 v-model="productQuery"
                 class="picker-input"
-                placeholder="제품·브랜드 검색해 태그"
+                placeholder="제품·브랜드 검색해 태그 추가"
                 @focus="focusPicker"
               />
               <ul v-if="pickerOpen && productQuery.trim()" class="picker-results">
@@ -263,6 +266,7 @@ onMounted(() => {
 .pi-brand { font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-faint); }
 .pi-name { font-size: 13.5px; font-weight: 600; color: var(--ink); }
 
+.picked-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 .picked {
   display: flex; align-items: center; gap: 12px; padding: 11px 12px;
   border-radius: 14px; background: var(--sage-soft); border: 1px solid transparent;
