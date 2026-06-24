@@ -108,8 +108,7 @@ function formatPrice(n) {
   <div class="screen">
     <div class="main">
       <header class="appbar">
-        <span class="eyebrow">browse</span>
-        <h1 class="title serif">둘러보기</h1>
+        <h1 class="title t-page">둘러보기</h1>
       </header>
 
       <!-- 검색 -->
@@ -205,11 +204,7 @@ function formatPrice(n) {
 .screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 .main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
-.appbar { flex-shrink: 0; padding: calc(18px + env(safe-area-inset-top)) 20px 4px; }
-.eyebrow { font-size: 10.5px; letter-spacing: 3.5px; text-transform: uppercase; color: var(--sage); font-weight: 600; }
-.title { font-size: 32px; font-weight: 400; letter-spacing: -.6px; line-height: 1.1; margin-top: 8px; }
-.title em { font-style: italic; color: var(--rose-ink); }
-.lead { font-size: 13px; color: var(--ink-soft); margin-top: 8px; }
+.appbar { flex-shrink: 0; padding: calc(16px + env(safe-area-inset-top)) 20px 4px; }
 
 .searchbar {
   flex-shrink: 0; display: flex; align-items: center; gap: 9px;
@@ -318,10 +313,8 @@ function formatPrice(n) {
 @media (min-width: 900px) {
   .screen { flex-direction: row; }
   .appbar, .filters, .body, .searchbar { max-width: 1000px; width: 100%; margin-left: auto; margin-right: auto; }
-  .appbar { padding: 44px 40px 6px; }
-  .title { font-size: 42px; }
-  .lead { font-size: 14px; }
-  .searchbar { margin-top: 20px; max-width: 1000px; }
+  .appbar { padding: 40px 40px 6px; }
+  .searchbar { margin-top: 18px; max-width: 1000px; }
   .filters { padding: 14px 40px 16px; }
   .body { padding: 12px 40px 40px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 22px; }

@@ -146,7 +146,6 @@ function formatPrice(n) {
         </div>
 
         <div class="result-head">
-          <span class="eyebrow">your edit</span>
           <p class="result-summary serif">{{ chat.recommendBatch.content }}</p>
         </div>
 
@@ -207,7 +206,6 @@ function formatPrice(n) {
           <div class="empty-orb">
             <DewyLoader :size="96" />
           </div>
-          <span class="eyebrow">consultation</span>
           <h1 class="empty-title serif">맑게 비치는<br><em>당신의 피부</em></h1>
           <p class="empty-desc">피부 고민을 편하게 적어주세요. 저장된 프로필을 참고해 맞춤 추천을 드려요.</p>
           <div class="examples">

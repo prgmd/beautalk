@@ -45,9 +45,8 @@ function formatDate(dateStr) {
 <template>
   <div class="view">
     <header class="page-header">
-      <p class="eyebrow">Recommendation Journal</p>
       <div class="title-row">
-        <h2 class="page-title serif">추천받은 제품</h2>
+        <h2 class="page-title t-page">추천받은 제품</h2>
         <span class="count">총 {{ totalCount }}개</span>
       </div>
       <p class="page-desc">챗봇이 추천해 준 제품을 최신순으로 모아봤어요.</p>
@@ -121,16 +120,7 @@ function formatDate(dateStr) {
 
 /* Header */
 .page-header { margin-bottom: 24px; animation: bt-rise 0.5s var(--ease) both; }
-.eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-bottom: 6px;
-}
 .title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
-.page-title { font-size: 25px; font-weight: 600; letter-spacing: -0.4px; color: var(--ink); }
 .page-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
 .count {
   font-size: 12px;
@@ -362,7 +352,6 @@ function formatDate(dateStr) {
   .view { max-width: 900px; }
 
   .page-header { margin-bottom: 32px; }
-  .page-title { font-size: 30px; }
   .page-desc { font-size: 14px; }
 
   /* roomier timeline + batch headers */

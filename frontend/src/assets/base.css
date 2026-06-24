@@ -66,6 +66,15 @@ img { display:block; }
 /* 세리프 헬퍼 (전역) */
 .serif { font-family:'Fraunces','Noto Serif KR',serif; }
 
+/* ── 제목 타입 스케일 (단일 출처) ──
+   .t-page = 모든 페이지 제목(둘러보기·커뮤니티·찜·추천·프로필·계정 등) 동일 규격.
+   영문 키커(eyebrow)는 사용하지 않는다. */
+.t-page {
+  font-family:'Fraunces','Noto Serif KR',serif;
+  font-size:26px; font-weight:500; letter-spacing:-.3px; line-height:1.2; color:var(--ink);
+}
+@media (min-width:900px) { .t-page { font-size:31px; } }
+
 /* 선택/포커스 */
 ::selection { background:rgba(126,139,109,.25); color:var(--ink); }
 :focus-visible { outline:2px solid var(--sage); outline-offset:2px; }

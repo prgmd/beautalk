@@ -51,9 +51,8 @@ function unlike(product) {
 <template>
   <div class="view">
     <header class="page-header">
-      <p class="eyebrow">My Collection</p>
       <div class="title-row">
-        <h2 class="page-title serif">찜한 제품</h2>
+        <h2 class="page-title t-page">찜한 제품</h2>
         <span class="count">총 {{ likedProducts.length }}개</span>
       </div>
     </header>
@@ -113,16 +112,7 @@ function unlike(product) {
 
 /* Header */
 .page-header { margin-bottom: 20px; animation: bt-rise 0.5s var(--ease) both; }
-.eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-bottom: 6px;
-}
 .title-row { display: flex; align-items: center; gap: 12px; }
-.page-title { font-size: 25px; font-weight: 600; letter-spacing: -0.4px; color: var(--ink); }
 .count {
   font-size: 12px;
   font-weight: 600;
@@ -287,7 +277,6 @@ function unlike(product) {
   .view { max-width: 900px; }
 
   .page-header { margin-bottom: 28px; }
-  .page-title { font-size: 30px; }
 
   /* 3-column arch-card grid */
   .product-grid {

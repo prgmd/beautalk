@@ -29,10 +29,7 @@ function write() {
   <div class="screen">
     <div class="main">
       <header class="appbar">
-        <div>
-          <span class="eyebrow">community</span>
-          <h1 class="title serif">커뮤니티</h1>
-        </div>
+        <h1 class="title t-page">커뮤니티</h1>
         <button class="write-btn" @click="write"><Icon name="plus" :size="16" /> 글쓰기</button>
       </header>
 
@@ -111,8 +108,7 @@ function write() {
   flex-shrink: 0; display: flex; align-items: flex-end; justify-content: space-between;
   padding: calc(12px + env(safe-area-inset-top)) 20px 6px;
 }
-.eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--sage); }
-.title { font-size: 26px; font-weight: 500; letter-spacing: -.3px; margin-top: 4px; }
+.title { margin: 0; }
 .write-btn {
   display: none; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 99px;
   background: var(--ink); color: var(--canvas); font-size: 13px; font-weight: 600; box-shadow: var(--sh-ink);
@@ -215,7 +211,6 @@ function write() {
   .appbar { padding: 28px 40px 6px; }
   .filters { padding: 12px 40px 14px; }
   .body { padding: 6px 40px 40px; }
-  .title { font-size: 30px; }
   .write-btn { display: inline-flex; }
   .fab { display: none; }
 }

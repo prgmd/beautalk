@@ -97,8 +97,7 @@ function getInitials(email) {
 <template>
   <div class="view">
     <header class="page-header">
-      <p class="eyebrow">Account · 내 계정</p>
-      <h2 class="page-title serif">계정</h2>
+      <h2 class="page-title t-page">계정</h2>
     </header>
 
     <!-- 계정 정보 카드 -->
@@ -181,7 +180,7 @@ function getInitials(email) {
     <div v-if="showWithdrawModal" class="modal-overlay" @click="closeWithdraw">
       <div class="modal" @click.stop>
         <span class="grab-handle" aria-hidden="true"></span>
-        <p class="modal-eyebrow">Danger Zone</p>
+        <p class="modal-eyebrow">위험</p>
         <h3 class="serif">정말 탈퇴하시겠어요?</h3>
         <p>프로필, 추천 기록, 찜한 제품 등 모든 데이터가 영구 삭제됩니다. 이 작업은 되돌릴 수 없어요.</p>
         <p v-if="errorMsg" class="modal-error">{{ errorMsg }}</p>
@@ -201,11 +200,6 @@ function getInitials(email) {
 
 /* Header */
 .page-header { animation: bt-rise 0.4s var(--ease) both; }
-.eyebrow {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--sage-ink); margin-bottom: 6px;
-}
-.page-title { font-size: 26px; font-weight: 500; letter-spacing: -0.4px; line-height: 1.15; }
 
 /* Account identity card */
 .account-card {
@@ -396,7 +390,6 @@ function getInitials(email) {
 @media (min-width: 900px) {
   .view { max-width: 640px; }
 
-  .page-title { font-size: 32px; }
 
   .account-card { padding: 24px 26px; }
   .avatar { width: 60px; height: 60px; font-size: 17px; }
