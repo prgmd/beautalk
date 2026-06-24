@@ -3,11 +3,14 @@ import { computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUiStore } from '@/stores/ui'
+import { useAvatarStore } from '@/stores/avatar'
+import { avatarSrc } from '@/utils/avatars'
 
 const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
 const ui = useUiStore()
+const avatar = useAvatarStore()
 
 // 상단 메뉴(이모지 없음). '내 정보'는 하단 프로필로 따로 둔다.
 const MENU = [
@@ -80,7 +83,10 @@ onMounted(() => {
       <div class="nav-foot">
         <span class="sec-label foot-label">내 정보</span>
         <button class="profile" :class="{ on: infoActive }" @click="goInfo">
-          <span class="avatar">{{ avatarChar }}</span>
+          <span class="avatar">
+            <img v-if="avatar.selected" :src="avatarSrc(avatar.selected)" alt="" />
+            <template v-else>{{ avatarChar }}</template>
+          </span>
           <span class="p-meta">
             <span class="p-name">{{ displayName }}</span>
             <span class="p-sub">찜·추천·프로필·계정</span>
@@ -197,10 +203,11 @@ onMounted(() => {
   .profile:hover { box-shadow: var(--sh-md); }
   .profile.on { border-color: transparent; background: var(--sage-soft); }
   .avatar {
-    width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%;
+    width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
     background: var(--sage); color: #fff; font-weight: 700; font-size: 15px;
     display: flex; align-items: center; justify-content: center;
   }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
   .p-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; text-align: left; }
   .p-name { font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .p-sub { font-size: 10.5px; color: var(--ink-faint); white-space: nowrap; }
