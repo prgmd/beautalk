@@ -9,6 +9,7 @@ on:
     branches: [develop]
   pull_request:
     branches: [develop]
+  workflow_dispatch:        # Actions 탭에서 수동 재실행(코드 변경 없이 재배포)
 
 jobs:
   test:
@@ -61,7 +62,8 @@ jobs:
 
   deploy:
     needs: test                                   # 테스트 통과해야만 배포
-    if: github.event_name == 'push'               # PR에선 배포 안 함(merge/push만)
+    # PR에선 배포 안 함. develop push(merge 포함) 또는 수동 실행(workflow_dispatch)일 때만.
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
