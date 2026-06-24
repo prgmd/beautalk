@@ -59,6 +59,8 @@ function stars(rating) {
 </script>
 
 <template>
+  <!-- body로 Teleport: #app > * { position:relative } 규칙이 fixed 오버레이를 덮어쓰지 않게 -->
+  <Teleport to="body">
   <Transition name="modal">
     <div v-if="store.isOpen" class="overlay" @click="store.close()">
       <div class="sheet" @click.stop>
@@ -153,6 +155,7 @@ function stars(rating) {
       </div>
     </div>
   </Transition>
+  </Teleport>
 </template>
 
 <style scoped>
