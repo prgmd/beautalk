@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { api } from '@/services/api'
+import { API_BASE } from '@/services/config'
 
 export const useAuthStore = defineStore('auth', () => {
   // 로그인 상태(hasProfile)만 localStorage에 유지 — 토큰은 저장하지 않는다.
@@ -35,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
   // 사용자가 직접 로그아웃: 백엔드에 알려 refresh 토큰 블랙리스트 + HttpOnly 쿠키 삭제 후 로컬 정리
   async function serverLogout() {
     try {
-      await fetch('http://localhost:8000/api/v1/auth/logout/', {
+      await fetch(`${API_BASE}/auth/logout/`, {
         method: 'POST',
         credentials: 'include',
         headers: {

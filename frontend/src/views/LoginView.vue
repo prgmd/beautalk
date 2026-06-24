@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import TermsModal from '@/components/TermsModal.vue'
+import { API_BASE } from '@/services/config'
 
 const route = useRoute()
 const activeModal = ref(null) // null | 'terms' | 'privacy'
@@ -28,8 +29,8 @@ function handleOAuth(provider) {
   // 백엔드가 카카오/구글 인증 URL 조립 후 해당 로그인 페이지로 리다이렉트
   // Vue Router 아닌 window.location.href 사용 — 외부 사이트로 완전히 이동해야 하기 때문
   const urls = {
-    kakao: 'http://localhost:8000/api/v1/auth/kakao/login/',
-    google: 'http://localhost:8000/api/v1/auth/google/login/',
+    kakao: `${API_BASE}/auth/kakao/login/`,
+    google: `${API_BASE}/auth/google/login/`,
   }
   window.location.href = urls[provider]
 }
