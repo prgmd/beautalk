@@ -64,3 +64,6 @@ Thumbs.db
 # Docker
 # ========================
 *.env.docker
+
+# certbot 발급물(서버에서 생성, 루트 소유) — 레포에 올리지 않는다
+certbot/

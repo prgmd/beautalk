@@ -1,0 +1,116 @@
+# CI/CD — develop 기준 통합 파이프라인.
+#   - test  : develop으로의 PR·push마다 백엔드 Django 테스트 (항상 실행)
+#   - deploy: develop에 push(merge 포함)될 때만, 그리고 test 통과 시에만 EC2에 자동 배포
+# 배포 트리거를 develop으로 정한 이유·인프라 배경은 docs/deployment.md 참고.
+name: CI/CD
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      # 임베딩 VectorExtension 마이그레이션(CREATE EXTENSION vector)이 돌아야 하므로
+      # 표준 postgres가 아니라 pgvector 확장이 포함된 이미지를 쓴다.
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: beautalk_test
+          POSTGRES_USER: beautalk
+          POSTGRES_PASSWORD: beautalk
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U beautalk -d beautalk_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: Django 테스트
+        run: python manage.py test --noinput
+        env:
+          # CI 전용 더미 시크릿. DEBUG=True로 throttle을 끄고(rate=None) 로컬과 동일 조건.
+          DJANGO_SECRET_KEY: ci-test-secret-key-not-for-production
+          DJANGO_DEBUG: 'True'
+          DB_ENGINE: django.db.backends.postgresql
+          DB_NAME: beautalk_test
+          DB_USER: beautalk
+          DB_PASSWORD: beautalk
+          DB_HOST: localhost
+          DB_PORT: '5432'
+
+  deploy:
+    needs: test                                   # 테스트 통과해야만 배포
+    if: github.event_name == 'push'               # PR에선 배포 안 함(merge/push만)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 프론트 빌드는 반드시 Actions 러너에서 한다 — t3.micro(1GB)에서 node 빌드는
+      # OOM 주범이라 EC2에선 절대 빌드하지 않는다(docs/deployment.md §5). 산출물 dist만 전송.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 프론트 빌드
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build      # frontend/.env.production 의 VITE_API_BASE 사용
+          tar czf dist.tar.gz -C dist .
+
+      # 단일 tarball만 전송(경로 모호성 제거). strip_components로 frontend/ 접두 제거.
+      - name: dist 전송 → EC2 /tmp
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: frontend/dist.tar.gz
+          target: /tmp
+          strip_components: 1
+
+      - name: EC2 배포 (코드 갱신 · dist 반영 · compose · migrate)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/beautalk
+            # 로컬 수정 없이 origin/develop과 정확히 일치(충돌·잔류 방지). dist·.env는 gitignore라 보존.
+            git fetch origin develop
+            git reset --hard origin/develop
+            # Actions가 빌드한 dist로 교체(스테일 에셋 방지 위해 비우고 푼다)
+            rm -rf frontend/dist
+            mkdir -p frontend/dist
+            tar xzf /tmp/dist.tar.gz -C frontend/dist
+            rm -f /tmp/dist.tar.gz
+            # 백엔드 재빌드·기동(t3.micro는 스왑으로 버팀) 후 마이그레이션
+            docker compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.prod.yml exec -T backend python manage.py migrate --noinput
+            docker image prune -f
