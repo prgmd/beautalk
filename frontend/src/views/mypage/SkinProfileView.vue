@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useProfileStore } from '@/stores/profile'
+import { useToastStore } from '@/stores/toast'
 
 const profile = useProfileStore()
+const toast = useToastStore()
 
 const editing = ref(false)
 const loading = ref(false)
@@ -43,6 +45,10 @@ async function saveEdit() {
   if (saving.value) return
   saving.value = true
   errorMsg.value = ''
+  // 입력칸에 남아있는(추가 안 누른) 기피 성분도 반영
+  const pending = editAvoidInput.value.trim()
+  if (pending && !editAvoidList.value.includes(pending)) editAvoidList.value.push(pending)
+  editAvoidInput.value = ''
   try {
     await profile.patchProfile({
       skinType: editSkinType.value,
@@ -50,6 +56,7 @@ async function saveEdit() {
       avoidIngredients: editAvoidList.value,
     })
     editing.value = false
+    toast.success('피부 프로필을 저장했어요')
   } catch {
     errorMsg.value = '저장에 실패했어요. 잠시 후 다시 시도해 주세요.'
   }

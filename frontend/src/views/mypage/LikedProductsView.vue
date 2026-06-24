@@ -2,31 +2,48 @@
 import { computed, onMounted, ref } from 'vue'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
+import { useToastStore } from '@/stores/toast'
 
 const likes = useLikesStore()
 const productDetail = useProductDetailStore()
+const toast = useToastStore()
 
 const likedProducts = computed(() => likes.items)
 const loading = ref(false)
+const loadError = ref(false)
 
 // 진입 시 백엔드에서 최신 찜 목록을 불러온다(이미 불러왔으면 생략).
 onMounted(async () => {
   if (likes.loaded) return
   loading.value = true
+  loadError.value = false
   try {
     await likes.fetchLikes()
   } catch {
-    // 실패해도 로컬 캐시로 계속 표시한다.
+    // 캐시가 없으면 사용자에게 알린다(빈 상태로 오인 방지).
+    if (!likes.items.length) loadError.value = true
   }
   loading.value = false
 })
 
+function retry() {
+  loadError.value = false
+  likes.loaded = false
+  onLoad()
+}
+async function onLoad() {
+  loading.value = true
+  try { await likes.fetchLikes() } catch { if (!likes.items.length) loadError.value = true }
+  loading.value = false
+}
+
 function formatPrice(n) {
-  return n?.toLocaleString('ko-KR') + '원'
+  return n != null ? n.toLocaleString('ko-KR') + '원' : '가격 정보 없음'
 }
 
 function unlike(product) {
   likes.toggleLike(product)
+  toast.show('찜을 해제했어요')
 }
 </script>
 
@@ -45,6 +62,12 @@ function unlike(product) {
       찜한 제품을 불러오는 중...
     </p>
 
+    <div v-else-if="loadError && !likedProducts.length" class="empty">
+      <p class="empty-icon">🌿</p>
+      <p class="empty-text serif">불러오지 못했어요.</p>
+      <button class="retry-btn" @click="retry">다시 시도</button>
+    </div>
+
     <div v-if="likedProducts.length" class="product-grid">
       <article v-for="product in likedProducts" :key="product.id" class="product-card">
         <div class="product-image clickable" @click="productDetail.open(product)">
@@ -59,15 +82,18 @@ function unlike(product) {
           <div class="row">
             <p class="price serif">{{ formatPrice(product.price) }}</p>
             <div class="actions">
-              <a :href="product.oliveyoungUrl" target="_blank" class="link-btn" title="올리브영">↗</a>
-              <button class="heart liked" @click="unlike(product)" title="찜 해제">♥</button>
+              <a
+                v-if="product.oliveyoungUrl && product.oliveyoungUrl !== '#'"
+                :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer"
+                class="link-btn" aria-label="올리브영에서 보기">↗</a>
+              <button class="heart liked" aria-label="찜 해제" @click="unlike(product)">♥</button>
             </div>
           </div>
         </div>
       </article>
     </div>
 
-    <div v-else-if="!loading" class="empty">
+    <div v-else-if="!loading && !loadError" class="empty">
       <p class="empty-icon">🤍</p>
       <p class="empty-text serif">아직 찜한 제품이 없어요.</p>
       <p class="empty-sub">챗봇에서 마음에 드는 제품에 <em>♡</em>를 눌러보세요.</p>
@@ -160,14 +186,6 @@ function unlike(product) {
   justify-content: center;
   overflow: hidden;
 }
-.product-image::before {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 46%;
-  background: repeating-linear-gradient(180deg, transparent 0 9px, rgba(34, 42, 46, .05) 9px 10px);
-  pointer-events: none;
-}
 .product-image img {
   width: 100%;
   height: 100%;
@@ -250,6 +268,10 @@ function unlike(product) {
 .empty-text { font-size: 18px; font-weight: 600; color: var(--ink); }
 .empty-sub { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
 .empty-sub em { color: var(--rose); font-style: normal; }
+.retry-btn {
+  margin-top: 6px; padding: 10px 22px; border-radius: 99px; font-size: 13.5px; font-weight: 600;
+  color: var(--ink); background: var(--card); border: 1px solid var(--line); box-shadow: var(--sh-sm);
+}
 
 /* ===== Desktop (≥900px) ===== */
 @media (min-width: 900px) {

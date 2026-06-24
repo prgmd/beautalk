@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useLikesStore } from '@/stores/likes'
@@ -8,6 +8,24 @@ import { api } from '@/services/api'
 const store = useProductDetailStore()
 const likes = useLikesStore()
 const router = useRouter()
+
+// Esc로 닫기 + 열려있는 동안 배경 스크롤 잠금
+function onKey(e) {
+  if (e.key === 'Escape') store.close()
+}
+watch(() => store.isOpen, (open) => {
+  if (open) {
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKey)
+  } else {
+    document.body.style.overflow = ''
+    window.removeEventListener('keydown', onKey)
+  }
+})
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', onKey)
+})
 
 const product = computed(() => store.product)
 const detail = computed(() => store.detail)
@@ -47,7 +65,7 @@ const satisfactionList = computed(() => {
 })
 
 function formatPrice(n) {
-  return n?.toLocaleString('ko-KR') + '원'
+  return n != null ? n.toLocaleString('ko-KR') + '원' : '가격 정보 없음'
 }
 
 function stars(rating) {
@@ -78,7 +96,7 @@ function stars(rating) {
             <h2 class="name serif">{{ product?.name }}</h2>
             <div class="rating-row" v-if="detail">
               <span class="stars">{{ stars(detail.average_rating) }}</span>
-              <span class="rating-num">{{ detail.average_rating }}</span>
+              <span class="rating-num">{{ Number(detail.average_rating).toFixed(1) }}</span>
               <span class="review-count">리뷰 {{ detail.review_count.toLocaleString('ko-KR') }}개</span>
             </div>
             <p class="price serif">{{ formatPrice(product?.price) }}</p>
@@ -88,9 +106,10 @@ function stars(rating) {
                 :class="{ liked: likes.isLiked(product?.id) }"
                 @click="likes.toggleLike(product)"
               >{{ likes.isLiked(product?.id) ? '♥ 찜함' : '♡ 찜하기' }}</button>
-              <a :href="product?.oliveyoungUrl" target="_blank" class="oliveyoung-btn">
-                올리브영에서 보기 ↗
-              </a>
+              <a
+                v-if="product?.oliveyoungUrl && product.oliveyoungUrl !== '#'"
+                :href="product.oliveyoungUrl" target="_blank" rel="noopener noreferrer" class="oliveyoung-btn"
+              >올리브영에서 보기 ↗</a>
             </div>
           </div>
         </div>
@@ -120,9 +139,9 @@ function stars(rating) {
             </div>
           </section>
 
-          <!-- 리뷰 -->
+          <!-- 리뷰 (예시 데이터 — 실제 리뷰 API 연동 전) -->
           <section class="section">
-            <h3 class="section-title serif">실제 리뷰</h3>
+            <h3 class="section-title serif">리뷰 미리보기 <span class="sample-tag">예시</span></h3>
             <div class="review-list">
               <div v-for="review in detail.reviews" :key="review.id" class="review-card">
                 <div class="review-head">
@@ -281,6 +300,10 @@ function stars(rating) {
 
 .section { display: flex; flex-direction: column; gap: 12px; }
 .section-title { font-size: 16px; font-weight: 600; color: var(--ink); }
+.sample-tag {
+  font-size: 10px; font-weight: 700; vertical-align: middle; margin-left: 6px;
+  padding: 2px 7px; border-radius: 99px; background: var(--panel); color: var(--ink-faint);
+}
 
 .ai-section .ai-summary {
   background: var(--sage-soft);

@@ -39,6 +39,7 @@ const SECTIONS = [
               :key="tab.path"
               class="tab"
               :class="{ active: route.path === tab.path }"
+              :aria-current="route.path === tab.path ? 'page' : undefined"
               @click="router.push(tab.path)"
             >{{ tab.label }}</button>
           </template>
@@ -68,8 +69,13 @@ const SECTIONS = [
   -ms-overflow-style: none; scrollbar-width: none;
 }
 .tabstrip::-webkit-scrollbar { display: none; }
-/* 모바일: 섹션 라벨 숨기고 탭만 가로로 */
-.sec-label { display: none; }
+/* 모바일: 섹션 라벨을 탭 사이 작은 구분자로 */
+.sec-label {
+  display: inline-flex; align-items: center; flex-shrink: 0;
+  font-size: 10px; letter-spacing: 1px; color: var(--ink-faint); font-weight: 700;
+  padding: 0 2px 0 6px;
+}
+.sec-label:first-child { padding-left: 0; }
 .tab {
   flex-shrink: 0;
   padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;

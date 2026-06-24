@@ -3,11 +3,20 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useAvatarStore } from '@/stores/avatar'
+import { useToastStore } from '@/stores/toast'
+import { useConfirmStore } from '@/stores/confirm'
 import { AVATARS, avatarSrc } from '@/utils/avatars'
 
 const router = useRouter()
 const auth = useAuthStore()
 const avatar = useAvatarStore()
+const toast = useToastStore()
+const confirm = useConfirmStore()
+
+function selectAvatar(key) {
+  avatar.set(key)
+  toast.success('프로필 사진을 변경했어요')
+}
 
 const showWithdrawModal = ref(false)
 const withdrawing = ref(false)
@@ -16,7 +25,6 @@ const errorMsg = ref('')
 // 닉네임 편집
 const nickname = ref(auth.user?.nickname || '')
 const nickSaving = ref(false)
-const nickMsg = ref('')
 
 // 진입 시 백엔드에서 최신 계정 정보를 불러온다(실패해도 기존 표시 유지).
 onMounted(async () => {
@@ -27,18 +35,23 @@ onMounted(async () => {
 async function saveNickname() {
   if (nickSaving.value) return
   nickSaving.value = true
-  nickMsg.value = ''
   try {
     await auth.saveNickname(nickname.value.trim())
-    nickMsg.value = '저장됐어요.'
+    nickname.value = auth.user?.nickname || ''
+    toast.success('닉네임을 저장했어요')
   } catch (e) {
-    nickMsg.value = e?.data?.nickname?.[0] || '저장에 실패했어요.'
+    toast.error(e?.data?.nickname?.[0] || '저장에 실패했어요')
   } finally {
     nickSaving.value = false
   }
 }
 
 async function logout() {
+  if (!(await confirm.ask({
+    title: '로그아웃할까요?',
+    message: '이 기기에서 로그아웃됩니다.',
+    confirmText: '로그아웃',
+  }))) return
   await auth.serverLogout()
   router.push('/login')
 }
@@ -107,8 +120,8 @@ function getInitials(email) {
         <button
           v-for="a in AVATARS" :key="a.key"
           class="avatar-choice" :class="{ on: avatar.selected === a.key }"
-          :aria-label="a.label"
-          @click="avatar.set(a.key)"
+          :aria-label="a.label" :aria-pressed="avatar.selected === a.key"
+          @click="selectAvatar(a.key)"
         >
           <img :src="a.src" :alt="a.label" />
         </button>
@@ -131,13 +144,12 @@ function getInitials(email) {
         </button>
       </div>
       <p class="nick-hint">커뮤니티에 표시되는 이름이에요. 비우면 이메일 앞부분이 보여요.</p>
-      <p v-if="nickMsg" class="nick-msg">{{ nickMsg }}</p>
     </section>
 
     <!-- 계정 관리 -->
     <section class="section">
       <p class="section-title">계정 관리</p>
-      <div class="action-card" @click="logout">
+      <div class="action-card" role="button" tabindex="0" @click="logout" @keydown.enter="logout" @keydown.space.prevent="logout">
         <div class="action-left">
           <span class="action-icon">→</span>
           <div>
@@ -152,7 +164,7 @@ function getInitials(email) {
     <!-- 위험 영역 -->
     <section class="section danger-section">
       <p class="section-title danger-title">위험 영역</p>
-      <div class="action-card danger-card" @click="openWithdraw">
+      <div class="action-card danger-card" role="button" tabindex="0" @click="openWithdraw" @keydown.enter="openWithdraw" @keydown.space.prevent="openWithdraw">
         <div class="action-left">
           <span class="action-icon">⚠️</span>
           <div>
