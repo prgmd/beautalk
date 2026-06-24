@@ -1,13 +1,43 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useLikesStore } from '@/stores/likes'
+import { api } from '@/services/api'
 
 const store = useProductDetailStore()
 const likes = useLikesStore()
+const router = useRouter()
 
 const product = computed(() => store.product)
 const detail = computed(() => store.detail)
+
+// ── 이 제품 관련 커뮤니티 글 ──
+// 챗봇 추천의 목업 제품(비 UUID)은 서버에 글이 없으니 호출하지 않는다.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const relatedPosts = ref([])
+
+async function fetchRelated(id) {
+  relatedPosts.value = []
+  if (!id || !UUID_RE.test(id)) return
+  try {
+    const { data } = await api.get(`/products/${id}/posts/`)
+    relatedPosts.value = data?.results || (Array.isArray(data) ? data : [])
+  } catch {
+    relatedPosts.value = []
+  }
+}
+
+watch(
+  () => (store.isOpen ? store.product?.id : null),
+  (id) => { if (id) fetchRelated(id) },
+  { immediate: true },
+)
+
+function openPost(id) {
+  store.close()
+  router.push(`/community/${id}`)
+}
 
 const satisfactionList = computed(() => {
   if (!detail.value?.satisfaction_by_type) return []
@@ -102,6 +132,21 @@ function stars(rating) {
                 <p class="review-recommend">👍 도움돼요 {{ review.recommend_count }}</p>
               </div>
             </div>
+          </section>
+
+          <!-- 이 제품 관련 커뮤니티 글 -->
+          <section v-if="relatedPosts.length" class="section">
+            <h3 class="section-title serif">🌿 이 제품 관련 글 {{ relatedPosts.length }}개</h3>
+            <ul class="related-list">
+              <li v-for="post in relatedPosts" :key="post.id" class="related-item" @click="openPost(post.id)">
+                <div class="ri-top">
+                  <span class="ri-cat">{{ post.category_label }}</span>
+                  <span class="ri-stats">💬 {{ post.comment_count }} · ♥ {{ post.like_count }}</span>
+                </div>
+                <p class="ri-title">{{ post.title }}</p>
+                <p class="ri-author">{{ post.author }}</p>
+              </li>
+            </ul>
           </section>
         </div>
       </div>
@@ -288,6 +333,20 @@ function stars(rating) {
 .review-date { font-size: 11px; color: var(--ink-faint); margin-left: auto; }
 .review-text { font-size: 13px; line-height: 1.65; color: var(--ink); }
 .review-recommend { font-size: 11px; color: var(--ink-faint); }
+
+/* 관련 글 */
+.related-list { display: flex; flex-direction: column; gap: 10px; }
+.related-item {
+  background: var(--sheet); border: 1px solid var(--line-soft); border-radius: var(--radius);
+  padding: 12px 14px; cursor: pointer; box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.related-item:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.ri-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.ri-cat { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--sage-soft); color: var(--sage-ink); }
+.ri-stats { font-size: 11.5px; color: var(--ink-faint); }
+.ri-title { font-size: 14px; font-weight: 600; line-height: 1.35; color: var(--ink); }
+.ri-author { font-size: 11.5px; color: var(--ink-faint); margin-top: 4px; }
 
 /* Transition — slide up from bottom */
 .modal-enter-active, .modal-leave-active { transition: opacity var(--t) var(--ease); }
