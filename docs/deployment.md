@@ -2,7 +2,8 @@
 
 > 로컬 개발 완료 → **AWS EC2 단일 인스턴스에 docker-compose로 배포**하고,
 > **GitHub Actions로 CI(테스트)·CD(자동 배포)** 를 구축한다.
-> 상태: **Phase 1·2 완료(https://beautalk.site 운영 중), Phase 3(Actions) 대기**. 도메인: `beautalk.site`
+> 상태: **Phase 1·2 완료(https://beautalk.site 운영 중), Phase 3(Actions) 진행 중 — 워크플로우
+> 작성·푸시 완료, 첫 자동배포 디버깅 중**. 도메인: `beautalk.site`
 
 ---
 
@@ -177,10 +178,24 @@ nginx 자체에 certbot을 심지 않고 별도 1회 실행으로 분리한 이�
 줄이 있는데, exchange 엔드포인트는 1회용 토큰을 소비하는 구조라 동일 콜백에서 중복 호출되면
 두 번째는 401이 나는 게 정상 — 첫 호출이 이미 성공해 로그인 자체엔 영향 없음.)
 
-### Phase 3 — GitHub Actions
-- [ ] **CI**: PR/push에 Django 테스트 (PG service 컨테이너) + (선택) 프론트 빌드
-- [ ] **CD**: 배포 브랜치 push → SSH로 EC2 접속 → `git pull` + `docker compose up -d --build` + `migrate`
-- [ ] Secrets: `EC2_HOST`, `EC2_SSH_KEY`, `EC2_USER` 등
+### Phase 3 — GitHub Actions (진행 중 — 워크플로우 작성·푸시 완료, 첫 배포 디버깅 중)
+- [x] **워크플로우 작성**: `.github/workflows/ci-cd.yml` — `test`(항상) → `deploy`(develop push + test 통과 시)
+  통합 파이프라인. 배포 트리거 브랜치 = **develop**(결정, §4)
+- [x] **CI(test 잡)**: develop으로의 PR·push마다 Django 테스트. pgvector service 컨테이너
+  (`pgvector/pgvector:pg16` — 임베딩 `VectorExtension` 마이그레이션이 `CREATE EXTENSION vector`를
+  요구), `DJANGO_DEBUG=True`로 throttle 끄고 DB_*는 service 컨테이너로 주입
+- [x] **CD(deploy 잡)**: 프론트는 **Actions 러너에서 빌드**(t3.micro OOM 회피, §5) → dist tarball
+  scp → EC2에서 `git fetch + reset --hard origin/develop` → dist 교체 → `docker compose up -d --build`
+  → `migrate`. SSH/SCP는 `appleboy/ssh-action`·`appleboy/scp-action` 사용
+- [x] **Secrets 등록**: `EC2_HOST`(52.78.34.135)·`EC2_USER`(ubuntu)·`EC2_SSH_KEY`(.pem 전체)
+- [x] **사전 준비**: EC2 저장소를 `46-...` 브랜치 → **develop으로 전환**(`git reset --hard origin/develop`,
+  얕은 클론이라 `git remote set-branches origin "*"` + `fetch develop:refs/...` 선행 필요),
+  CD가 sudo 없이 docker 실행 가능함을 새 SSH 세션에서 확인, `certbot/`을 `.gitignore`에 추가
+- [ ] ⚠️ **첫 배포 미반영 — 디버깅 필요**: 워크플로우 커밋(`323d80a`) push 후 ~6분 모니터링했으나
+  EC2 HEAD가 갱신 안 됨(컨테이너 재기동 흔적 없음) → `test` 또는 `deploy` 잡이 실패한 것으로 추정.
+  **다음 세션: GitHub Actions 탭에서 어느 잡이 왜 실패했는지 확인**이 출발점. 유력 후보:
+  ① CI 테스트가 CI 환경(DEBUG=True)에서 깨짐(로컬은 DEBUG 미설정=False로 통과했었음 → throttle 등
+  환경차 가능성), ② `EC2_SSH_KEY` 시크릿 개행 누락 등으로 appleboy 인증 실패, ③ Actions 미트리거.
 
 ---
 
@@ -201,7 +216,8 @@ nginx 자체에 certbot을 심지 않고 별도 1회 실행으로 분리한 이�
 ## 4. 결정 사항 (확정 필요)
 
 - [x] **도메인 이름**: `beautalk.site` (GoDaddy 구매, A레코드 연결 완료)
-- [ ] **배포 브랜치**: `main`(배포 전용, 권장) vs `develop`
+- [x] **배포 브랜치**: **`develop` 직접 배포**(결정 2026-06-24) — 학교 프로젝트·데모 특성상 별도
+  `main` 운용보다 단순함 우선. develop push/merge 시 자동 배포
 - [x] **DB**: 컨테이너 (RDS 안 씀)
 - [x] **EC2 사양**: **t3.micro (1GB)** — 프리티어 소진, 최소비용. 1GB 최적화는 §5.
 

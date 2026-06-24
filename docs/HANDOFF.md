@@ -8,14 +8,17 @@
 
 ## 0. 한 줄 상황
 **Phase 1·2 완료 — `https://beautalk.site` 실제로 운영 중.** 로그인(카카오·구글)·온보딩·챗봇·추천·
-찜·커뮤니티 게시판까지 수동 E2E 전 구간 통과. 지금 **Phase 3(GitHub Actions CI/CD) 착수.**
+찜·커뮤니티 게시판까지 수동 E2E 전 구간 통과. **Phase 3(GitHub Actions CI/CD) 진행 중 — 워크플로우
+작성·푸시까지 됐으나 첫 자동배포가 EC2에 반영 안 됨(디버깅 필요).**
 
-- **작업 브랜치**: `46-deploy-aws-ec2-배포-github-actions-cicd-구축` (develop 최신 + FE 작업 merge 완료)
+- **작업 브랜치**: 이제 **`develop`에서 직접 작업**(Phase1·2는 PR #53으로 develop에 merge 완료).
+  배포 트리거 브랜치도 develop으로 결정
 - **도메인**: `beautalk.site` (HTTPS, Let's Encrypt 인증서 만료 2026-09-22)
 - **EC2**: t3.micro, Ubuntu 24.04 LTS, 퍼블릭 IP `52.78.34.135`
   - SSH: `ssh -i <다운로드한 beautalk.pem 경로> ubuntu@52.78.34.135`
-  - 코드 위치: `~/beautalk` (배포 브랜치 클론), 컴포즈: `~/beautalk/docker-compose.prod.yml`
+  - 코드 위치: `~/beautalk` (**이제 develop 브랜치** 추적), 컴포즈: `~/beautalk/docker-compose.prod.yml`
   - env 2개 이미 주입됨: `~/beautalk/.env`(compose 변수치환), `~/beautalk/backend/.env`(Django 시크릿)
+  - certbot 인증서: `~/beautalk/certbot/`(루트 소유, gitignore)
 
 ## 1. ⚠️ 작업 방식 (반드시 지킬 것)
 - **git commit/push는 사용자가 직접 한다.** Claude는 **명령만 제공**(실행 금지). 커밋 메시지는 **한 줄**, **Co-Authored-By 트레일러 제외**. (메모리 `git-commit-preferences` 참고)
@@ -27,11 +30,19 @@
 - **Phase 2** — EC2 수동 배포: **완료** (EC2·Docker·DNS·certbot HTTPS·OAuth redirect·프론트
   dist·E2E 검증 전부 끝). 트러블슈팅 기록: deployment.md (스테일 시드 픽스처, 카카오 `KOE006`
   redirect_uri 오타, Docker baked-in 이미지 vs 호스트 마운트 등)
-- **Phase 3** — GitHub Actions CI/CD: **착수** — deployment.md §2 참고
-  - [ ] CI: PR/push에 Django 테스트(PG service 컨테이너)
-  - [ ] CD: 배포 브랜치 push → SSH로 EC2 접속 → `git pull` + `docker compose up -d --build` + `migrate`
-  - [ ] Secrets: `EC2_HOST`, `EC2_SSH_KEY`, `EC2_USER` 등 GitHub repo secrets 등록 필요
-  - [ ] **미결정**: 배포 트리거 브랜치 — `main`(신규, 배포 전용) vs `develop` 그대로 (deployment.md §4)
+- **Phase 3** — GitHub Actions CI/CD: **진행 중** — `.github/workflows/ci-cd.yml` 작성·push 완료,
+  Secrets 등록 완료, EC2 develop 전환 완료. **첫 자동배포가 EC2에 반영 안 됨 → 디버깅이 다음 일.**
+  - 🔴 **다음 시작점**: GitHub Actions 탭에서 커밋 `323d80a` 워크플로우 run 열어 **test/deploy 중
+    어느 잡이 왜 실패했는지** 확인. 유력 후보:
+    1. **CI 테스트가 CI에서 깨짐** — 로컬은 `DJANGO_DEBUG` 미설정(=False)으로 통과했는데 CI는
+       `DJANGO_DEBUG=True`로 돌림(throttle off). 환경차로 깨질 수 있음 → 의심되면 워크플로우에서
+       `DJANGO_DEBUG`를 빼거나 False로 맞춰 로컬과 동일 조건으로. (검증 중이던 작업: `backend/*/tests.py`에
+       throttle/429 의존 테스트 있는지 확인 — `accounts·board·chat·products/tests.py`)
+    2. **`EC2_SSH_KEY` 시크릿 개행 깨짐** → appleboy 인증 실패. .pem 전체를 헤더·푸터 포함해 다시 등록
+    3. **Actions 미트리거** — repo Settings에서 Actions 활성화 여부 확인
+  - 참고: EC2 저장소는 develop 추적으로 이미 정리됨. 새 SSH 세션에서 sudo 없이 docker 실행됨 확인.
+    CD 스크립트는 `git reset --hard origin/develop`이라 EC2 로컬수정은 매번 버려짐(주의: 서버에서
+    직접 고친 건 develop에 반영해야 유지됨)
 
 ## 3. 핵심 결정·주의사항
 - **gpt-4o 적용됨** — prod env `GMS_MODEL=gpt-4o` (근거: docs/model-selection-report.md).
@@ -43,5 +54,5 @@
 ## 4. 이번 프로젝트 현재 상태 (context)
 - **하이브리드 추천**(정형 제약 SQL필터+RAG), **챗봇 품질**(그라운딩), **데이터**(306제품·임베딩·중복0),
   **커뮤니티**(제품 다중태그 M2M + 닉네임), **배포**(Phase1·2) 모두 완료. 테스트 63개.
-- 남은 큰 덩어리: **Phase 3(Actions)** + 프론트 연동(하이브리드 필터 UI·게시판 5페이지, FE 팀원 진행 중) + 발표.
+- 남은 큰 덩어리: **Phase 3(Actions) 마무리(첫 배포 디버깅)** + 프론트 연동(하이브리드 필터 UI·게시판 5페이지, FE 팀원 진행 중) + 발표.
 - 문서 허브: docs/README.md. 배포: docs/deployment.md.
