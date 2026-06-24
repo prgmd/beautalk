@@ -154,7 +154,15 @@
   - psycopg2-binary 추가, Product 156건 dumpdata→loaddata 이관, 테스트 34개 통과
   - URLField max_length 200→500 (PG 길이 강제 대응, 올리브영 URL 최대 298자)
 - [~] Docker 컨테이너화 (DB만 컨테이너로 구동 / 앱 컨테이너화는 배포 단계)
-- [ ] AWS 배포·Nginx 설정
+- [ ] **AWS EC2 배포 + GitHub Actions CI/CD** → 계획: [docs/deployment.md](./deployment.md)
+  - [x] Phase 1: 배포 가능화 (localhost env화·gunicorn·Dockerfile·nginx.conf·compose.prod·.env.prod.example)
+    - 회귀 테스트 63개 통과 (Phase1 변경 후 재확인)
+    - 로컬에서 `docker-compose.prod.yml` 기동 검증 (nginx·backend·db, SPA·API·admin·static 응답 확인)
+    - 검증 중 버그 발견·수정: `db` 서비스 변수치환용 루트 `.env` 누락 → 빈 자격증명 초기화 위험 (상세: deployment.md "로컬 검증 트러블슈팅")
+    - 루트 `.env.prod.example` 추가, `.gitignore`에 `!.env.prod.example` 예외 추가
+  - [ ] 프론트 API base env화 (FE 담당, 스펙은 deployment.md)
+  - [ ] Phase 2: EC2 수동 배포 (보안그룹·도메인·HTTPS·OAuth redirect 등록·E2E 검증)
+  - [ ] Phase 3: Actions (CI 테스트 + CD 자동 배포)
 - [x] DEBUG/ALLOWED_HOSTS 환경변수 분리 (배포 시 `.env`만 주입하면 운영 전환 — backend-hardening.md)
 - [ ] 전체 QA·버그 수정
 - [ ] 발표 준비
