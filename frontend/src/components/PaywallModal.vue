@@ -33,6 +33,7 @@ function selectPlan(plan) {
 </script>
 
 <template>
+  <Teleport to="body">
   <Transition name="modal" appear>
     <div class="overlay" @click="emit('close')">
       <div class="sheet" @click.stop>
@@ -93,6 +94,7 @@ function selectPlan(plan) {
       </div>
     </div>
   </Transition>
+  </Teleport>
 </template>
 
 <style scoped>
