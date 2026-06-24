@@ -2,9 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useAvatarStore } from '@/stores/avatar'
+import { AVATARS, avatarSrc } from '@/utils/avatars'
 
 const router = useRouter()
 const auth = useAuthStore()
+const avatar = useAvatarStore()
 
 const showWithdrawModal = ref(false)
 const withdrawing = ref(false)
@@ -67,12 +70,30 @@ function getInitials(email) {
     <!-- 계정 정보 카드 -->
     <div class="account-card">
       <span class="leaf" aria-hidden="true">❋</span>
-      <div class="avatar">{{ getInitials(auth.user?.email) }}</div>
+      <div class="avatar">
+        <img v-if="avatar.selected" :src="avatarSrc(avatar.selected)" alt="프로필" class="avatar-img" />
+        <span v-else>{{ getInitials(auth.user?.email) }}</span>
+      </div>
       <div class="account-info">
         <p class="email serif">{{ auth.user?.email || 'demo@example.com' }}</p>
         <p class="join-date">{{ formatJoinDate() }}</p>
       </div>
     </div>
+
+    <!-- 프로필 사진 선택 -->
+    <section class="section">
+      <p class="section-title">프로필 사진</p>
+      <div class="avatar-picker">
+        <button
+          v-for="a in AVATARS" :key="a.key"
+          class="avatar-choice" :class="{ on: avatar.selected === a.key }"
+          :aria-label="a.label"
+          @click="avatar.set(a.key)"
+        >
+          <img :src="a.src" :alt="a.label" />
+        </button>
+      </div>
+    </section>
 
     <!-- 계정 관리 -->
     <section class="section">
@@ -173,7 +194,20 @@ function getInitials(email) {
   position: relative;
   z-index: 1;
 }
+.avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .account-info { position: relative; z-index: 1; min-width: 0; }
+
+/* 프로필 사진 선택 */
+.avatar-picker { display: flex; gap: 12px; flex-wrap: wrap; }
+.avatar-choice {
+  width: 60px; height: 60px; border-radius: 50%; overflow: hidden;
+  border: 2px solid var(--line); background: var(--card); box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.avatar-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-choice:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.avatar-choice:active { transform: scale(.96); }
+.avatar-choice.on { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(126,139,109,.2); }
 .email { font-size: 17px; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
 .join-date { font-size: 12px; color: var(--ink-faint); margin-top: 3px; }
 

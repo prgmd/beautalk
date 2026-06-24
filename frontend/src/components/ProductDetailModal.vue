@@ -216,7 +216,7 @@ function stars(rating) {
 .head {
   display: flex;
   gap: 18px;
-  padding: 8px 24px 24px;
+  padding: 26px 24px 24px;
   border-bottom: 1px solid var(--line-soft);
 }
 
