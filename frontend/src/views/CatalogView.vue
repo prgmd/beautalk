@@ -5,6 +5,7 @@ import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { normalizeProduct } from '@/utils/product'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
+import Icon from '@/components/Icon.vue'
 
 const likes = useLikesStore()
 const productDetail = useProductDetailStore()
@@ -107,17 +108,16 @@ function formatPrice(n) {
   <div class="screen">
     <div class="main">
       <header class="appbar">
-        <div>
-          <span class="eyebrow">browse</span>
-          <h1 class="title serif">둘러보기</h1>
-        </div>
+        <span class="eyebrow">Browse the shelf</span>
+        <h1 class="title serif">오늘의 <em>화장대</em></h1>
+        <p class="lead">큐레이션된 제품을 천천히 둘러보세요.</p>
       </header>
 
       <!-- 검색 -->
       <div class="searchbar">
-        <span class="s-ic" aria-hidden="true">🔎</span>
+        <Icon name="search" :size="18" class="s-ic" />
         <input v-model="search" type="search" enterkeyhint="search" aria-label="제품·브랜드 검색" placeholder="제품·브랜드 검색" />
-        <button v-if="search" class="s-clear" @click="search = ''" aria-label="검색어 지우기">×</button>
+        <button v-if="search" class="s-clear" @click="search = ''" aria-label="검색어 지우기"><Icon name="x" :size="15" /></button>
       </div>
 
       <!-- 카테고리 필터 -->
@@ -134,20 +134,31 @@ function formatPrice(n) {
 
       <div ref="bodyEl" class="body">
         <p v-if="errorMsg" class="msg err">{{ errorMsg }}</p>
-        <p v-if="loading" class="msg">제품을 불러오는 중...</p>
 
-        <div v-if="pageItems.length" class="grid">
-          <article v-for="product in pageItems" :key="product.id" class="card">
+        <!-- 스켈레톤 -->
+        <div v-if="loading" class="grid" aria-hidden="true">
+          <div v-for="n in 8" :key="n" class="card skel">
+            <div class="arch sk" />
+            <div class="meta">
+              <div class="sk-line sk" style="width:40%" />
+              <div class="sk-line sk" style="width:80%" />
+              <div class="sk-line sk" style="width:50%" />
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!loading && pageItems.length" class="grid">
+          <article v-for="(product, i) in pageItems" :key="product.id" class="card" :style="{ '--d': i * 35 + 'ms' }">
             <div class="arch" @click="productDetail.open(product)">
               <img v-if="product.image" :src="product.image" :alt="product.name" />
-              <span v-else class="ph">🧴</span>
+              <Icon v-else name="leaf" :size="38" class="ph" />
               <button
                 class="heart"
                 :class="{ liked: likes.isLiked(product.id) }"
                 :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
                 :aria-pressed="likes.isLiked(product.id)"
                 @click.stop="likes.toggleLike(product)"
-              >{{ likes.isLiked(product.id) ? '♥' : '♡' }}</button>
+              ><Icon :name="likes.isLiked(product.id) ? 'heart-fill' : 'heart'" :size="16" /></button>
             </div>
             <div
               class="meta" role="button" tabindex="0"
@@ -163,7 +174,7 @@ function formatPrice(n) {
         </div>
 
         <div v-if="isEmpty" class="empty">
-          <p class="empty-icon">🌿</p>
+          <span class="empty-art"><Icon name="leaf" :size="40" /></span>
           <template v-if="search || activeCategory">
             <p class="empty-text">조건에 맞는 제품이 없어요.</p>
             <button class="empty-cta" @click="search = ''; selectCategory('')">검색·필터 초기화</button>
@@ -173,7 +184,7 @@ function formatPrice(n) {
 
         <!-- 숫자 페이지네이션 -->
         <div v-if="!loading && pageCount > 1" class="pager">
-          <button class="pg arrow" :disabled="page === 1" @click="goPage(page - 1)" aria-label="이전">‹</button>
+          <button class="pg arrow" :disabled="page === 1" @click="goPage(page - 1)" aria-label="이전"><Icon name="chevron-left" :size="17" /></button>
           <button
             v-for="(p, i) in pages"
             :key="i"
@@ -182,7 +193,7 @@ function formatPrice(n) {
             :disabled="p === '…'"
             @click="goPage(p)"
           >{{ p }}</button>
-          <button class="pg arrow" :disabled="page === pageCount" @click="goPage(page + 1)" aria-label="다음">›</button>
+          <button class="pg arrow" :disabled="page === pageCount" @click="goPage(page + 1)" aria-label="다음"><Icon name="chevron-right" :size="17" /></button>
         </div>
       </div>
     </div>
@@ -195,21 +206,24 @@ function formatPrice(n) {
 .screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 .main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
-.appbar { flex-shrink: 0; padding: calc(12px + env(safe-area-inset-top)) 20px 6px; }
-.eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--sage); }
-.title { font-size: 26px; font-weight: 500; letter-spacing: -.3px; margin-top: 4px; }
+.appbar { flex-shrink: 0; padding: calc(18px + env(safe-area-inset-top)) 20px 4px; }
+.eyebrow { font-size: 10.5px; letter-spacing: 3.5px; text-transform: uppercase; color: var(--sage); font-weight: 600; }
+.title { font-size: 32px; font-weight: 400; letter-spacing: -.6px; line-height: 1.1; margin-top: 8px; }
+.title em { font-style: italic; color: var(--rose-ink); }
+.lead { font-size: 13px; color: var(--ink-soft); margin-top: 8px; }
 
 .searchbar {
-  flex-shrink: 0; display: flex; align-items: center; gap: 8px;
-  margin: 6px 20px 0; padding: 11px 14px; border-radius: var(--radius);
+  flex-shrink: 0; display: flex; align-items: center; gap: 9px;
+  margin: 16px 20px 0; padding: 12px 15px; border-radius: 99px;
   background: var(--card); border: 1px solid var(--line); box-shadow: var(--sh-sm);
   transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 .searchbar:focus-within { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(126,139,109,.15); }
-.s-ic { font-size: 14px; opacity: .7; }
+.s-ic { color: var(--ink-faint); }
 .searchbar input { flex: 1; border: none; background: none; outline: none; font-size: 14px; color: var(--ink); font-family: inherit; }
 .searchbar input::placeholder { color: var(--ink-faint); }
-.s-clear { width: 22px; height: 22px; border-radius: 50%; background: var(--panel); color: var(--ink-soft); font-size: 15px; flex-shrink: 0; }
+.s-clear { width: 24px; height: 24px; border-radius: 50%; background: var(--panel); color: var(--ink-soft); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s-clear:hover { background: var(--line); color: var(--ink); }
 
 .filters {
   flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto;
@@ -223,39 +237,57 @@ function formatPrice(n) {
 .chip:active { transform: scale(.97); }
 .chip.on { background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-sm); }
 
-.body { flex: 1; min-height: 0; overflow-y: auto; padding: 6px 20px 24px; }
+.body { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 24px; }
 .msg { font-size: 13px; color: var(--ink-soft); padding: 16px 2px; text-align: center; }
 .msg.err { color: var(--danger); }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 16px; }
 .card {
   background: var(--card); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
-  padding: 10px; box-shadow: var(--sh-sm); animation: bt-rise .4s var(--ease) both;
+  padding: 10px; box-shadow: var(--sh-soft);
+  animation: card-in .5s var(--ease) both; animation-delay: var(--d, 0ms);
   transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
-.card:hover { transform: translateY(-3px); box-shadow: var(--sh-md); }
+.card:hover { transform: translateY(-4px); box-shadow: var(--sh-hover); }
 .arch {
-  position: relative; aspect-ratio: 1; border-radius: 80px 80px 12px 12px; overflow: hidden;
-  background: linear-gradient(170deg,#EFE7DB,#E6E3D0 60%,#DEE7DF); cursor: pointer;
+  position: relative; aspect-ratio: 1; border-radius: 80px 80px 14px 14px; overflow: hidden;
+  background: linear-gradient(170deg,#F1EADE,#E7E3D2 60%,#DFE7DF); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.arch img { width: 100%; height: 100%; object-fit: cover; }
-.ph { font-size: 36px; position: relative; }
+.arch img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.card:hover .arch img { transform: scale(1.06); }
+.ph { color: var(--sage); opacity: .5; }
 .heart {
-  position: absolute; top: 9px; right: 9px; width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(28,22,16,.42); border: 1px solid rgba(255,255,255,.35);
-  box-shadow: 0 2px 8px rgba(0,0,0,.28); backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px); font-size: 15px; color: #fff;
+  position: absolute; top: 10px; right: 10px; width: 33px; height: 33px; border-radius: 50%;
+  background: rgba(28,22,16,.4); border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,.28); backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px); color: #fff;
   display: flex; align-items: center; justify-content: center;
+  transition: transform var(--t-fast) var(--ease-back), background var(--t-fast);
 }
+.heart:active { transform: scale(.88); }
 .heart.liked { background: var(--rose); border-color: transparent; color: #fff; }
-.meta { padding: 11px 6px 4px; cursor: pointer; }
-.brand { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-faint); }
-.name { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin: 4px 0 6px; }
-.price { font-size: 15px; }
+.meta { padding: 13px 6px 5px; cursor: pointer; }
+.brand { font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-faint); }
+.name { font-size: 13.5px; font-weight: 600; line-height: 1.4; margin: 5px 0 8px; color: var(--ink); }
+.card:hover .name { text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+.price { font-size: 16px; color: var(--ink); }
 
-.empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 56px 0; text-align: center; }
-.empty-icon { font-size: 38px; }
+/* 스켈레톤 */
+.skel { pointer-events: none; animation: none; }
+.sk { position: relative; overflow: hidden; background: var(--panel); }
+.sk::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.65) 50%, transparent 80%);
+  transform: translateX(-100%); animation: shimmer 1.3s infinite;
+}
+.sk-line { height: 11px; border-radius: 6px; margin: 8px 0; }
+
+.empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 0; text-align: center; }
+.empty-art {
+  width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--sage-soft); color: var(--sage-ink);
+}
 .empty-text { font-size: 14px; color: var(--ink-soft); }
 .empty-cta {
   margin-top: 4px; padding: 9px 18px; border-radius: 99px; font-size: 13px; font-weight: 600;
@@ -271,19 +303,28 @@ function formatPrice(n) {
 }
 .pg:hover:not(:disabled):not(.on) { background: var(--card); color: var(--ink); }
 .pg.on { background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-sm); }
-.pg.arrow { font-size: 16px; }
+.pg.arrow { padding: 0 6px; }
 .pg.gap { border: none; background: none; min-width: 20px; color: var(--ink-faint); }
 .pg:disabled { opacity: .4; cursor: default; }
+
+@keyframes card-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; }
+  .sk::after { animation: none; }
+  .card:hover .arch img { transform: none; }
+}
 
 /* ── 데스크탑(≥900px) ── */
 @media (min-width: 900px) {
   .screen { flex-direction: row; }
-  .appbar, .filters, .body, .searchbar { max-width: 980px; width: 100%; margin-left: auto; margin-right: auto; }
-  .appbar { padding: 28px 40px 6px; }
-  .searchbar { margin-top: 8px; max-width: 900px; }
-  .filters { padding: 10px 40px 14px; }
-  .body { padding: 6px 40px 32px; }
-  .title { font-size: 30px; }
-  .grid { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 18px; }
+  .appbar, .filters, .body, .searchbar { max-width: 1000px; width: 100%; margin-left: auto; margin-right: auto; }
+  .appbar { padding: 44px 40px 6px; }
+  .title { font-size: 42px; }
+  .lead { font-size: 14px; }
+  .searchbar { margin-top: 20px; max-width: 1000px; }
+  .filters { padding: 14px 40px 16px; }
+  .body { padding: 12px 40px 40px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 22px; }
 }
 </style>

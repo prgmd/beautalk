@@ -36,6 +36,8 @@
   --sh-lg:0 24px 60px rgba(50,40,24,.14), 0 8px 20px rgba(50,40,24,.06);
   --sh-bub:0 4px 14px rgba(60,48,30,.07);
   --sh-ink:0 10px 24px rgba(34,42,46,.26);
+  --sh-soft:0 2px 4px rgba(60,48,30,.04), 0 14px 30px rgba(60,48,30,.07);
+  --sh-hover:0 12px 26px rgba(60,48,30,.13), 0 4px 10px rgba(60,48,30,.06);
 
   /* ── Radius / motion ── */
   --radius-sm:10px; --radius:14px; --radius-lg:18px; --radius-xl:26px;
