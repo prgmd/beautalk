@@ -5,7 +5,9 @@ import re
 import time
 
 import requests as http
+from django.core.cache import cache
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -36,6 +38,31 @@ _WEATHER_CACHE_SEC = 1800  # 30분마다 갱신 (무료 플랜 60req/min 여유 
 
 ERR_TIMEOUT = 'AI 응답 시간 초과. 잠시 후 다시 시도해주세요.'
 ERR_CONNECT = 'AI 서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
+
+# 하루 대화 한도(표시용). 백엔드 throttle의 'chat' 100/day와 같은 값으로 맞춘다.
+# throttle이 실제 차단을 강제하고, 이 카운터는 '남은 횟수'를 사용자에게 보여주기 위한 것.
+CHAT_DAILY_LIMIT = 100
+
+
+def _quota_key(user) -> str:
+    """사용자·날짜별 대화 사용량 캐시 키 (자정에 자연 만료/리셋)."""
+    today = timezone.localdate().isoformat()
+    return f'chat_quota_{user.pk}_{today}'
+
+
+def _chat_quota(user) -> dict:
+    """현재 남은 대화 횟수를 반환한다. {limit, used, remaining}."""
+    used = cache.get(_quota_key(user), 0)
+    return {'limit': CHAT_DAILY_LIMIT, 'used': used, 'remaining': max(0, CHAT_DAILY_LIMIT - used)}
+
+
+def _increment_chat_quota(user) -> dict:
+    """대화 1회 사용 기록 후 갱신된 사용량을 반환한다(자정까지 TTL)."""
+    key = _quota_key(user)
+    used = cache.get(key, 0) + 1
+    # 다음 자정까지 남은 초를 TTL로 (대략 — 하루 + 여유)
+    cache.set(key, used, 60 * 60 * 24)
+    return {'limit': CHAT_DAILY_LIMIT, 'used': used, 'remaining': max(0, CHAT_DAILY_LIMIT - used)}
 
 # 추천 프롬프트에 넣을 후보 제품 수. 벡터 검색으로 의미적으로 가까운 것만 추리므로
 # 전 제품 주입 없이 작게 유지해도 충분하다(토큰 절약 + 추천 품질).
@@ -323,7 +350,9 @@ class ChatView(APIView):
         except (json.JSONDecodeError, TypeError, AttributeError):
             ai_content, ready = raw, False
 
-        return Response({'content': ai_content, 'ready': ready})
+        # 성공한 대화만 사용량으로 집계하고, 남은 횟수를 응답에 실어 프론트가 즉시 반영하게 한다.
+        quota = _increment_chat_quota(request.user)
+        return Response({'content': ai_content, 'ready': ready, 'quota': quota})
 
 
 # ──────────────────────────────────────────────
@@ -653,3 +682,16 @@ class WeatherView(APIView):
             'temp': _WEATHER_CACHE.get('temp'),
             'desc': _WEATHER_CACHE.get('desc', ''),
         })
+
+
+# ──────────────────────────────────────────────
+# 대화 사용량 — GET /api/v1/chat/quota/
+# ──────────────────────────────────────────────
+
+class ChatQuotaView(APIView):
+    """GET /api/v1/chat/quota/  — 오늘 남은 대화 횟수 (초기 로드용)"""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(_chat_quota(request.user))

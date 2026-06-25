@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useConfirmStore } from '@/stores/confirm'
 import { useAuthStore } from '@/stores/auth'
+import { usePaywallStore } from '@/stores/paywall'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import DewyLoader from '@/components/DewyLoader.vue'
 import Icon from '@/components/Icon.vue'
@@ -15,25 +16,49 @@ const chat = useChatStore()
 const likes = useLikesStore()
 const productDetail = useProductDetailStore()
 const confirm = useConfirmStore()
+const paywall = usePaywallStore()
 
 const inputText = ref('')
 const chatBody = ref(null)
 
 const isEmpty = computed(() => chat.messages.length === 0)
 
+// 오늘 남은 대화 횟수 (서버 기준). 초기 로드 시 한 번 조회.
+const remaining = computed(() => chat.quota?.remaining ?? null)
+const isDepleted = computed(() => remaining.value === 0)
+const quotaNotice = computed(() => {
+  if (remaining.value == null) return ''
+  return isDepleted.value
+    ? '오늘의 무료 대화가 소진됐어요.'
+    : `오늘의 무료 대화가 ${remaining.value}번 남았어요.`
+})
+onMounted(() => chat.fetchQuota())
+
 // ── 날씨 (배경 + 뱃지 + 빈 화면 인사) ──
 const authStore = useAuthStore()
 const weather = ref({ condition: 'default', temp: null, desc: '' })
 
 const WX_ICON  = { clear: '☀️', rain: '🌧️', snow: '❄️', clouds: '☁️', default: '🌿' }
-const WX_CYCLE = ['clear', 'clouds', 'rain', 'snow']
 const wxIcon   = computed(() => WX_ICON[weather.value.condition] || WX_ICON.default)
 
-function cycleWeather() {
-  const idx  = WX_CYCLE.indexOf(weather.value.condition)
-  const next = WX_CYCLE[(idx + 1) % WX_CYCLE.length]
-  weather.value = { ...weather.value, condition: next }
+// 날씨 수동 선택 시트
+const WX_OPTIONS = [
+  { key: 'clear',  icon: '☀️', label: '맑음' },
+  { key: 'clouds', icon: '☁️', label: '흐림' },
+  { key: 'rain',   icon: '🌧️', label: '비' },
+  { key: 'snow',   icon: '❄️', label: '눈' },
+]
+const showWeatherPicker = ref(false)
+function pickWeather(key) {
+  weather.value = { ...weather.value, condition: key }
+  showWeatherPicker.value = false
 }
+// 드롭다운 바깥 클릭 시 닫기 (열려있을 때만 처리)
+function closeWeatherPicker() {
+  if (showWeatherPicker.value) showWeatherPicker.value = false
+}
+onMounted(() => document.addEventListener('click', closeWeatherPicker))
+onUnmounted(() => document.removeEventListener('click', closeWeatherPicker))
 
 const userName = computed(() => {
   const u = authStore.user
@@ -71,6 +96,12 @@ onMounted(fetchWeather)
 async function sendMessage(text) {
   const msg = text || inputText.value.trim()
   if (!msg || chat.isLoading) return
+
+  // 첫 메시지이고 사전 조건을 골랐다면, 봇 인사말을 먼저 심어 조건을 확인시킨다.
+  // (history에 포함되어 대화·추천 단계 모두 이 조건을 인지)
+  if (isEmpty.value && conditionGreeting.value) {
+    chat.seedAssistant(conditionGreeting.value)
+  }
 
   // 사용량 제한은 백엔드 throttle(100/day)이 단일 기준. 초과 시 서버가 429를 주면
   // api.js가 페이월을 띄운다(프론트는 별도 카운팅하지 않는다).
@@ -112,6 +143,26 @@ const filterSummary = computed(() => {
   return parts.join(' · ')
 })
 
+// 사전 선택 조건 → 첫 봇 인사말. 아무것도 안 골랐으면 빈 문자열(인사말 생략).
+const conditionGreeting = computed(() => {
+  if (!activeCount.value) return ''
+  const quoted = []
+  selForms.value.forEach((k) => quoted.push(`'${formLabel(k)}'`))
+  const band = PRICE_BANDS.find((b) => b.key === selBand.value)
+  if (band) quoted.push(`'${band.label}'`)
+  return `사전에 ${quoted.join(', ')} 조건을 고르셨네요! 어떤 피부 고민이 있으신지 편하게 말씀해 주시면 딱 맞는 제품을 찾아드릴게요.`
+})
+
+// 사전 선택 조건 → 사용자 발화 프롬프트. '대화 바로 시작하기'가 이 문장을 전송한다.
+const conditionPrompt = computed(() => {
+  const forms = selForms.value.map(formLabel)
+  const band = PRICE_BANDS.find((b) => b.key === selBand.value)
+  if (forms.length && band) return `${forms.join(', ')} 제품을 ${band.label} 가격대로 추천받고 싶어요.`
+  if (forms.length) return `${forms.join(', ')} 제품을 추천받고 싶어요.`
+  if (band) return `${band.label} 가격대의 제품을 추천받고 싶어요.`
+  return ''
+})
+
 // 선택값 → 백엔드 filters. 아무것도 안 골랐으면 undefined(=기존 동작).
 function buildFilters() {
   const f = {}
@@ -124,8 +175,22 @@ function buildFilters() {
   return Object.keys(f).length ? f : undefined
 }
 
-function getRecommendations() {
+async function getRecommendations() {
+  // 아직 준비(ready)되지 않았으면 정보 부족을 알리고 동의를 받은 뒤에만 진행한다.
+  if (!chat.ready && !(await confirm.ask({
+    title: '아직 충분한 정보가 모이지 않았어요',
+    message: '그래도 추천해드릴까요?',
+    confirmText: '추천받기',
+  }))) return
   chat.requestRecommend(buildFilters())
+}
+
+// 사전 조건만 고르고 입력 없이 대화 시작 — 조건을 발화로 만들어 그대로 전송한다.
+// (sendMessage 대신 직접 sendChat: 인사말 중복 심기를 피하고 바로 사용자 발화로 시작)
+function startChatWithConditions() {
+  if (!conditionPrompt.value || chat.isLoading) return
+  inputText.value = ''
+  chat.sendChat(conditionPrompt.value)
 }
 
 async function newChat() {
@@ -157,10 +222,43 @@ function formatPrice(n) {
     <!-- 앱바 -->
     <header class="appbar">
       <span class="ab-brand serif">beau<span class="it">talk</span></span>
-      <button class="wx-badge" @click="cycleWeather" title="날씨 바꾸기">
-        {{ wxIcon }}<span v-if="weather.temp != null"> {{ weather.temp }}°C</span><span class="wx-cycle">↻</span>
-      </button>
-      <button class="ab-new" @click="newChat"><span class="abn-ic">⟲</span> 새 대화</button>
+      <div class="ab-right">
+        <!-- 날씨 드롭다운 -->
+        <div class="wx-dropdown">
+          <button
+            class="wx-badge" :class="{ open: showWeatherPicker }"
+            @click.stop="showWeatherPicker = !showWeatherPicker" title="날씨 바꾸기"
+          >
+            {{ wxIcon }}<span v-if="weather.temp != null"> {{ weather.temp }}°C</span><span class="wx-cycle">▾</span>
+          </button>
+          <Transition name="wxdrop">
+            <div v-if="showWeatherPicker" class="wx-menu">
+              <button
+                v-for="o in WX_OPTIONS" :key="o.key"
+                class="wx-menu-item" :class="{ on: weather.condition === o.key }"
+                @click="pickWeather(o.key)"
+              >
+                <span class="wmi-icon">{{ o.icon }}</span>
+                <span class="wmi-label">{{ o.label }}</span>
+              </button>
+            </div>
+          </Transition>
+        </div>
+        <!-- 프리미엄: 무제한 뱃지 / 무료: 남은 대화 횟수 → 클릭 시 요금제(결제창) -->
+        <button
+          v-if="authStore.isPremium"
+          class="quota-chip premium"
+          @click="paywall.open()" title="요금제 보기"
+        >✨ 프리미엄</button>
+        <button
+          v-else-if="remaining != null"
+          class="quota-chip" :class="{ low: remaining <= 10 }"
+          @click="paywall.open()" title="요금제 보기"
+        >
+          <Icon name="chat" :size="12" /> 남은 대화 <strong>{{ remaining }}</strong>회
+        </button>
+        <button v-if="!isEmpty" class="ab-new" @click="newChat"><span class="abn-ic">⟲</span> 새 대화</button>
+      </div>
     </header>
 
     <!-- 추천 결과 화면 -->
@@ -288,45 +386,62 @@ function formatPrice(n) {
       </div>
 
       <!-- 추천받기 -->
-      <div v-if="!isEmpty" class="reco-bar">
-        <button class="filters-toggle" :class="{ open: showFilters, active: activeCount }" @click="showFilters = !showFilters">
-          <span class="ft-ic">⛃</span>
-          <span class="ft-text">조건 좁히기 <span class="opt">선택</span></span>
-          <span v-if="activeCount" class="cnt">{{ activeCount }}</span>
-          <span class="chev">{{ showFilters ? '▾' : '▸' }}</span>
-        </button>
+      <div class="reco-bar">
+        <!-- 조건 좁히기 — 대화 시작 전(빈 화면)에만 -->
+        <template v-if="isEmpty">
+          <button class="filters-toggle" :class="{ open: showFilters, active: activeCount }" @click="showFilters = !showFilters">
+            <span class="ft-ic">⛃</span>
+            <span class="ft-text">조건 좁히기 <span class="opt">선택</span></span>
+            <span v-if="activeCount" class="cnt">{{ activeCount }}</span>
+            <span class="chev">{{ showFilters ? '▾' : '▸' }}</span>
+          </button>
 
-        <div v-if="showFilters" class="filters-panel">
-          <div class="f-group">
-            <span class="f-label">제형</span>
-            <div class="chips">
-              <button
-                v-for="o in FORM_OPTIONS" :key="o.key"
-                class="chip" :class="{ on: selForms.includes(o.key) }"
-                @click="toggleForm(o.key)"
-              >{{ o.label }}</button>
+          <div v-if="showFilters" class="filters-panel">
+            <div class="f-group">
+              <span class="f-label">제형</span>
+              <div class="chips">
+                <button
+                  v-for="o in FORM_OPTIONS" :key="o.key"
+                  class="chip" :class="{ on: selForms.includes(o.key) }"
+                  @click="toggleForm(o.key)"
+                >{{ o.label }}</button>
+              </div>
+            </div>
+            <div class="f-group">
+              <span class="f-label">가격대</span>
+              <div class="chips">
+                <button
+                  v-for="b in PRICE_BANDS" :key="b.key"
+                  class="chip" :class="{ on: selBand === b.key }"
+                  @click="toggleBand(b.key)"
+                >{{ b.label }}</button>
+              </div>
+            </div>
+            <div v-if="activeCount" class="filters-actions">
+              <button class="fa-clear" @click="clearFilters">전체 해제</button>
+              <button class="fa-start" @click="startChatWithConditions">대화 바로 시작하기</button>
             </div>
           </div>
-          <div class="f-group">
-            <span class="f-label">가격대</span>
-            <div class="chips">
-              <button
-                v-for="b in PRICE_BANDS" :key="b.key"
-                class="chip" :class="{ on: selBand === b.key }"
-                @click="toggleBand(b.key)"
-              >{{ b.label }}</button>
-            </div>
-          </div>
-          <button v-if="activeCount" class="filters-clear" @click="clearFilters">전체 해제</button>
-        </div>
 
-        <!-- 접었을 때도 선택한 조건을 보이게 -->
-        <p v-if="!showFilters && filterSummary" class="filter-summary">적용: {{ filterSummary }}</p>
+          <!-- 접었을 때도 선택한 조건을 보이게 -->
+          <p v-if="!showFilters && filterSummary" class="filter-summary">적용: {{ filterSummary }}</p>
+        </template>
 
-        <button class="reco-btn" :class="{ ready: chat.ready }" @click="getRecommendations()">
-          <span class="lf"><Icon name="sparkle" :size="16" /></span> 추천 3개 받기{{ chat.ready ? ' · 준비됐어요' : '' }}
-        </button>
+        <!-- 대화 시작 후 — 적용 조건 요약(읽기 전용) + 추천 버튼 -->
+        <template v-else>
+          <p v-if="filterSummary" class="filter-summary locked">선택한 조건: {{ filterSummary }}</p>
+          <button class="reco-btn" :class="{ ready: chat.ready }" @click="getRecommendations()">
+            <span class="lf"><Icon name="sparkle" :size="16" /></span> 추천 3개 받기{{ chat.ready ? ' · 준비됐어요' : '' }}
+          </button>
+        </template>
       </div>
+
+      <!-- 남은 대화 안내 (프리미엄은 무제한이라 생략) -->
+      <p
+        v-if="quotaNotice && !authStore.isPremium"
+        class="quota-notice" :class="{ depleted: isDepleted }"
+        @click="isDepleted && paywall.open()"
+      >{{ quotaNotice }}<span v-if="isDepleted" class="qn-cta"> 프리미엄 보기 →</span></p>
 
       <!-- 입력 -->
       <div class="composer">
@@ -357,6 +472,24 @@ function formatPrice(n) {
 }
 .ab-brand { font-size: 21px; font-weight: 500; letter-spacing: -.3px; }
 .ab-brand .it { font-style: italic; color: var(--sage); }
+.ab-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.quota-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--ink-soft); font-weight: 500;
+  padding: 4px 11px; border-radius: 99px;
+  background: var(--sage-soft); border: 1px solid var(--line-soft);
+  cursor: pointer; transition: border-color var(--t-fast), color var(--t-fast);
+}
+.quota-chip strong { font-weight: 700; color: var(--sage-ink); }
+.quota-chip:hover { border-color: var(--sage); color: var(--ink); }
+.quota-chip:active { transform: scale(.96); }
+.quota-chip.low { background: var(--danger-bg); border-color: var(--danger-border); }
+.quota-chip.low strong { color: var(--danger); }
+.quota-chip.premium {
+  background: var(--ink); color: var(--canvas); border-color: transparent;
+  font-weight: 700; box-shadow: var(--sh-ink);
+}
+.quota-chip.premium:hover { color: var(--canvas); }
 .wx-badge {
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 12px; color: var(--ink-faint); font-weight: 500;
@@ -394,21 +527,6 @@ function formatPrice(n) {
 .empty-title { font-size: 26px; font-weight: 400; line-height: 1.25; letter-spacing: -.3px; }
 .empty-title em { font-style: italic; }
 .empty-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; max-width: 300px; }
-.ex-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--ink-faint);
-  margin-top: 14px; margin-bottom: 2px;
-}
-.examples { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.example {
-  display: flex; align-items: center; gap: 9px;
-  padding: 12px 15px; background: var(--sheet); border: 1px dashed var(--line-strong);
-  border-radius: var(--radius); text-align: left;
-  transition: transform var(--t) var(--ease), background var(--t-fast), border-color var(--t-fast);
-}
-.example .ex-ic { color: var(--sage); flex-shrink: 0; }
-.example .ex-text { font-size: 13.5px; color: var(--ink-soft); }
-.example:hover { background: var(--card); border-color: var(--sage); }
-.example:active { transform: scale(.98); }
 
 /* ── 메시지 ── */
 .msg { display: flex; gap: 9px; margin-bottom: 14px; align-items: flex-end; animation: bt-rise .35s var(--ease) both; }
@@ -453,13 +571,30 @@ function formatPrice(n) {
   padding: 0 5px; border-radius: 99px; background: var(--sage); color: #fff; font-size: 11px; font-weight: 700;
 }
 .filters-toggle .chev { color: var(--ink-faint); font-size: 11px; }
-.filters-clear {
-  align-self: flex-start; margin-top: 2px; padding: 6px 12px; border-radius: 99px;
-  font-size: 12px; font-weight: 600; color: var(--ink-soft); background: var(--card); border: 1px solid var(--line);
+.filters-actions {
+  display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+  margin-top: 4px;
 }
-.filters-clear:hover { color: var(--danger); border-color: var(--danger-border); }
+.fa-clear {
+  padding: 10px 16px; border-radius: 99px;
+  font-size: 13px; font-weight: 600; color: var(--ink-soft);
+  background: var(--card); border: 1px solid var(--line);
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.fa-clear:hover { color: var(--danger); border-color: var(--danger-border); }
+.fa-start {
+  padding: 10px 18px; border-radius: 99px;
+  font-size: 13.5px; font-weight: 700; color: var(--canvas);
+  background: var(--ink); border: 1px solid var(--ink); box-shadow: var(--sh-ink);
+  transition: transform var(--t) var(--ease);
+}
+.fa-start:active { transform: scale(.97); }
 .filter-summary {
   margin: 0 4px 8px; font-size: 12px; color: var(--sage-ink); font-weight: 600;
+}
+.filter-summary.locked {
+  display: inline-block; padding: 5px 12px; border-radius: 99px;
+  background: var(--sage-soft); border: 1px solid var(--line-soft);
 }
 .filters-panel {
   display: flex; flex-direction: column; gap: 12px;
@@ -488,6 +623,14 @@ function formatPrice(n) {
   background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-ink);
 }
 .reco-btn.ready .lf { color: var(--sage-soft); }
+
+/* 남은 대화 안내 */
+.quota-notice {
+  flex-shrink: 0; text-align: center; font-size: 11.5px; color: var(--ink-faint);
+  padding: 2px 16px 0;
+}
+.quota-notice.depleted { color: var(--danger); font-weight: 600; cursor: pointer; }
+.quota-notice .qn-cta { color: var(--sage-ink); font-weight: 700; }
 
 /* ── 입력 ── */
 .composer {
@@ -594,12 +737,39 @@ function formatPrice(n) {
   .rec-card:hover .rec-arch img { transform: none; }
 }
 
+/* ── 날씨 드롭다운 ── */
+.wx-dropdown { position: relative; }
+.wx-badge.open { border-color: var(--sage); color: var(--ink); }
+.wx-badge.open .wx-cycle { transform: rotate(180deg); }
+.wx-cycle { transition: transform var(--t-fast) var(--ease); }
+.wx-menu {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 50;
+  min-width: 132px; padding: 6px;
+  background: var(--card); border: 1px solid var(--line-soft);
+  border-radius: var(--radius); box-shadow: var(--sh-lg);
+  transform-origin: top left;
+}
+.wx-menu-item {
+  width: 100%; display: flex; align-items: center; gap: 9px;
+  padding: 9px 11px; border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--ink-soft);
+  transition: background var(--t-fast);
+}
+.wx-menu-item:hover { background: var(--panel); }
+.wx-menu-item.on { background: var(--sage-soft); color: var(--sage-ink); font-weight: 600; }
+.wmi-icon { font-size: 18px; line-height: 1; }
+.wmi-label { font-weight: 500; }
+
+/* 펼침 모션 */
+.wxdrop-enter-active { transition: opacity var(--t-fast) var(--ease), transform var(--t) var(--ease-back); }
+.wxdrop-leave-active { transition: opacity var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
+.wxdrop-enter-from, .wxdrop-leave-to { opacity: 0; transform: scale(0.9) translateY(-6px); }
+
 /* ── 데스크탑(≥900px) ── */
 @media (min-width: 900px) {
   .screen { flex-direction: row; }
   .appbar { max-width: 900px; width: 100%; margin: 0 auto; padding: 22px 40px 10px; }
   .ab-brand { display: none; }
-  .ab-new { margin-left: auto; }
   .chat, .result { max-width: 900px; width: 100%; margin: 0 auto; padding-left: 40px; padding-right: 40px; }
   .reco-bar, .composer { max-width: 900px; width: 100%; margin: 0 auto; padding-left: 40px; padding-right: 40px; }
   .composer { padding-bottom: 22px; }

@@ -15,10 +15,20 @@ export const useAuthStore = defineStore('auth', () => {
   // App.vue에서 startup refresh로 복원된다.
   const isLoggedIn = computed(() => !!user.value)
   const hasProfile = computed(() => !!user.value?.hasProfile)
+  // 프리미엄 여부(목업 결제). 실제 결제 연동 전까지 로컬 상태로만 관리한다.
+  const isPremium = computed(() => !!user.value?.isPremium)
+
+  // 결제 성공을 가정하고 프리미엄으로 전환/해지한다(목업).
+  function setPremium(value = true) {
+    if (!user.value) return
+    user.value = { ...user.value, isPremium: value }
+    localStorage.setItem('bt_user', JSON.stringify(user.value))
+  }
 
   function login(userData, token) {
     accessToken.value = token
-    user.value = { hasProfile: userData.hasProfile ?? false }
+    // 기존 프리미엄 상태(목업)는 재로그인 시에도 유지한다.
+    user.value = { hasProfile: userData.hasProfile ?? false, isPremium: !!user.value?.isPremium }
     localStorage.setItem('bt_user', JSON.stringify(user.value))
   }
 
@@ -90,8 +100,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    user, accessToken, isLoggedIn, hasProfile,
-    login, setAccessToken, logout, serverLogout, setProfileComplete,
+    user, accessToken, isLoggedIn, hasProfile, isPremium,
+    login, setPremium, setAccessToken, logout, serverLogout, setProfileComplete,
     fetchAccount, saveNickname, withdraw,
   }
 })

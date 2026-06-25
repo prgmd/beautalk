@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useAvatarStore } from '@/stores/avatar'
 import { useToastStore } from '@/stores/toast'
 import { useConfirmStore } from '@/stores/confirm'
+import { usePaywallStore } from '@/stores/paywall'
 import { AVATARS, avatarSrc } from '@/utils/avatars'
 import Icon from '@/components/Icon.vue'
 
@@ -13,6 +14,17 @@ const auth = useAuthStore()
 const avatar = useAvatarStore()
 const toast = useToastStore()
 const confirm = useConfirmStore()
+const paywall = usePaywallStore()
+
+async function cancelPremium() {
+  if (!(await confirm.ask({
+    title: '프리미엄을 해지할까요?',
+    message: '무료 플랜으로 전환되며, 하루 100회 대화로 제한돼요.',
+    confirmText: '해지하기', danger: true,
+  }))) return
+  auth.setPremium(false)
+  toast.success('무료 플랜으로 전환했어요')
+}
 
 function selectAvatar(key) {
   avatar.set(key)
@@ -111,7 +123,39 @@ function getInitials(email) {
         <p class="email serif">{{ auth.user?.email || 'demo@example.com' }}</p>
         <p class="join-date">{{ formatJoinDate() }}</p>
       </div>
+      <span class="plan-tag" :class="auth.isPremium ? 'premium' : 'free'">
+        {{ auth.isPremium ? '✨ 프리미엄' : '무료' }}
+      </span>
     </div>
+
+    <!-- 플랜 -->
+    <section class="section">
+      <p class="section-title">플랜</p>
+      <div v-if="auth.isPremium" class="action-card plan-card-premium">
+        <div class="action-left">
+          <span class="action-icon"><Icon name="sparkle" :size="17" /></span>
+          <div>
+            <p class="action-label">프리미엄 이용 중</p>
+            <p class="action-desc">무제한 대화 · 대화 기록 무제한 보관</p>
+          </div>
+        </div>
+        <button class="plan-cancel" @click="cancelPremium">해지</button>
+      </div>
+      <div
+        v-else class="action-card plan-upgrade"
+        role="button" tabindex="0"
+        @click="paywall.open()" @keydown.enter="paywall.open()" @keydown.space.prevent="paywall.open()"
+      >
+        <div class="action-left">
+          <span class="action-icon"><Icon name="sparkle" :size="17" /></span>
+          <div>
+            <p class="action-label">프리미엄으로 업그레이드</p>
+            <p class="action-desc">무제한 대화 · 월 4,900원</p>
+          </div>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+    </section>
 
     <!-- 프로필 사진 선택 -->
     <section class="section">
@@ -271,6 +315,26 @@ function getInitials(email) {
 .nick-hint { font-size: 12px; color: var(--ink-faint); margin-top: 8px; line-height: 1.5; }
 .email { font-size: 17px; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
 .join-date { font-size: 12px; color: var(--ink-faint); margin-top: 3px; }
+
+/* 플랜 태그 (계정 카드 우상단) */
+.plan-tag {
+  position: absolute; top: 16px; right: 16px; z-index: 1;
+  font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;
+}
+.plan-tag.free { background: var(--panel); color: var(--ink-soft); border: 1px solid var(--line); }
+.plan-tag.premium { background: var(--ink); color: var(--canvas); box-shadow: var(--sh-ink); }
+
+/* 플랜 카드 */
+.plan-upgrade { border-color: var(--sage); background: var(--sage-soft); }
+.plan-upgrade .action-icon { color: var(--sage-ink); }
+.plan-card-premium .action-icon { color: var(--sage-ink); }
+.plan-cancel {
+  flex-shrink: 0; padding: 8px 14px; border-radius: 99px;
+  font-size: 12.5px; font-weight: 600; color: var(--ink-soft);
+  background: var(--card); border: 1px solid var(--line);
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.plan-cancel:hover { color: var(--danger); border-color: var(--danger-border); }
 
 /* Sections */
 .section { display: flex; flex-direction: column; gap: 10px; }
