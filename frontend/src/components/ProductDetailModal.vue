@@ -288,6 +288,8 @@ function stars(rating) {
   font-weight: 600;
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 6px;
   box-shadow: var(--sh-ink);
   transition: transform var(--t-fast) var(--ease);
 }

@@ -720,9 +720,12 @@ function formatPrice(n) {
   background: var(--panel); border-radius: 12px; padding: 11px 13px; margin: 12px 6px 0;
 }
 .rec-link {
-  display: block; text-align: center; margin: 12px 6px 4px; padding: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin: 12px 6px 4px; padding: 10px;
   border: 1px solid var(--line); border-radius: 12px; font-size: 13px; font-weight: 500; color: var(--ink);
+  transition: background var(--t-fast), border-color var(--t-fast);
 }
+.rec-link:hover { background: var(--sheet); border-color: var(--ink-faint); }
 
 .more-chat-btn {
   display: block; margin: 24px auto 8px; padding: 11px 22px; border-radius: 99px;

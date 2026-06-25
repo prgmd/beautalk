@@ -46,11 +46,19 @@ CATEGORY_FALLBACK = {
 }
 
 
+# '스킨'이 토너로 오인되게 만드는 일반어·브랜드. 매칭 전에 제거한다.
+# (예: "스킨케어100 블러파우더"→파우더인데 토너로 오분류, "스킨푸드"는 브랜드)
+FALSE_FRIENDS = ['스킨케어', '스킨푸드']
+
+
 def _normalize(name: str) -> str:
-    """`[...]`·`(...)` 제거 + 공백 제거 + 소문자화한 매칭용 문자열."""
+    """`[...]`·`(...)` 제거 + 공백 제거 + 소문자화 + false-friend 제거한 매칭용 문자열."""
     name = re.sub(r'\[[^\]]*\]', '', name)   # [마케팅 문구] 제거
     name = re.sub(r'\([^)]*\)', '', name)    # (사은품/구성) 제거
-    return name.replace(' ', '').lower()
+    name = name.replace(' ', '').lower()
+    for ff in FALSE_FRIENDS:                  # '스킨'이 토너로 새지 않도록
+        name = name.replace(ff, '')
+    return name
 
 
 def classify(product) -> list:
