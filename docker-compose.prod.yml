@@ -1,0 +1,59 @@
+# Beautalk 프로덕션 — 단일 EC2(t3.micro) 배포용 풀스택.
+#   nginx(정적+프록시) · backend(gunicorn+Django) · db(postgres+pgvector)
+#   프론트는 Actions에서 빌드한 frontend/dist 를 nginx가 서빙(빌드는 EC2에서 안 함).
+#
+#   배포: docker compose -f docker-compose.prod.yml up -d --build
+#   이후: migrate / loaddata / backfill 은 수동(또는 CD 스크립트). deployment.md 참고.
+#
+#   ⚠️ env 파일 2개 필요 (역할 다름, 값은 DB_* 동일하게 맞출 것):
+#     - ./.env          → 이 파일(${DB_NAME} 등) 변수치환용. 루트에 둬야 compose가 읽는다.
+#                          (.env.prod.example 참고. 없으면 빈 값으로 치환되어 첫 배포 시
+#                          Postgres가 빈 자격증명으로 초기화돼 깨진다 — 로컬 검증으로 확인됨)
+#     - ./backend/.env  → Django(backend 컨테이너) 런타임 시크릿 (env_file 로 주입)
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # t3.micro(1GB) 메모리 튜닝 — 데이터 ~300건이라 작게 잡아도 충분
+    command: postgres -c shared_buffers=128MB -c max_connections=20 -c work_mem=4MB
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: always
+    env_file: ./backend/.env          # 프로덕션 시크릿(서버에 주입)
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"                        # 외부 노출 X, nginx만 접근
+    mem_limit: 450m
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"                     # Phase 2 HTTPS용 (인증서 발급 전엔 미사용)
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro   # Actions가 빌드한 정적
+      - ./certbot/conf:/etc/letsencrypt              # Phase 2 인증서
+      - ./certbot/www:/var/www/certbot               # Phase 2 ACME 챌린지
+    depends_on:
+      - backend
+    mem_limit: 64m
+
+volumes:
+  postgres_data:

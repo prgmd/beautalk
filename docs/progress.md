@@ -154,7 +154,55 @@
   - psycopg2-binary 추가, Product 156건 dumpdata→loaddata 이관, 테스트 34개 통과
   - URLField max_length 200→500 (PG 길이 강제 대응, 올리브영 URL 최대 298자)
 - [~] Docker 컨테이너화 (DB만 컨테이너로 구동 / 앱 컨테이너화는 배포 단계)
-- [ ] AWS 배포·Nginx 설정
+- [ ] **AWS EC2 배포 + GitHub Actions CI/CD** → 계획: [docs/deployment.md](./deployment.md)
+  - [x] Phase 1: 배포 가능화 (localhost env화·gunicorn·Dockerfile·nginx.conf·compose.prod·.env.prod.example)
+    - 회귀 테스트 63개 통과 (Phase1 변경 후 재확인)
+    - 로컬에서 `docker-compose.prod.yml` 기동 검증 (nginx·backend·db, SPA·API·admin·static 응답 확인)
+    - 검증 중 버그 발견·수정: `db` 서비스 변수치환용 루트 `.env` 누락 → 빈 자격증명 초기화 위험 (상세: deployment.md "로컬 검증 트러블슈팅")
+    - 루트 `.env.prod.example` 추가, `.gitignore`에 `!.env.prod.example` 예외 추가
+  - [x] 프론트 API base env화 (FE 담당, PR #49 `fix/api-base-env`) — `config.js`의 `API_BASE`가
+    `VITE_API_BASE`(`.env.production`)를 읽도록 전환, 하드코딩 호출 잔존 없음 확인
+  - [x] **Phase 2: EC2 수동 배포 — 완료**
+    - EC2 생성 (t3.micro, Ubuntu 24.04 LTS, 보안그룹 SSH 22(My IP)/HTTP 80/HTTPS 443(0.0.0.0/0))
+      — AMI 검색 시 AWS Marketplace의 "SQL Server" 번들 AMI와 혼동 주의(Quick Start 탭의 순정
+      Ubuntu만 선택), 키페어 `beautalk`, 퍼블릭 IP `52.78.34.135`
+    - Docker CE + compose 플러그인 설치 (공식 apt 저장소 방식)
+    - 스왑 2GB + `vm.swappiness=10` (t3.micro 1GB RAM 보강, deployment.md §5)
+    - 도메인 A레코드(GoDaddy) `@` → 퍼블릭 IP. `www`는 기존 `@` CNAME이 따라가서 별도 레코드 불필요
+      (CNAME·A 동시 등록 시도 시 "Record name conflicts" 에러 — DNS 규칙상 같은 호스트에 둘 다 불가)
+    - 배포 브랜치(`46-...`)에 `develop` 병합 — FE 작업(API base env화 등 PR #47~49)과 백엔드 배포
+      작업이 서로 다른 파일만 건드려 무충돌 병합. FE가 이어서 같은 브랜치에 푸시
+    - 프로덕션 env 2개 직접 EC2에 생성: 루트 `.env`(DB_NAME/USER/PASSWORD, compose 변수치환용) +
+      `backend/.env`(Django 전체 시크릿). `SECRET_KEY`·DB 비밀번호는 운영용으로 새로 생성(dev 값
+      재사용 안 함), `DJANGO_ALLOWED_HOSTS`에 도메인+EC2 IP 둘 다 포함(인증서 발급 전 직접 IP 접근 대비)
+    - `git clone`(배포 브랜치) → `docker compose -f docker-compose.prod.yml up -d --build` →
+      `migrate` 정상 적용
+    - **`products_seed.json` 스테일 발견·갱신**(156건→306건, 임베딩 305·제형 281 포함) — PG 전환
+      커밋 이후 한 번도 갱신 안 된 픽스처였음. Windows `dumpdata`의 `cp949` 인코딩 함정
+      (`PYTHONUTF8=1` 필요), backend 이미지가 코드를 빌드 시점에 baked-in해 호스트 파일 교체만으론
+      반영 안 됨(`docker compose cp`로 실행 중 컨테이너에 직접 주입) — 상세: deployment.md
+      "프로덕션 데이터 적재 트러블슈팅"
+    - certbot(webroot 플러그인, 1회 `docker run`) → `beautalk.site`+`www.beautalk.site` 인증서
+      발급(Let's Encrypt, 만료 2026-09-22) → `nginx.conf`에 443 server 블록 + 80→443 redirect 추가
+    - 카카오 로그인에서 `KOE006`(앱 관리자 설정 오류) 발생 — 원인은 redirect URI를 `http://`로
+      등록한 오타(`https://`여야 함). 정정 후 정상 동작. 구글은 처음부터 정상 등록
+    - 프론트 `npm run build`(`VITE_API_BASE=https://beautalk.site/api/v1`) → `dist/` scp 전송,
+      nginx가 바인드 마운트로 즉시 서빙(재시작 불필요)
+    - **수동 E2E 전 구간 통과**: 구글 로그인→온보딩, 카카오 로그인→온보딩, 챗봇 대화(`POST
+      /chat/` 200×2), 추천(`POST /recommend/` 201), 찜(`POST /likes/` 201), 게시판 목록/작성/
+      상세/제품 역참조/게시글 좋아요 — 전부 에러 없이 200/201
+  - [~] **Phase 3: GitHub Actions CI/CD — 진행 중**
+    - `.github/workflows/ci-cd.yml` 작성: `test`(develop PR·push마다 항상) → `deploy`(develop
+      push + test 통과 시에만). 배포 트리거 브랜치 = develop으로 결정
+    - CI: pgvector service 컨테이너(`pgvector/pgvector:pg16`)로 Django 테스트. 임베딩
+      `VectorExtension`이 `CREATE EXTENSION vector`를 요구해 표준 postgres로는 불가
+    - CD: 프론트는 Actions 러너에서 빌드(t3.micro OOM 회피) → dist tarball scp → EC2에서
+      `git reset --hard origin/develop` + dist 교체 + `docker compose up -d --build` + `migrate`
+      (`appleboy/ssh-action`·`scp-action` 사용)
+    - 사전 준비: EC2 저장소를 develop으로 전환, GitHub Secrets(EC2_HOST/USER/SSH_KEY) 등록,
+      `.gitignore`에 `certbot/` 추가
+    - ⚠️ **첫 자동배포 미반영 — 디버깅 필요**: 워크플로우 push 후 EC2에 반영 안 됨(test/deploy 잡
+      실패 추정). 다음: Actions 탭에서 실패 잡·원인 확인 (상세: deployment.md Phase 3)
 - [x] DEBUG/ALLOWED_HOSTS 환경변수 분리 (배포 시 `.env`만 주입하면 운영 전환 — backend-hardening.md)
 - [ ] 전체 QA·버그 수정
 - [ ] 발표 준비

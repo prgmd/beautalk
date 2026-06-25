@@ -20,7 +20,11 @@ from .serializers import SkinProfileSerializer, UserInfoSerializer
 # Refresh 쿠키 설정
 # ──────────────────────────────────────────────
 
-FRONTEND_LOGIN_URL = 'http://localhost:5173/login'
+# 배포 시 env로 주입(프로덕션: https://beautalk.site). 로컬은 기본값으로 그대로 동작.
+# nginx가 /api를 backend로 프록시하므로 프로덕션에선 둘 다 같은 도메인이 된다.
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000')
+FRONTEND_LOGIN_URL = f'{FRONTEND_URL}/login'
 
 REFRESH_COOKIE_NAME = 'bt_refresh'
 # logout(/api/v1/auth/logout/)과 refresh(/api/v1/auth/token/refresh) 요청에
@@ -116,7 +120,7 @@ class KakaoLoginView(APIView):
         kakao_auth_url = (
             'https://kauth.kakao.com/oauth/authorize'
             f'?client_id={os.environ.get("KAKAO_CLIENT_ID")}'
-            '&redirect_uri=http://localhost:8000/api/v1/auth/kakao/callback/'
+            f'&redirect_uri={BACKEND_URL}/api/v1/auth/kakao/callback/'
             '&response_type=code'
             f'&state={state}'
         )
@@ -129,15 +133,15 @@ class KakaoCallbackView(APIView):
         returned_state = request.GET.get('state')
         session_state = request.session.pop('oauth_state', None)
         if not returned_state or returned_state != session_state:
-            return redirect('http://localhost:5173/login?error=csrf_detected')
+            return redirect(f'{FRONTEND_URL}/login?error=csrf_detected')
 
         # OAuth 에러 처리
         if request.GET.get('error'):
-            return redirect('http://localhost:5173/login?error=oauth_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=oauth_failed')
 
         code = request.GET.get('code')
         if not code:
-            return redirect('http://localhost:5173/login?error=missing_code')
+            return redirect(f'{FRONTEND_URL}/login?error=missing_code')
 
         # (1) 인가 코드 → 카카오 액세스 토큰 교환
         token_response = http.post(
@@ -146,17 +150,17 @@ class KakaoCallbackView(APIView):
                 'grant_type': 'authorization_code',
                 'client_id': os.environ.get('KAKAO_CLIENT_ID'),
                 'client_secret': os.environ.get('KAKAO_CLIENT_SECRET'),
-                'redirect_uri': 'http://localhost:8000/api/v1/auth/kakao/callback/',
+                'redirect_uri': f'{BACKEND_URL}/api/v1/auth/kakao/callback/',
                 'code': code,
             },
             timeout=10,
         )
         if not token_response.ok:
-            return redirect('http://localhost:5173/login?error=token_exchange_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=token_exchange_failed')
 
         kakao_access_token = token_response.json().get('access_token')
         if not kakao_access_token:
-            return redirect('http://localhost:5173/login?error=token_exchange_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=token_exchange_failed')
 
         # (2) 카카오 액세스 토큰 → 사용자 정보
         user_info_response = http.get(
@@ -165,7 +169,7 @@ class KakaoCallbackView(APIView):
             timeout=10,
         )
         if not user_info_response.ok:
-            return redirect('http://localhost:5173/login?error=userinfo_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=userinfo_failed')
 
         kakao_user_info = user_info_response.json()
         kakao_id = kakao_user_info.get('id')
@@ -181,7 +185,7 @@ class KakaoCallbackView(APIView):
         request.session['pending_access'] = str(refresh.access_token)
         request.session['pending_refresh'] = str(refresh)
 
-        return redirect('http://localhost:5173/auth/callback')
+        return redirect(f'{FRONTEND_URL}/auth/callback')
 
 
 # ──────────────────────────────────────────────
@@ -196,7 +200,7 @@ class GoogleLoginView(APIView):
         google_auth_url = (
             'https://accounts.google.com/o/oauth2/v2/auth'
             f'?client_id={os.environ.get("GOOGLE_CLIENT_ID")}'
-            '&redirect_uri=http://localhost:8000/api/v1/auth/google/callback/'
+            f'&redirect_uri={BACKEND_URL}/api/v1/auth/google/callback/'
             '&response_type=code'
             '&scope=openid email profile'
             f'&state={state}'
@@ -210,14 +214,14 @@ class GoogleCallbackView(APIView):
         returned_state = request.GET.get('state')
         session_state = request.session.pop('oauth_state', None)
         if not returned_state or returned_state != session_state:
-            return redirect('http://localhost:5173/login?error=csrf_detected')
+            return redirect(f'{FRONTEND_URL}/login?error=csrf_detected')
 
         if request.GET.get('error'):
-            return redirect('http://localhost:5173/login?error=oauth_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=oauth_failed')
 
         code = request.GET.get('code')
         if not code:
-            return redirect('http://localhost:5173/login?error=missing_code')
+            return redirect(f'{FRONTEND_URL}/login?error=missing_code')
 
         # (1) 인가 코드 → 구글 액세스 토큰 교환
         token_response = http.post(
@@ -226,17 +230,17 @@ class GoogleCallbackView(APIView):
                 'grant_type': 'authorization_code',
                 'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
                 'client_secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
-                'redirect_uri': 'http://localhost:8000/api/v1/auth/google/callback/',
+                'redirect_uri': f'{BACKEND_URL}/api/v1/auth/google/callback/',
                 'code': code,
             },
             timeout=10,
         )
         if not token_response.ok:
-            return redirect('http://localhost:5173/login?error=token_exchange_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=token_exchange_failed')
 
         google_access_token = token_response.json().get('access_token')
         if not google_access_token:
-            return redirect('http://localhost:5173/login?error=token_exchange_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=token_exchange_failed')
 
         # (2) 구글 액세스 토큰 → 사용자 정보
         user_info_response = http.get(
@@ -245,7 +249,7 @@ class GoogleCallbackView(APIView):
             timeout=10,
         )
         if not user_info_response.ok:
-            return redirect('http://localhost:5173/login?error=userinfo_failed')
+            return redirect(f'{FRONTEND_URL}/login?error=userinfo_failed')
 
         google_user_info = user_info_response.json()
         google_id = google_user_info.get('sub')
@@ -261,7 +265,7 @@ class GoogleCallbackView(APIView):
         request.session['pending_access'] = str(refresh.access_token)
         request.session['pending_refresh'] = str(refresh)
 
-        return redirect('http://localhost:5173/auth/callback')
+        return redirect(f'{FRONTEND_URL}/auth/callback')
 
 
 # ──────────────────────────────────────────────

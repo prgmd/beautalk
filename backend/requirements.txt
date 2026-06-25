@@ -5,6 +5,8 @@ Django==5.2.14
 django-cors-headers==4.9.0
 djangorestframework==3.17.1
 djangorestframework_simplejwt==5.5.1
+gunicorn==23.0.0          # 프로덕션 WSGI 서버
+whitenoise==6.7.0         # gunicorn이 정적(admin·DRF) 직접 서빙 — nginx 정적 볼륨 불필요
 idna==3.18
 langsmith==0.7.37   # LLM 관측(선택). 미설정 시 chat/observability.py가 no-op 처리
 pgvector==0.4.2

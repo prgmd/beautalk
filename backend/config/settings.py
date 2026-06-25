@@ -36,6 +36,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # 정적 파일(admin·DRF) 서빙
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -45,10 +46,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# 로컬 기본값 + 배포 도메인(env, 콤마 구분). 프론트·API가 같은 도메인이면 CORS는 사실상
+# 불필요하나, 로컬 dev(5173↔8000)와 분리 배포 대비해 env로 허용 오리진을 받는다.
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
+    o.strip() for o in os.environ.get(
+        'CORS_ALLOWED_ORIGINS', 'http://localhost:5173'
+    ).split(',') if o.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# 운영(HTTPS) 세션·admin POST를 위한 신뢰 오리진. env로 배포 도메인 주입.
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
+]
+
+# nginx가 SSL 종료 후 HTTP로 프록시하므로, 이 헤더로 Django가 원요청을 HTTPS로 인식하게 한다
+# (없으면 secure 쿠키 미설정·리다이렉트 깨짐).
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -130,4 +146,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+# collectstatic 수집 경로 (whitenoise가 여기서 admin·DRF 정적을 서빙). 컨테이너 빌드 시 수집.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
