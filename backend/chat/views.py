@@ -7,7 +7,7 @@ import time
 import requests as http
 from django.db import transaction
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
@@ -641,9 +641,10 @@ class WeatherView(APIView):
 
     WEATHER_API_KEY 미설정 시 condition='default' 반환 (프론트는 배경 변화 없음).
     30분 캐시를 _weather_hint()와 공유하므로 추가 API 호출 없음.
+    날씨 정보는 공개 데이터이므로 인증 불필요 (토큰 복원 전 마운트 타이밍 이슈 방지).
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         _weather_hint()  # 캐시가 만료됐으면 갱신

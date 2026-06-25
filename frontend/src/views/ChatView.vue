@@ -4,6 +4,7 @@ import { useChatStore } from '@/stores/chat'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useConfirmStore } from '@/stores/confirm'
+import { useAuthStore } from '@/stores/auth'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import DewyLoader from '@/components/DewyLoader.vue'
 import Icon from '@/components/Icon.vue'
@@ -20,26 +21,52 @@ const chatBody = ref(null)
 
 const isEmpty = computed(() => chat.messages.length === 0)
 
-// ── 날씨 (배경 + 뱃지) ──
+// ── 날씨 (배경 + 뱃지 + 빈 화면 인사) ──
+const authStore = useAuthStore()
 const weather = ref({ condition: 'default', temp: null, desc: '' })
-const WX_ICON = { clear: '☀️', rain: '🌧️', snow: '❄️', clouds: '☁️' }
-const wxIcon = computed(() => WX_ICON[weather.value.condition] || '')
+
+const WX_ICON  = { clear: '☀️', rain: '🌧️', snow: '❄️', clouds: '☁️', default: '🌿' }
+const WX_CYCLE = ['clear', 'clouds', 'rain', 'snow']
+const wxIcon   = computed(() => WX_ICON[weather.value.condition] || WX_ICON.default)
+
+function cycleWeather() {
+  const idx  = WX_CYCLE.indexOf(weather.value.condition)
+  const next = WX_CYCLE[(idx + 1) % WX_CYCLE.length]
+  weather.value = { ...weather.value, condition: next }
+}
+
+const userName = computed(() => {
+  const u = authStore.user
+  if (!u) return ''
+  if (u.nickname) return u.nickname
+  if (u.email) return u.email.split('@')[0]
+  return ''
+})
+
+const WX_SUGGEST = {
+  clear:  '맑고 자외선이 강한 날이에요. 선크림을 꼭 챙겨보는 건 어떨까요?',
+  rain:   '비가 내리고 있어요. 워터프루프 제품을 챙겨보는 건 어떨까요?',
+  snow:   '춥고 건조한 날씨예요. 보습 크림으로 피부를 지켜보는 건 어떨까요?',
+  clouds: '흐린 날인만큼 자외선 차단을 신경 써보는 건 어떨까요?',
+}
+const wxWeatherLines = computed(() => {
+  const { condition, temp, desc } = weather.value
+  if (temp == null) return null
+  return {
+    line1: `오늘 서울 날씨는 ${desc} ${temp}°C예요.`,
+    line2: WX_SUGGEST[condition] || '',
+  }
+})
 
 async function fetchWeather() {
   try {
-    const { data } = await api.get('/weather/')
-    weather.value = data
+    const { data } = await api.get('/weather/', { auth: false })
+    if (data?.condition) weather.value = data
   } catch {
-    // 키 미설정이거나 API 오류면 조용히 무시
+    // WEATHER_API_KEY 미설정이거나 API 오류면 조용히 무시 (기본 문구 유지)
   }
 }
 onMounted(fetchWeather)
-
-const EXAMPLE_PROMPTS = [
-  '여드름 자국에 좋은 토너 추천해줘',
-  '건조한 피부에 맞는 크림이 필요해',
-  '민감성 피부에 무난한 클렌저 있어?',
-]
 
 async function sendMessage(text) {
   const msg = text || inputText.value.trim()
@@ -130,7 +157,9 @@ function formatPrice(n) {
     <!-- 앱바 -->
     <header class="appbar">
       <span class="ab-brand serif">beau<span class="it">talk</span></span>
-      <span v-if="weather.temp != null" class="wx-badge">{{ wxIcon }} {{ weather.temp }}°C</span>
+      <button class="wx-badge" @click="cycleWeather" title="날씨 바꾸기">
+        {{ wxIcon }}<span v-if="weather.temp != null"> {{ weather.temp }}°C</span><span class="wx-cycle">↻</span>
+      </button>
       <button class="ab-new" @click="newChat"><span class="abn-ic">⟲</span> 새 대화</button>
     </header>
 
@@ -223,19 +252,15 @@ function formatPrice(n) {
           <div class="empty-orb">
             <DewyLoader :size="96" />
           </div>
-          <h1 class="empty-title serif">맑게 비치는<br><em>당신의 피부</em></h1>
-          <p class="empty-desc">피부 고민을 편하게 적어주세요. 저장된 프로필을 참고해 맞춤 추천을 드려요.</p>
-          <p class="ex-label">이렇게 물어보세요</p>
-          <div class="examples">
-            <button
-              v-for="p in EXAMPLE_PROMPTS" :key="p"
-              class="example"
-              @click="sendMessage(p)"
-            >
-              <Icon name="chat" :size="15" class="ex-ic" />
-              <span class="ex-text">“{{ p }}”</span>
-            </button>
+          <h1 class="empty-title serif">
+            <template v-if="userName">{{ userName }}님<br><em>안녕하세요!</em></template>
+            <template v-else>맑게 비치는<br><em>당신의 피부</em></template>
+          </h1>
+          <div v-if="wxWeatherLines" class="empty-weather">
+            <p class="ew-line1">{{ wxWeatherLines.line1 }}</p>
+            <p class="ew-line2">{{ wxWeatherLines.line2 }}</p>
           </div>
+          <p class="empty-desc" v-else>피부 고민을 편하게 적어주세요. 저장된 프로필을 참고해 맞춤 추천을 드려요.</p>
         </div>
 
         <!-- 메시지 -->
@@ -324,12 +349,6 @@ function formatPrice(n) {
 .screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 .main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
-/* 날씨별 배경 — 상단에서 서서히 사라지는 컬러 그라디언트 */
-.wx-clear  .main { background: linear-gradient(180deg, rgba(255,195,80,.13) 0%, transparent 260px); }
-.wx-rain   .main { background: linear-gradient(180deg, rgba(90,120,180,.12) 0%, transparent 260px); }
-.wx-snow   .main { background: linear-gradient(180deg, rgba(160,205,235,.14) 0%, transparent 260px); }
-.wx-clouds .main { background: linear-gradient(180deg, rgba(130,130,140,.08) 0%, transparent 260px); }
-
 /* 앱바 */
 .appbar {
   flex-shrink: 0;
@@ -339,10 +358,15 @@ function formatPrice(n) {
 .ab-brand { font-size: 21px; font-weight: 500; letter-spacing: -.3px; }
 .ab-brand .it { font-style: italic; color: var(--sage); }
 .wx-badge {
+  display: inline-flex; align-items: center; gap: 3px;
   font-size: 12px; color: var(--ink-faint); font-weight: 500;
-  padding: 4px 9px; border-radius: 99px;
+  padding: 4px 10px; border-radius: 99px;
   background: var(--sheet); border: 1px solid var(--line-soft);
+  cursor: pointer; transition: border-color var(--t-fast), color var(--t-fast);
 }
+.wx-badge:hover { border-color: var(--sage); color: var(--ink); }
+.wx-badge:active { transform: scale(.96); }
+.wx-cycle { font-size: 11px; color: var(--ink-faint); margin-left: 1px; }
 .ab-new {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 14px; border-radius: 99px;
@@ -364,6 +388,9 @@ function formatPrice(n) {
   text-align: center; padding: 20px 8px 40px; gap: 14px;
 }
 .empty-orb { margin-bottom: 4px; }
+.empty-weather { display: flex; flex-direction: column; gap: 4px; text-align: center; }
+.ew-line1 { font-size: 13.5px; color: var(--ink-soft); }
+.ew-line2 { font-size: 13px; color: var(--ink-faint); }
 .empty-title { font-size: 26px; font-weight: 400; line-height: 1.25; letter-spacing: -.3px; }
 .empty-title em { font-style: italic; }
 .empty-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; max-width: 300px; }
