@@ -40,8 +40,7 @@ function handleOAuth(provider) {
   <div class="page">
     <div class="card">
       <header class="masthead">
-        <img src="/logo.svg" alt="" class="brand-mark" />
-        <p class="eyebrow">Botanical Beauty Lab</p>
+        <img src="/logo.png" alt="" class="brand-mark" />
         <div class="logo serif">beaut<em>alk</em></div>
       </header>
 
@@ -88,7 +87,16 @@ function handleOAuth(provider) {
     calc(env(safe-area-inset-top) + 32px) 24px
     calc(env(safe-area-inset-bottom) + 32px);
   overflow: hidden;
-  background: url('/background_leaves.jpg') center center / cover no-repeat;
+  background: #EFE8DA;   /* 베이스 톤(이미지 로드 전·여백 fallback) */
+}
+
+/* 보타니컬 배경 — 고화질 사진을 오버레이 없이 그대로. z-index 0이라 카드(z-index 1) 뒤. */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('/leaves-background.jpg') center center / cover no-repeat;
 }
 
 .card {
