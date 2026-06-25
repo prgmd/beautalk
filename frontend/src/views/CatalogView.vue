@@ -4,6 +4,7 @@ import { api } from '@/services/api'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { normalizeProduct } from '@/utils/product'
+import { FORM_OPTIONS } from '@/utils/forms'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import Icon from '@/components/Icon.vue'
 
@@ -14,10 +15,18 @@ const all = ref([]) // 전체 제품(정규화)
 const loading = ref(false)
 const errorMsg = ref('')
 const search = ref('')
-const activeCategory = ref('') // '' = 전체
+const activeForm = ref('') // '' = 전체. 상위 분류(맞춤 타입=제형, 추천과 같은 축)
+const activeCategory = ref('') // '' = 전체. 하위 분류(커머스 카테고리)
 const sortBy = ref('default') // 'default'(리뷰순=리뷰 많은 순) | 'likes'(인기순=찜 많은 순)
 const page = ref(1)
 const PAGE_SIZE = 12
+
+// 상위: 제형(form). 실제 데이터에 존재하는 제형만 노출.
+const forms = computed(() => {
+  const present = new Set()
+  all.value.forEach((p) => (p.form || []).forEach((f) => present.add(f)))
+  return FORM_OPTIONS.filter((o) => present.has(o.key))
+})
 
 // 한글 IME 조합 중에도 즉시 검색되도록 input 이벤트로 직접 반영
 // (v-model은 compositionend까지 갱신을 미뤄 "카" 한 글자가 바로 안 걸림)
@@ -68,6 +77,7 @@ const categories = computed(() => {
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase()
   const list = all.value.filter((p) => {
+    if (activeForm.value && !(p.form || []).includes(activeForm.value)) return false
     if (activeCategory.value && p.category !== activeCategory.value) return false
     if (q && !`${p.name} ${p.brand}`.toLowerCase().includes(q)) return false
     return true
@@ -100,13 +110,14 @@ const pages = computed(() => {
 })
 
 // 필터/검색/정렬 바뀌면 1페이지로
-watch([activeCategory, search, sortBy], () => { page.value = 1 })
+watch([activeForm, activeCategory, search, sortBy], () => { page.value = 1 })
 
 function goPage(p) {
   if (p === '…' || p === page.value) return
   page.value = p
   if (bodyEl.value) bodyEl.value.scrollTop = 0
 }
+function selectForm(key) { activeForm.value = key }
 function selectCategory(cat) { activeCategory.value = cat }
 
 const isEmpty = computed(() => !loading.value && filtered.value.length === 0)
@@ -145,13 +156,25 @@ function formatPrice(n) {
         <button class="sort-tab" :class="{ on: sortBy === 'likes' }" @click="sortBy = 'likes'">인기순</button>
       </div>
 
-      <!-- 카테고리 필터 -->
-      <nav v-if="categories.length" class="filters">
-        <button class="chip" :class="{ on: activeCategory === '' }" @click="selectCategory('')">전체</button>
+      <!-- 상위: 제형(맞춤 타입) -->
+      <nav v-if="forms.length" class="filters forms-row">
+        <button class="chip" :class="{ on: activeForm === '' }" @click="selectForm('')">전체</button>
+        <button
+          v-for="o in forms"
+          :key="o.key"
+          class="chip"
+          :class="{ on: activeForm === o.key }"
+          @click="selectForm(o.key)"
+        >{{ o.label }}</button>
+      </nav>
+
+      <!-- 하위: 커머스 카테고리 -->
+      <nav v-if="categories.length" class="filters cats-row">
+        <button class="subchip" :class="{ on: activeCategory === '' }" @click="selectCategory('')">전체</button>
         <button
           v-for="cat in categories"
           :key="cat"
-          class="chip"
+          class="subchip"
           :class="{ on: activeCategory === cat }"
           @click="selectCategory(cat)"
         >{{ cat }}</button>
@@ -262,15 +285,27 @@ function formatPrice(n) {
 
 .filters {
   flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto;
-  padding: 10px 20px 12px; -ms-overflow-style: none; scrollbar-width: none;
+  -ms-overflow-style: none; scrollbar-width: none;
 }
 .filters::-webkit-scrollbar { display: none; }
+.forms-row { padding: 12px 20px 4px; }   /* 상위: 제형(맞춤 타입) */
+.cats-row { padding: 6px 20px 12px; }     /* 하위: 커머스 카테고리 */
+
+/* 상위 칩 — 강조 */
 .chip {
   flex-shrink: 0; padding: 8px 15px; border-radius: 99px; font-size: 13px; font-weight: 600;
   color: var(--ink-soft); background: var(--sheet); border: 1px solid var(--line); transition: all var(--t-fast);
 }
 .chip:active { transform: scale(.97); }
 .chip.on { background: var(--ink); color: var(--canvas); border-color: var(--ink); box-shadow: var(--sh-sm); }
+
+/* 하위 칩 — 작고 가벼운 보조 */
+.subchip {
+  flex-shrink: 0; padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 500;
+  color: var(--ink-faint); background: transparent; border: 1px solid var(--line-soft); transition: all var(--t-fast);
+}
+.subchip:active { transform: scale(.97); }
+.subchip.on { color: var(--sage-ink); background: var(--sage-soft); border-color: var(--sage); font-weight: 600; }
 
 .body { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 24px; }
 .msg { font-size: 13px; color: var(--ink-soft); padding: 16px 2px; text-align: center; }
