@@ -13,6 +13,7 @@
 |------|------|
 | [progress.md](progress.md) | 전체 진행 체크리스트 (완료/예정) |
 | [structure.md](structure.md) | 코드 구조 지도 (어디에 뭐가 있나) |
+| [backend-architecture.md](backend-architecture.md) | **백엔드 단일 레퍼런스** — 아키텍처·모델·API 22개·요청 흐름 |
 
 ### 🔵 지금 진행 중 — 하이브리드 추천
 | 문서 | 용도 |

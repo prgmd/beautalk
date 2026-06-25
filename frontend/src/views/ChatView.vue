@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useLikesStore } from '@/stores/likes'
 import { useProductDetailStore } from '@/stores/productDetail'
@@ -8,6 +8,7 @@ import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import DewyLoader from '@/components/DewyLoader.vue'
 import Icon from '@/components/Icon.vue'
 import { FORM_OPTIONS, PRICE_BANDS, formLabel } from '@/utils/forms'
+import { api } from '@/services/api'
 
 const chat = useChatStore()
 const likes = useLikesStore()
@@ -18,6 +19,21 @@ const inputText = ref('')
 const chatBody = ref(null)
 
 const isEmpty = computed(() => chat.messages.length === 0)
+
+// ── 날씨 (배경 + 뱃지) ──
+const weather = ref({ condition: 'default', temp: null, desc: '' })
+const WX_ICON = { clear: '☀️', rain: '🌧️', snow: '❄️', clouds: '☁️' }
+const wxIcon = computed(() => WX_ICON[weather.value.condition] || '')
+
+async function fetchWeather() {
+  try {
+    const { data } = await api.get('/weather/')
+    weather.value = data
+  } catch {
+    // 키 미설정이거나 API 오류면 조용히 무시
+  }
+}
+onMounted(fetchWeather)
 
 const EXAMPLE_PROMPTS = [
   '여드름 자국에 좋은 토너 추천해줘',
@@ -109,11 +125,12 @@ function formatPrice(n) {
 </script>
 
 <template>
-  <div class="screen">
+  <div class="screen" :class="'wx-' + weather.condition">
     <div class="main">
     <!-- 앱바 -->
     <header class="appbar">
       <span class="ab-brand serif">beau<span class="it">talk</span></span>
+      <span v-if="weather.temp != null" class="wx-badge">{{ wxIcon }} {{ weather.temp }}°C</span>
       <button class="ab-new" @click="newChat"><span class="abn-ic">⟲</span> 새 대화</button>
     </header>
 
@@ -307,6 +324,12 @@ function formatPrice(n) {
 .screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 .main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
+/* 날씨별 배경 — 상단에서 서서히 사라지는 컬러 그라디언트 */
+.wx-clear  .main { background: linear-gradient(180deg, rgba(255,195,80,.13) 0%, transparent 260px); }
+.wx-rain   .main { background: linear-gradient(180deg, rgba(90,120,180,.12) 0%, transparent 260px); }
+.wx-snow   .main { background: linear-gradient(180deg, rgba(160,205,235,.14) 0%, transparent 260px); }
+.wx-clouds .main { background: linear-gradient(180deg, rgba(130,130,140,.08) 0%, transparent 260px); }
+
 /* 앱바 */
 .appbar {
   flex-shrink: 0;
@@ -315,6 +338,11 @@ function formatPrice(n) {
 }
 .ab-brand { font-size: 21px; font-weight: 500; letter-spacing: -.3px; }
 .ab-brand .it { font-style: italic; color: var(--sage); }
+.wx-badge {
+  font-size: 12px; color: var(--ink-faint); font-weight: 500;
+  padding: 4px 9px; border-radius: 99px;
+  background: var(--sheet); border: 1px solid var(--line-soft);
+}
 .ab-new {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 14px; border-radius: 99px;

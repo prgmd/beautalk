@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import re
+import time
 
 import requests as http
 from django.db import transaction
@@ -28,6 +29,10 @@ GMS_MODEL   = os.environ.get('GMS_MODEL', 'gpt-5-nano')
 # gpt-5 계열은 응답 전 '추론'에 시간을 크게 쓴다(기본 ~20s). 추천·대화는 깊은 추론이
 # 필요 없어 reasoning_effort를 낮춰 지연을 줄인다(low≈5s, minimal≈3.5s). 빈값이면 미적용.
 GMS_REASONING_EFFORT = os.environ.get('GMS_REASONING_EFFORT', 'low')
+
+WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY', '')
+_WEATHER_CACHE: dict = {'hint': '', 'condition': 'default', 'temp': None, 'desc': '', 'ts': 0.0}
+_WEATHER_CACHE_SEC = 1800  # 30분마다 갱신 (무료 플랜 60req/min 여유 확보)
 
 ERR_TIMEOUT = 'AI 응답 시간 초과. 잠시 후 다시 시도해주세요.'
 ERR_CONNECT = 'AI 서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
@@ -60,6 +65,63 @@ _FORM_KEYWORDS = [
 # ──────────────────────────────────────────────
 # 공통 — GMS 호출 + 프롬프트 조립
 # ──────────────────────────────────────────────
+
+# OpenWeatherMap main 값 → 4개 condition으로 단순화 (프론트 배경 + 힌트 공용)
+_WEATHER_CONDITION = {
+    'Clear': 'clear',
+    'Snow': 'snow',
+    'Drizzle': 'rain', 'Rain': 'rain', 'Thunderstorm': 'rain',
+    # Clouds·Mist·Fog·Haze·Dust·Sand·Smoke 등 나머지 → clouds
+}
+_WEATHER_SKIN_HINT = {
+    'clear':  '맑고 자외선이 강합니다. 선케어·수분 제품을 자연스럽게 언급하면 좋습니다.',
+    'rain':   '비가 내립니다. 워터프루프나 클렌징 제품을 언급해도 좋습니다.',
+    'snow':   '추운 날씨입니다. 장벽 강화·보습 크림을 자연스럽게 언급하세요.',
+    'clouds': '흐리거나 대기질이 좋지 않습니다. 클렌징이나 자외선 차단을 가볍게 언급할 수 있습니다.',
+}
+
+
+def _weather_hint() -> str:
+    """OpenWeatherMap으로 서울 현재 날씨를 읽어 스킨케어 맥락 힌트를 만든다.
+
+    WEATHER_API_KEY 미설정이거나 API 실패 시 빈 문자열(no-op). 30분 단위 캐시로
+    불필요한 외부 호출을 줄인다. condition·temp·desc도 캐시해 WeatherView가 재활용한다.
+    """
+    if not WEATHER_API_KEY:
+        return ''
+
+    now = time.time()
+    if _WEATHER_CACHE['hint'] and now - _WEATHER_CACHE['ts'] < _WEATHER_CACHE_SEC:
+        return _WEATHER_CACHE['hint']
+
+    try:
+        res = http.get(
+            'https://api.openweathermap.org/data/2.5/weather',
+            params={'q': 'Seoul,KR', 'appid': WEATHER_API_KEY, 'units': 'metric', 'lang': 'kr'},
+            timeout=3,
+        )
+        res.raise_for_status()
+        d = res.json()
+        temp = round(d['main']['temp'])
+        humidity = d['main'].get('humidity', 50)
+        main = d['weather'][0]['main']
+        desc = d['weather'][0]['description']
+        condition = _WEATHER_CONDITION.get(main, 'clouds')
+
+        parts = [f'서울 현재 날씨: {desc} {temp}°C, 습도 {humidity}%']
+        if humidity < 40:
+            parts.append('건조한 날씨라 보습 제품도 자연스럽게 언급하세요.')
+        skin_hint = _WEATHER_SKIN_HINT.get(condition, '')
+        if skin_hint:
+            parts.append(skin_hint)
+
+        hint = ' / '.join(parts)
+        _WEATHER_CACHE.update({'hint': hint, 'condition': condition, 'temp': temp, 'desc': desc, 'ts': now})
+        return hint
+    except Exception as e:
+        logger.debug('날씨 조회 실패(무시): %s', e)
+        return ''
+
 
 def _skin_block(user) -> str:
     """사용자 피부 프로필을 프롬프트용 텍스트로 만든다.
@@ -165,13 +227,13 @@ def _availability_hint(history) -> str:
             f'충분하면 더 캐묻지 말고 추천으로 넘기세요.')
 
 
-def _build_chat_prompt(user, availability='') -> str:
+def _build_chat_prompt(user, availability='', weather='') -> str:
     """대화 단계 시스템 프롬프트.
 
     추천이 실제로 쓸 수 있는 축(제품군·제형·가격대·피부고민)에만 대화를 묶는다(grounding).
     데이터에 없는 속성(향료·성분·세부 텍스처·SPF 수치)은 묻지 않게 하고, '모름/상관없음'을
     유효한 답으로 수용해 같은 질문으로 빙빙 도는 것을 막는다.
-    availability(현재 조건의 실제 재고 현황)가 있으면 주입해 데이터에 근거해 대화하게 한다.
+    availability(현재 조건의 실제 재고 현황)와 weather(날씨 맥락)가 있으면 주입한다.
     """
     categories = list(
         Product.objects.values_list('category', flat=True).distinct()
@@ -179,6 +241,7 @@ def _build_chat_prompt(user, availability='') -> str:
     category_block = ', '.join(c for c in categories if c) or '(제품 정보 없음)'
     form_block = ', '.join(label for _, label in Product.FORM_CHOICES)
     availability_block = f'\n[현재 데이터 현황 — 근거로 삼으세요]\n{availability}\n' if availability else ''
+    weather_block = f'\n[오늘 날씨 — 자연스러운 대화 맥락으로만 활용, 강요 금지]\n{weather}\n' if weather else ''
 
     return f"""당신은 화장품 추천 상담 AI 'Beautalk'입니다.
 사용자와 짧게 대화하며 추천에 필요한 정보를 모읍니다.
@@ -193,7 +256,7 @@ def _build_chat_prompt(user, availability='') -> str:
    사용자가 그중 하나만 말해도 그 제형으로 '확정'하고, 둘 중 고르라고 되묻지 마세요.)
 - 가격대(원하면): "2~3만원대", "2만원 이하" 같은 범위
 - 피부 고민: 위 프로필 참고 (없으면 한 번만 물어볼 수 있음)
-{availability_block}
+{availability_block}{weather_block}
 
 [절대 묻지 말 것 — 데이터에 없어 추천에 못 씀]
 - 향료/성분 포함 여부, 세부 텍스처(젤·스틱 등 제형 하위 구분), SPF 정확한 수치.
@@ -240,7 +303,8 @@ class ChatView(APIView):
 
         # 방금 보낸 content까지 포함해 현재 제약의 실제 재고를 읽어 프롬프트에 주입(라이브 그라운딩).
         availability = _availability_hint(history + [{'role': 'user', 'content': content}])
-        messages = [{'role': 'system', 'content': _build_chat_prompt(request.user, availability)}]
+        weather = _weather_hint()
+        messages = [{'role': 'system', 'content': _build_chat_prompt(request.user, availability, weather)}]
         messages.extend(history)
         messages.append({'role': 'user', 'content': content})
 
@@ -566,3 +630,25 @@ class RecommendationListView(APIView):
             .order_by('-created_at')
         )
         return Response(RecommendationSerializer(recommendations, many=True).data)
+
+
+# ──────────────────────────────────────────────
+# 날씨 — GET /api/v1/weather/
+# ──────────────────────────────────────────────
+
+class WeatherView(APIView):
+    """GET /api/v1/weather/  — 서울 현재 날씨 (프론트 배경·뱃지용)
+
+    WEATHER_API_KEY 미설정 시 condition='default' 반환 (프론트는 배경 변화 없음).
+    30분 캐시를 _weather_hint()와 공유하므로 추가 API 호출 없음.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        _weather_hint()  # 캐시가 만료됐으면 갱신
+        return Response({
+            'condition': _WEATHER_CACHE.get('condition', 'default'),
+            'temp': _WEATHER_CACHE.get('temp'),
+            'desc': _WEATHER_CACHE.get('desc', ''),
+        })

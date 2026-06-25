@@ -61,7 +61,15 @@ function openPost(id) {
 const satisfactionList = computed(() => {
   if (!detail.value?.satisfaction_by_type) return []
   return Object.entries(detail.value.satisfaction_by_type)
-    .map(([type, value]) => ({ type, value }))
+    .map(([type, raw]) => {
+      if (typeof raw === 'number') return { type, label: '', value: raw }
+      // "아주 만족해요: 70%" 형태 파싱
+      const m = String(raw).match(/^(.*?):\s*(\d+(?:\.\d+)?)%?$/)
+      if (m) return { type, label: m[1].trim(), value: Number(m[2]) }
+      const n = parseFloat(String(raw))
+      return { type, label: '', value: isNaN(n) ? 0 : n }
+    })
+    .filter((item) => item.value > 0)
     .sort((a, b) => b.value - a.value)
 })
 
@@ -135,24 +143,7 @@ function stars(rating) {
               <div v-for="item in satisfactionList" :key="item.type" class="satisfaction-row">
                 <span class="sat-type">{{ item.type }}</span>
                 <div class="sat-bar"><div class="sat-fill" :style="{ width: item.value + '%' }" /></div>
-                <span class="sat-value">{{ item.value }}%</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- 리뷰 (예시 데이터 — 실제 리뷰 API 연동 전) -->
-          <section class="section">
-            <h3 class="section-title serif">리뷰 미리보기 <span class="sample-tag">예시</span></h3>
-            <div class="review-list">
-              <div v-for="review in detail.reviews" :key="review.id" class="review-card">
-                <div class="review-head">
-                  <span class="review-stars">{{ stars(review.rating) }}</span>
-                  <span class="review-user">{{ review.user_name }}</span>
-                  <span class="review-skin">{{ review.skin_type }}</span>
-                  <span class="review-date">{{ review.review_date }}</span>
-                </div>
-                <p class="review-text">{{ review.text }}</p>
-                <p class="review-recommend">👍 도움돼요 {{ review.recommend_count }}</p>
+                <span class="sat-value">{{ item.label ? item.label + ': ' + item.value + '%' : item.value + '%' }}</span>
               </div>
             </div>
           </section>
@@ -306,11 +297,6 @@ function stars(rating) {
 
 .section { display: flex; flex-direction: column; gap: 12px; }
 .section-title { display: flex; align-items: center; gap: 7px; font-size: 16px; font-weight: 600; color: var(--ink); }
-.sample-tag {
-  font-size: 10px; font-weight: 700; vertical-align: middle; margin-left: 6px;
-  padding: 2px 7px; border-radius: 99px; background: var(--panel); color: var(--ink-faint);
-}
-
 .ai-section .ai-summary {
   background: var(--sage-soft);
   border: 1px solid var(--line);
@@ -342,32 +328,7 @@ function stars(rating) {
   border-radius: 999px;
   transition: width var(--t-slow) var(--ease);
 }
-.sat-value { font-size: 12px; color: var(--ink-soft); width: 38px; text-align: right; flex-shrink: 0; }
-
-.review-list { display: flex; flex-direction: column; gap: 10px; }
-.review-card {
-  background: var(--sheet);
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  box-shadow: var(--sh-sm);
-}
-.review-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.review-stars { color: var(--rose); font-size: 12px; }
-.review-user { font-size: 12px; font-weight: 600; color: var(--ink); }
-.review-skin {
-  font-size: 11px;
-  background: var(--sage-soft);
-  border-radius: 999px;
-  padding: 2px 9px;
-  color: var(--sage-ink);
-}
-.review-date { font-size: 11px; color: var(--ink-faint); margin-left: auto; }
-.review-text { font-size: 13px; line-height: 1.65; color: var(--ink); }
-.review-recommend { font-size: 11px; color: var(--ink-faint); }
+.sat-value { font-size: 12px; color: var(--ink-soft); width: 90px; text-align: right; flex-shrink: 0; }
 
 /* 관련 글 */
 .related-list { display: flex; flex-direction: column; gap: 10px; }
