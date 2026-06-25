@@ -107,9 +107,11 @@ jobs:
             # 로컬 수정 없이 origin/develop과 정확히 일치(충돌·잔류 방지). dist·.env는 gitignore라 보존.
             git fetch origin develop
             git reset --hard origin/develop
-            # Actions가 빌드한 dist로 교체(스테일 에셋 방지 위해 비우고 푼다)
-            rm -rf frontend/dist
+            # Actions가 빌드한 dist로 교체. ⚠️ 디렉터리 자체를 rm 하면 inode가 바뀌어 이미
+            # 떠 있는 nginx의 바인드 마운트(./frontend/dist)가 옛 inode를 가리켜 빈 디렉터리가 됨
+            # → 403. 그래서 디렉터리는 두고 '내용만' 비워 inode를 보존한다(마운트 유지, 재시작 불필요).
             mkdir -p frontend/dist
+            find frontend/dist -mindepth 1 -delete
             tar xzf /tmp/dist.tar.gz -C frontend/dist
             rm -f /tmp/dist.tar.gz
             # 백엔드 재빌드·기동(t3.micro는 스왑으로 버팀) 후 마이그레이션
