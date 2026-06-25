@@ -68,8 +68,8 @@ chat/
 
 board/                # 커뮤니티 게시판 (F1303 필수 — 용도별: 자유/Q&A·팁/세일, 제품 태그)
 │                     #   ※ 앱명 community는 파이썬 모듈명과 충돌해 board로 명명
-├── models.py         # Post(카테고리·제목·본문 + 제품 정참조 FK, UUID PK), Comment, PostLike
-│   └── Post.product: products.Product FK(SET_NULL) — 게시글↔제품 태그, related_name='tagged_posts'
+├── models.py         # Post(카테고리·제목·본문 + 제품 태그 M2M, UUID PK), Comment, PostLike
+│   └── Post.products: products.Product M2M — 게시글↔제품 다대다 태그, related_name='tagged_posts'
 ├── serializers.py    # PostList/PostDetail/PostWrite(제품 product_id 입력) + CommentSerializer
 ├── views.py          # 게시판 + 댓글 + 좋아요 API (IsAuthorOrReadOnly로 작성자 검증)
 │   ├── PostListCreateView       # GET/POST /api/v1/posts/ (?category= 필터, 페이지네이션)
