@@ -16,14 +16,17 @@ const confirm = useConfirmStore()
 
 // 상단 메뉴(이모지 없음). '내 정보'는 하단 프로필로 따로 둔다.
 const MENU = [
-  { key: 'chat', label: '상담', path: '/chat' },
+  { key: 'home', label: '홈', path: '/home' },
+  { key: 'consult', label: '상담', path: '/consult' },
   { key: 'community', label: '커뮤니티', path: '/community' },
   { key: 'catalog', label: '둘러보기', path: '/catalog' },
 ]
 
 function isActive(key) {
   const p = route.path
-  if (key === 'chat') return p === '/chat'
+  if (key === 'home') return p === '/home'
+  // 상담 허브 + 추천 채팅 + 피부진단 모두 '상담'으로 활성 표시
+  if (key === 'consult') return p.startsWith('/consult') || p === '/chat'
   if (key === 'community') return p.startsWith('/community')
   if (key === 'catalog') return p.startsWith('/catalog')
   return false

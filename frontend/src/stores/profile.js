@@ -3,8 +3,8 @@ import { defineStore } from 'pinia'
 import { api } from '@/services/api'
 
 // 백엔드 skin_type은 영문 키, 프론트 UI는 한글 라벨 → 양방향 매핑
-const SKIN_TYPE_TO_KO = { dry: '건성', oily: '지성', combination: '복합성', sensitive: '민감성' }
-const SKIN_TYPE_TO_EN = { 건성: 'dry', 지성: 'oily', 복합성: 'combination', 민감성: 'sensitive' }
+const SKIN_TYPE_TO_KO = { dry: '건성', oily: '지성', combination: '복합성', sensitive: '민감성', unknown: '미정' }
+const SKIN_TYPE_TO_EN = { 건성: 'dry', 지성: 'oily', 복합성: 'combination', 민감성: 'sensitive', 미정: 'unknown' }
 
 export const useProfileStore = defineStore('profile', () => {
   const skinType = ref('')

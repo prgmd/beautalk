@@ -12,7 +12,7 @@ const loading = ref(false)
 const saving = ref(false)
 const errorMsg = ref('')
 
-const SKIN_TYPES = ['건성', '지성', '복합성', '민감성']
+const SKIN_TYPES = ['건성', '지성', '복합성', '민감성', '미정']
 const CONCERNS = ['여드름', '주름', '색소침착', '모공', '트러블', '건조함', '민감성', '탄력']
 
 const editSkinType = ref('')
@@ -103,7 +103,7 @@ function removeAvoid(item) {
       <article class="profile-card">
         <span class="leaf" aria-hidden="true">❋</span>
         <p class="card-sub">피부 타입</p>
-        <p class="card-value serif">{{ profile.skinType }}</p>
+        <p class="card-value serif" :class="{ 'no-value': !profile.skinType }">{{ profile.skinType || '미설정' }}</p>
       </article>
 
       <article class="profile-card">
@@ -262,6 +262,7 @@ function removeAvoid(item) {
 }
 .card-sub { font-size: 12px; font-weight: 700; letter-spacing: .4px; color: var(--sage-ink); margin-bottom: 8px; }
 .card-value { font-size: 22px; font-weight: 500; color: var(--ink); }
+.card-value.no-value { color: var(--ink-faint); font-style: italic; font-size: 18px; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .tag {

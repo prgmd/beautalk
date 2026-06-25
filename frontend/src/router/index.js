@@ -7,7 +7,25 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/chat',
+      redirect: '/home',
+    },
+    {
+      path: '/home',
+      name: 'home',
+      component: () => import('@/views/DashboardView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/consult',
+      name: 'consult',
+      component: () => import('@/views/ConsultHubView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/consult/skin',
+      name: 'consult-skin',
+      component: () => import('@/views/SkinConsultView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/login',
@@ -81,7 +99,7 @@ const router = createRouter({
 router.beforeEach((to) => {
   const auth = useAuthStore()
   if (to.meta.requiresAuth && !auth.isLoggedIn) return '/login'
-  if (to.meta.guest && auth.isLoggedIn) return '/chat'
+  if (to.meta.guest && auth.isLoggedIn) return '/home'
 })
 
 export default router

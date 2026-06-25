@@ -695,3 +695,52 @@ class ChatQuotaView(APIView):
 
     def get(self, request):
         return Response(_chat_quota(request.user))
+
+
+# ──────────────────────────────────────────────
+# 피부 타입 진단 — 자유 답변 매칭 POST /api/v1/consult/skin/match/
+# ──────────────────────────────────────────────
+
+class SkinMatchView(APIView):
+    """POST /api/v1/consult/skin/match/  — 진단 질문의 자유 답변을 보기에 매칭한다.
+
+    요청: { "question": "...", "options": ["보기1", "보기2", ...], "text": "사용자 자유 답변" }
+    응답: { "index": 0 }  — 가장 가까운 보기의 0-based 인덱스. 모호하면 -1.
+
+    프론트는 받은 index의 보기를 '선택한 것'으로 처리(점수 가산)한다.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        question = (request.data.get('question') or '').strip()
+        options = request.data.get('options') or []
+        text = (request.data.get('text') or '').strip()
+
+        if not text or not isinstance(options, list) or not options:
+            return Response({'index': -1})
+
+        numbered = '\n'.join(f'{i}. {opt}' for i, opt in enumerate(options))
+        system = (
+            '당신은 피부 타입 진단 보조자입니다. 사용자의 자유로운 답변을 읽고, '
+            '아래 보기 중 의미가 가장 가까운 것 하나의 번호를 고르세요.\n'
+            '보기와 전혀 무관하거나 판단이 불가능하면 -1을 고르세요.\n'
+            '반드시 아래 JSON 형식으로만 답하세요: {"index": 정수}'
+        )
+        user = f'[질문]\n{question}\n\n[보기]\n{numbered}\n\n[사용자 답변]\n{text}'
+
+        raw, error = _call_gms(
+            [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}],
+            timeout=20, reasoning_effort='minimal',
+        )
+        if error:
+            return error
+
+        try:
+            index = int(json.loads(raw).get('index', -1))
+        except (json.JSONDecodeError, TypeError, ValueError, AttributeError):
+            index = -1
+        # 범위를 벗어난 값은 -1(매칭 실패)로 정규화
+        if index < 0 or index >= len(options):
+            index = -1
+        return Response({'index': index})

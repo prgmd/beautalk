@@ -22,7 +22,7 @@ class UserInfo(models.Model):
     # 클래스 이름을 User로 하는 것은 비추천. 기본 Django User 모델과 충돌 가능성.
 
 class SkinProfile(models.Model):
-    SKIN_TYPE = [('dry', '건성'), ('oily', '지성'), ('combination', '복합성'), ('sensitive', '민감성')]
+    SKIN_TYPE = [('dry', '건성'), ('oily', '지성'), ('combination', '복합성'), ('sensitive', '민감성'), ('unknown', '미정')]
 
     user = models.OneToOneField(UserInfo, on_delete=models.CASCADE)
     skin_type = models.CharField(max_length=15, choices=SKIN_TYPE)

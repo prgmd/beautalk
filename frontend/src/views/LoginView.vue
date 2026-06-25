@@ -38,6 +38,9 @@ function handleOAuth(provider) {
 
 <template>
   <div class="page">
+    <span class="leaf-deco d1" aria-hidden="true">❋</span>
+    <span class="leaf-deco d2" aria-hidden="true">❋</span>
+    <span class="leaf-deco d3" aria-hidden="true">✦</span>
     <div class="card">
       <header class="masthead">
         <img src="/logo.png" alt="" class="brand-mark" />
@@ -87,17 +90,20 @@ function handleOAuth(provider) {
     calc(env(safe-area-inset-top) + 32px) 24px
     calc(env(safe-area-inset-bottom) + 32px);
   overflow: hidden;
-  background: #EFE8DA;   /* 베이스 톤(이미지 로드 전·여백 fallback) */
+  /* 앱과 통합된 온브랜드 배경 — 사진 대신 부드러운 그라데이션 */
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(126,139,109,.16) 0%, transparent 55%),
+    linear-gradient(165deg, var(--canvas) 0%, var(--sage-soft) 100%);
 }
 
-/* 보타니컬 배경 — 고화질 사진을 오버레이 없이 그대로. z-index 0이라 카드(z-index 1) 뒤. */
-.page::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: url('/leaves-background.jpg') center center / cover no-repeat;
+/* 잎·반짝이 장식 (배경 모티프) */
+.leaf-deco {
+  position: absolute; z-index: 0; pointer-events: none; user-select: none;
+  color: var(--sage); line-height: 1;
 }
+.leaf-deco.d1 { top: 8%; left: 9%; font-size: 120px; opacity: .14; transform: rotate(-12deg); }
+.leaf-deco.d2 { bottom: 6%; right: 8%; font-size: 150px; opacity: .12; transform: rotate(14deg); }
+.leaf-deco.d3 { top: 18%; right: 16%; font-size: 40px; opacity: .35; }
 
 .card {
   position: relative;
@@ -109,10 +115,8 @@ function handleOAuth(provider) {
   gap: 20px;
   padding: 36px 28px;
   border-radius: var(--radius-xl);
-  background: rgba(251, 248, 241, 0.88);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: var(--card);
+  border: 1px solid var(--line-soft);
   box-shadow: var(--sh-lg);
   animation: bt-rise var(--t-slow) var(--ease) both;
 }
