@@ -79,7 +79,6 @@ onMounted(() => {
           <span /><span /><span />
         </button>
         <span class="brand-lockup">
-          <img src="/logo.png" alt="" class="brand-mark" />
           <span class="brand serif">beau<span class="it">talk</span></span>
         </span>
       </div>

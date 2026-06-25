@@ -191,9 +191,9 @@
     - **수동 E2E 전 구간 통과**: 구글 로그인→온보딩, 카카오 로그인→온보딩, 챗봇 대화(`POST
       /chat/` 200×2), 추천(`POST /recommend/` 201), 찜(`POST /likes/` 201), 게시판 목록/작성/
       상세/제품 역참조/게시글 좋아요 — 전부 에러 없이 200/201
-  - [~] **Phase 3: GitHub Actions CI/CD — 진행 중**
-    - `.github/workflows/ci-cd.yml` 작성: `test`(develop PR·push마다 항상) → `deploy`(develop
-      push + test 통과 시에만). 배포 트리거 브랜치 = develop으로 결정
+  - [x] **Phase 3: GitHub Actions CI/CD — 완료** (develop push → 자동 빌드·테스트·배포 동작 확인)
+    - `.github/workflows/ci-cd.yml`: `test`(develop PR·push마다 항상) → `deploy`(develop push 또는
+      수동 `workflow_dispatch` + test 통과 시에만). 배포 트리거 브랜치 = develop
     - CI: pgvector service 컨테이너(`pgvector/pgvector:pg16`)로 Django 테스트. 임베딩
       `VectorExtension`이 `CREATE EXTENSION vector`를 요구해 표준 postgres로는 불가
     - CD: 프론트는 Actions 러너에서 빌드(t3.micro OOM 회피) → dist tarball scp → EC2에서
@@ -201,8 +201,10 @@
       (`appleboy/ssh-action`·`scp-action` 사용)
     - 사전 준비: EC2 저장소를 develop으로 전환, GitHub Secrets(EC2_HOST/USER/SSH_KEY) 등록,
       `.gitignore`에 `certbot/` 추가
-    - ⚠️ **첫 자동배포 미반영 — 디버깅 필요**: 워크플로우 push 후 EC2에 반영 안 됨(test/deploy 잡
-      실패 추정). 다음: Actions 탭에서 실패 잡·원인 확인 (상세: deployment.md Phase 3)
+    - **트러블슈팅 2건 해결**(상세: deployment.md "Actions CD 트러블슈팅"):
+      ① 보안그룹 SSH 22가 "내 IP"로만 열려 Actions 러너 차단 → `0.0.0.0/0` 개방
+      ② CD가 `rm -rf dist`로 디렉터리 inode를 바꿔 nginx 바인드 마운트가 깨짐(403) →
+      `find -delete`로 내용만 비워 inode 보존하도록 수정
 - [x] DEBUG/ALLOWED_HOSTS 환경변수 분리 (배포 시 `.env`만 주입하면 운영 전환 — backend-hardening.md)
 - [ ] 전체 QA·버그 수정
 - [ ] 발표 준비

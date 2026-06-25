@@ -2,8 +2,8 @@
 
 > 로컬 개발 완료 → **AWS EC2 단일 인스턴스에 docker-compose로 배포**하고,
 > **GitHub Actions로 CI(테스트)·CD(자동 배포)** 를 구축한다.
-> 상태: **Phase 1·2 완료(https://beautalk.site 운영 중), Phase 3(Actions) 진행 중 — 워크플로우
-> 작성·푸시 완료, 첫 자동배포 디버깅 중**. 도메인: `beautalk.site`
+> 상태: **Phase 1·2·3 완료 — https://beautalk.site 운영 중, develop push 시 자동 배포(CI/CD) 동작**.
+> 도메인: `beautalk.site`
 
 ---
 
@@ -178,9 +178,9 @@ nginx 자체에 certbot을 심지 않고 별도 1회 실행으로 분리한 이�
 줄이 있는데, exchange 엔드포인트는 1회용 토큰을 소비하는 구조라 동일 콜백에서 중복 호출되면
 두 번째는 401이 나는 게 정상 — 첫 호출이 이미 성공해 로그인 자체엔 영향 없음.)
 
-### Phase 3 — GitHub Actions (진행 중 — 워크플로우 작성·푸시 완료, 첫 배포 디버깅 중)
-- [x] **워크플로우 작성**: `.github/workflows/ci-cd.yml` — `test`(항상) → `deploy`(develop push + test 통과 시)
-  통합 파이프라인. 배포 트리거 브랜치 = **develop**(결정, §4)
+### Phase 3 — GitHub Actions (완료 — develop push 시 자동 빌드·테스트·배포)
+- [x] **워크플로우 작성**: `.github/workflows/ci-cd.yml` — `test`(항상) → `deploy`(develop push 또는
+  수동 `workflow_dispatch`, test 통과 시) 통합 파이프라인. 배포 트리거 브랜치 = **develop**(결정, §4)
 - [x] **CI(test 잡)**: develop으로의 PR·push마다 Django 테스트. pgvector service 컨테이너
   (`pgvector/pgvector:pg16` — 임베딩 `VectorExtension` 마이그레이션이 `CREATE EXTENSION vector`를
   요구), `DJANGO_DEBUG=True`로 throttle 끄고 DB_*는 service 컨테이너로 주입
@@ -191,11 +191,49 @@ nginx 자체에 certbot을 심지 않고 별도 1회 실행으로 분리한 이�
 - [x] **사전 준비**: EC2 저장소를 `46-...` 브랜치 → **develop으로 전환**(`git reset --hard origin/develop`,
   얕은 클론이라 `git remote set-branches origin "*"` + `fetch develop:refs/...` 선행 필요),
   CD가 sudo 없이 docker 실행 가능함을 새 SSH 세션에서 확인, `certbot/`을 `.gitignore`에 추가
-- [ ] ⚠️ **첫 배포 미반영 — 디버깅 필요**: 워크플로우 커밋(`323d80a`) push 후 ~6분 모니터링했으나
-  EC2 HEAD가 갱신 안 됨(컨테이너 재기동 흔적 없음) → `test` 또는 `deploy` 잡이 실패한 것으로 추정.
-  **다음 세션: GitHub Actions 탭에서 어느 잡이 왜 실패했는지 확인**이 출발점. 유력 후보:
-  ① CI 테스트가 CI 환경(DEBUG=True)에서 깨짐(로컬은 DEBUG 미설정=False로 통과했었음 → throttle 등
-  환경차 가능성), ② `EC2_SSH_KEY` 시크릿 개행 누락 등으로 appleboy 인증 실패, ③ Actions 미트리거.
+- [x] **첫 배포 2연속 트러블슈팅 끝에 자동배포 성공** — 아래 "Actions CD 트러블슈팅" 참고
+  (① 보안그룹 SSH 22 차단, ② nginx 바인드 마운트 inode). 최종적으로 develop push →
+  test → 프론트 빌드 → EC2 배포 → migrate가 전자동으로 도는 것 확인.
+
+#### Actions CD 트러블슈팅 — "로컬에선 되던 게 자동화하니 두 번 깨졌다"
+
+자동 배포는 **수동으로 손수 하던 절차를 그대로 옮기는 것**처럼 보이지만, "사람이 직접 할 때만
+성립하던 전제"가 두 군데서 드러났다.
+
+**1) 첫 run 실패 — 보안그룹이 GitHub Actions 러너를 막음 (`scp` 단계 실패)**
+- 증상: `test` 잡 통과, `deploy`의 프론트 빌드까지 성공 → **"dist 전송 → EC2" (scp-action)에서
+  실패**, 이후 ssh 배포 스텝은 skip. (실패 잡 식별은 `gh` CLI 없이 GitHub 공개 API
+  `/actions/runs/{id}/jobs`로 각 step의 conclusion을 읽어 확인.)
+- 원인: Phase 2에서 **보안상 SSH(22)를 "내 IP"로만** 열어뒀다. 내가 로컬에서 ssh하던 건 집 IP가
+  허용돼서였고, GitHub Actions 러너는 매번 바뀌는 임의의 외부 IP라 22번에 **TCP 연결 자체가
+  차단**됐다(인증 실패가 아니라 접속 불가). 빌드는 러너 안에서 도니 통과하고, EC2로 나가는 순간 막힘.
+- 해결: 보안그룹 SSH 22 소스를 `0.0.0.0/0`으로 개방. Ubuntu AMI는 기본이 **키 인증 전용**
+  (`PasswordAuthentication no`)이라 비밀번호 brute-force가 안 통해 데모 수준 위험은 수용 가능.
+  (더 안전한 대안: GitHub가 공개하는 Actions IP 대역만 허용 → 수백 개·수시 변경 + SG 60규칙 제한으로
+  비현실적 / AWS SSM·셀프호스트 러너로 inbound SSH 자체를 없애기 → IAM·추가설정 과함. 트레이드오프
+  끝에 단순개방 선택.)
+- 부수 개선: 코드 변경 없이 Actions 탭에서 재실행할 수 있게 `workflow_dispatch` 트리거 추가
+  (deploy 잡 `if`도 `push || workflow_dispatch`로 확장).
+
+**2) 배포는 성공인데 사이트가 403 — Docker 바인드 마운트 inode 함정**
+- 증상: deploy 잡 자체는 성공(EC2 HEAD 갱신·backend 재빌드 확인)인데 `https://beautalk.site/`가
+  **403**. 호스트의 `frontend/dist/`엔 `index.html`·`assets`가 멀쩡히 있는데, nginx 컨테이너
+  내부 `/usr/share/nginx/html/`는 **텅 비어 있었다**(`ls` → `total 0`).
+- 원인: CD 스크립트가 `rm -rf frontend/dist && mkdir`로 dist를 **삭제·재생성**했다. 그러면 그
+  디렉터리의 **inode가 바뀐다.** nginx 컨테이너는 이번 배포에서 이미지·설정이 안 바뀌어
+  `up -d --build`로도 **재생성되지 않고**(backend만 재빌드됨) 계속 떠 있었는데, 컨테이너의
+  바인드 마운트(`./frontend/dist`)는 **생성 시점에 잡힌 옛 inode**를 붙들고 있어 — 삭제된 빈
+  디렉터리를 가리키게 됐다. "사람이 수동 배포할 땐 nginx를 매번 새로 띄웠으니" 안 드러나던 함정.
+- 즉시 복구: `docker compose up -d --force-recreate nginx`로 nginx를 재생성해 **현재** dist
+  inode에 다시 바인드 → 200 회복.
+- 재발 방지(워크플로우 수정): 디렉터리 자체를 `rm` 하지 않고 **내용만 비운다.**
+  `mkdir -p frontend/dist && find frontend/dist -mindepth 1 -delete && tar xzf ...` —
+  디렉터리 inode가 유지되므로 떠 있는 nginx 마운트가 그대로 살아 있고, 새 파일이 즉시 보여
+  **nginx 재시작도 불필요**해진다.
+- **교훈**: 호스트 디렉터리를 바인드 마운트한 컨테이너가 떠 있는 동안, 그 디렉터리를
+  `rm -rf` + 재생성하면 안 된다(inode가 바뀌어 마운트가 죽은 inode를 가리킴). 내용만 교체하거나,
+  교체 후 컨테이너를 `--force-recreate`해야 한다. 수동 절차를 자동화로 옮길 땐 "수동일 때 매번
+  암묵적으로 일어나던 일(여기선 컨테이너 새로 띄우기)"이 빠지지 않았는지 점검해야 한다.
 
 ---
 

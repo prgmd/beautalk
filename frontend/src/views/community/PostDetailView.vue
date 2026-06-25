@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCommunityStore } from '@/stores/community'
-import { useAuthStore } from '@/stores/auth'
 import { usePostLikesStore } from '@/stores/postLikes'
 import { useProductDetailStore } from '@/stores/productDetail'
 import { useToastStore } from '@/stores/toast'
@@ -15,7 +14,6 @@ import Icon from '@/components/Icon.vue'
 const route = useRoute()
 const router = useRouter()
 const community = useCommunityStore()
-const auth = useAuthStore()
 const postLikes = usePostLikesStore()
 const productDetail = useProductDetailStore()
 const toast = useToastStore()
@@ -39,15 +37,13 @@ function initial(name) {
   return (name || '?').trim().charAt(0).toUpperCase()
 }
 
-// 작성자 표시명 = 이메일 로컬파트(백엔드 _author_name 규칙과 동일). 소유 판별에 사용.
-const myName = computed(() => (auth.user?.email ? auth.user.email.split('@')[0] : null))
-const isMine = computed(() => post.value && myName.value && post.value.author === myName.value)
+// 소유 판별은 서버가 내려주는 is_mine 사용(표시명 매칭은 닉네임·동명이인에 취약).
+const isMine = computed(() => !!post.value?.is_mine)
 
 async function load() {
   loading.value = true
   error.value = ''
   try {
-    if (!auth.user?.email) await auth.fetchAccount().catch(() => {})
     const data = await community.fetchPost(route.params.id)
     post.value = data
     likeCount.value = data?.like_count || 0
@@ -199,7 +195,7 @@ onMounted(load)
                     <span class="c-author">{{ c.author }}</span>
                     <span class="c-date">{{ formatRelative(c.created_at) }}</span>
                     <button
-                      v-if="myName && c.author === myName"
+                      v-if="c.is_mine"
                       class="c-del" @click="removeComment(c.id)" aria-label="댓글 삭제"
                     ><Icon name="x" :size="14" /></button>
                   </div>

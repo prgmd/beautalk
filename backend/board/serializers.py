@@ -17,16 +17,32 @@ def _author_name(user_info) -> str:
     return '익명'
 
 
+def _is_author(serializer, obj) -> bool:
+    """요청자가 이 글의 작성자인지. 프론트 수정/삭제 버튼 노출용.
+    표시명(author) 문자열 매칭은 닉네임·동명이인에 취약하므로, UserInfo id로 직접 비교한다.
+    (context에 request가 있어야 한다 — 수동 직렬화 시 context 전달 필수.)
+    """
+    request = serializer.context.get('request')
+    if not request or not getattr(request.user, 'is_authenticated', False):
+        return False
+    my = getattr(request.user, 'userinfo', None)
+    return my is not None and obj.user_id == my.id
+
+
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
+    is_mine = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'author', 'content', 'created_at']
+        fields = ['id', 'author', 'is_mine', 'content', 'created_at']
         read_only_fields = ['id', 'author', 'created_at']
 
     def get_author(self, obj):
         return _author_name(obj.user)
+
+    def get_is_mine(self, obj):
+        return _is_author(self, obj)
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -37,12 +53,13 @@ class PostListSerializer(serializers.ModelSerializer):
     comment_count = serializers.IntegerField(source='comments.count', read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
     has_product = serializers.SerializerMethodField()
+    is_mine = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = [
             'id', 'category', 'category_label', 'title', 'author',
-            'comment_count', 'like_count', 'has_product', 'created_at',
+            'comment_count', 'like_count', 'has_product', 'is_mine', 'created_at',
         ]
 
     def get_author(self, obj):
@@ -50,6 +67,9 @@ class PostListSerializer(serializers.ModelSerializer):
 
     def get_has_product(self, obj):
         return obj.products.exists()
+
+    def get_is_mine(self, obj):
+        return _is_author(self, obj)
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
@@ -60,17 +80,21 @@ class PostDetailSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     products = ProductSerializer(many=True, read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    is_mine = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = [
             'id', 'category', 'category_label', 'title', 'content', 'author',
-            'products', 'comments', 'like_count', 'created_at', 'updated_at',
+            'products', 'comments', 'like_count', 'is_mine', 'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'author', 'created_at', 'updated_at']
 
     def get_author(self, obj):
         return _author_name(obj.user)
+
+    def get_is_mine(self, obj):
+        return _is_author(self, obj)
 
 
 class PostWriteSerializer(serializers.ModelSerializer):

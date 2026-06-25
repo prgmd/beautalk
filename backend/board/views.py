@@ -60,7 +60,10 @@ class PostListCreateView(generics.ListCreateAPIView):
         write = PostWriteSerializer(data=request.data)
         write.is_valid(raise_exception=True)
         post = write.save(user=request.user.userinfo)
-        return Response(PostDetailSerializer(post).data, status=status.HTTP_201_CREATED)
+        return Response(
+            PostDetailSerializer(post, context={'request': request}).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -80,7 +83,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         write = PostWriteSerializer(instance, data=request.data, partial=partial)
         write.is_valid(raise_exception=True)
         write.save()
-        return Response(PostDetailSerializer(instance).data)
+        return Response(PostDetailSerializer(instance, context={'request': request}).data)
 
 
 # ──────────────────────────────────────────────
@@ -101,7 +104,10 @@ class CommentCreateView(APIView):
         comment = Comment.objects.create(
             post=post, user=request.user.userinfo, content=content,
         )
-        return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+        return Response(
+            CommentSerializer(comment, context={'request': request}).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class CommentDeleteView(APIView):
