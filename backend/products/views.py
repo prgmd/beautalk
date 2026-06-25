@@ -2,6 +2,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 
 from .models import Product, Like
@@ -26,7 +27,12 @@ class ProductListView(generics.ListAPIView):
     def get_queryset(self):
         # 페이지네이션은 정렬이 고정돼 있어야 페이지 경계에서 항목이 겹치거나
         # 누락되지 않는다. 리뷰 많은(인기) 제품을 앞에 두고 동률은 이름순으로 고정.
-        queryset = Product.objects.all().order_by('-review_count', 'name')
+        # like_count는 annotate로 한 번에 계산(직렬화의 N+1 방지) + 인기순 정렬용.
+        queryset = (
+            Product.objects
+            .annotate(like_count=Count('like'))
+            .order_by('-review_count', 'name')
+        )
         category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category=category)

@@ -10,14 +10,22 @@ class ProductSerializer(serializers.ModelSerializer):
     추천 카드·찜 목록·제품 상세에서 공통으로 재사용한다.
     """
 
+    # 찜 수. 목록 뷰는 annotate(like_count)로 N+1 없이 채우고,
+    # annotate 안 된 단건/중첩 사용처는 관계 count로 폴백한다.
+    like_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = [
             'id', 'brand', 'name', 'price',
             'oliveyoung_url', 'image_url', 'category', 'form',
             'ai_summary', 'average_rating', 'review_count',
-            'satisfaction_by_type',
+            'satisfaction_by_type', 'like_count',
         ]
+
+    def get_like_count(self, obj):
+        annotated = getattr(obj, 'like_count', None)
+        return annotated if annotated is not None else obj.like_set.count()
 
 
 class LikeSerializer(serializers.ModelSerializer):

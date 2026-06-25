@@ -58,7 +58,7 @@ onMounted(async () => {
 
   if (data) auth.setProfileComplete()
 
-  router.push(data ? '/chat' : '/onboarding')
+  router.push(data ? '/home' : '/onboarding')
 })
 </script>
 

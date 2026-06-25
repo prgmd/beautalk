@@ -81,9 +81,9 @@ onMounted(() => {
         <button class="burger" :aria-label="ui.sidebarCollapsed ? '메뉴 펼치기' : '메뉴 접기'" @click="ui.toggleSidebar()">
           <span /><span /><span />
         </button>
-        <span class="brand-lockup">
+        <button class="brand-lockup" @click="go('/home')" aria-label="홈으로">
           <span class="brand serif">beau<span class="it">talk</span></span>
-        </span>
+        </button>
       </div>
 
       <div class="nav-body">
@@ -186,7 +186,8 @@ onMounted(() => {
   }
   .burger:hover { background: rgba(255, 255, 255, .55); }
   .burger span { display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--ink-soft); }
-  .brand-lockup { display: inline-flex; align-items: center; gap: 7px; }
+  .brand-lockup { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; transition: opacity var(--t-fast); }
+  .brand-lockup:hover { opacity: .7; }
   .brand-mark { width: 24px; height: 24px; flex-shrink: 0; }
   .brand { font-size: 23px; font-weight: 500; letter-spacing: -.3px; white-space: nowrap; color: var(--ink); }
   .brand .it { font-style: italic; color: var(--sage); }

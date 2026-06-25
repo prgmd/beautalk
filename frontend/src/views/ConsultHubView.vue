@@ -17,7 +17,7 @@ function go(path) { router.push(path) }
         </header>
 
         <div class="cards">
-          <button class="card primary" @click="go('/chat')">
+          <button class="card" @click="go('/chat')">
             <span class="c-emoji">💌</span>
             <div class="c-body">
               <p class="c-title">화장품 추천</p>
@@ -66,7 +66,6 @@ function go(path) { router.push(path) }
   animation: bt-rise .5s var(--ease) .06s both;
 }
 .card:hover { transform: translateY(-3px); box-shadow: var(--sh-hover); border-color: var(--sage); }
-.card.primary { background: linear-gradient(150deg, var(--sage-soft), var(--card)); border-color: var(--line); }
 .c-emoji { font-size: 38px; line-height: 1; flex-shrink: 0; }
 .c-body { flex: 1; min-width: 0; }
 .c-title { font-size: 17px; font-weight: 700; color: var(--ink); }

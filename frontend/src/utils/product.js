@@ -16,6 +16,7 @@ export function normalizeProduct(p) {
     average_rating: p.average_rating,
     review_count: p.review_count,
     satisfaction_by_type: p.satisfaction_by_type,
+    likeCount: p.like_count ?? p.likeCount ?? 0, // 찜 수(인기순 정렬용)
     reason: p.reason, // 추천 응답에만 존재(있으면 보존)
   }
 }

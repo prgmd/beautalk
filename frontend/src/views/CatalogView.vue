@@ -15,8 +15,15 @@ const loading = ref(false)
 const errorMsg = ref('')
 const search = ref('')
 const activeCategory = ref('') // '' = 전체
+const sortBy = ref('default') // 'default'(리뷰순=리뷰 많은 순) | 'likes'(인기순=찜 많은 순)
 const page = ref(1)
 const PAGE_SIZE = 12
+
+// 한글 IME 조합 중에도 즉시 검색되도록 input 이벤트로 직접 반영
+// (v-model은 compositionend까지 갱신을 미뤄 "카" 한 글자가 바로 안 걸림)
+function onSearchInput(e) {
+  search.value = e.target.value
+}
 
 const bodyEl = ref(null)
 
@@ -60,11 +67,18 @@ const categories = computed(() => {
 
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase()
-  return all.value.filter((p) => {
+  const list = all.value.filter((p) => {
     if (activeCategory.value && p.category !== activeCategory.value) return false
     if (q && !`${p.name} ${p.brand}`.toLowerCase().includes(q)) return false
     return true
   })
+  // 인기순: 찜 많은 순, 동률은 리뷰순. 기본(추천순)은 백엔드 정렬(리뷰순)을 그대로.
+  if (sortBy.value === 'likes') {
+    return [...list].sort((a, b) =>
+      (b.likeCount - a.likeCount) || (b.review_count - a.review_count),
+    )
+  }
+  return list
 })
 
 const pageCount = computed(() => Math.max(1, Math.ceil(filtered.value.length / PAGE_SIZE)))
@@ -85,8 +99,8 @@ const pages = computed(() => {
   return out
 })
 
-// 필터/검색 바뀌면 1페이지로
-watch([activeCategory, search], () => { page.value = 1 })
+// 필터/검색/정렬 바뀌면 1페이지로
+watch([activeCategory, search, sortBy], () => { page.value = 1 })
 
 function goPage(p) {
   if (p === '…' || p === page.value) return
@@ -97,7 +111,10 @@ function selectCategory(cat) { activeCategory.value = cat }
 
 const isEmpty = computed(() => !loading.value && filtered.value.length === 0)
 
-onMounted(fetchAll)
+onMounted(() => {
+  fetchAll()
+  if (!likes.loaded) likes.fetchLikes().catch(() => {})
+})
 
 function formatPrice(n) {
   return n != null ? n.toLocaleString('ko-KR') + '원' : '가격 정보 없음'
@@ -114,8 +131,18 @@ function formatPrice(n) {
       <!-- 검색 -->
       <div class="searchbar">
         <Icon name="search" :size="18" class="s-ic" />
-        <input v-model="search" type="search" enterkeyhint="search" aria-label="제품·브랜드 검색" placeholder="제품·브랜드 검색" />
+        <input
+          :value="search" type="search" enterkeyhint="search"
+          aria-label="제품·브랜드 검색" placeholder="제품·브랜드 검색"
+          @input="onSearchInput"
+        />
         <button v-if="search" class="s-clear" @click="search = ''" aria-label="검색어 지우기"><Icon name="x" :size="15" /></button>
+      </div>
+
+      <!-- 정렬 탭 -->
+      <div class="sort-tabs">
+        <button class="sort-tab" :class="{ on: sortBy === 'default' }" @click="sortBy = 'default'">리뷰순</button>
+        <button class="sort-tab" :class="{ on: sortBy === 'likes' }" @click="sortBy = 'likes'">인기순</button>
       </div>
 
       <!-- 카테고리 필터 -->
@@ -150,13 +177,6 @@ function formatPrice(n) {
             <div class="arch" @click="productDetail.open(product)">
               <img v-if="product.image" :src="product.image" :alt="product.name" />
               <Icon v-else name="leaf" :size="38" class="ph" />
-              <button
-                class="heart"
-                :class="{ liked: likes.isLiked(product.id) }"
-                :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
-                :aria-pressed="likes.isLiked(product.id)"
-                @click.stop="likes.toggleLike(product)"
-              ><Icon :name="likes.isLiked(product.id) ? 'heart-fill' : 'heart'" :size="16" /></button>
             </div>
             <div
               class="meta" role="button" tabindex="0"
@@ -166,7 +186,18 @@ function formatPrice(n) {
             >
               <p class="brand">{{ product.brand }}</p>
               <p class="name">{{ product.name }}</p>
-              <p class="price serif">{{ formatPrice(product.price) }}</p>
+              <div class="price-row">
+                <p class="price serif">{{ formatPrice(product.price) }}</p>
+                <button
+                  class="like-btn" :class="{ liked: likes.isLiked(product.id) }"
+                  :aria-label="likes.isLiked(product.id) ? '찜 해제' : '찜하기'"
+                  :aria-pressed="likes.isLiked(product.id)"
+                  @click.stop="likes.toggleLike(product)"
+                >
+                  <Icon :name="likes.isLiked(product.id) ? 'heart-fill' : 'heart'" :size="15" />
+                  <span v-if="product.likeCount > 0" class="lb-count">{{ product.likeCount }}</span>
+                </button>
+              </div>
             </div>
           </article>
         </div>
@@ -205,6 +236,16 @@ function formatPrice(n) {
 .main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
 .appbar { flex-shrink: 0; padding: calc(16px + env(safe-area-inset-top)) 20px 4px; }
+
+/* 정렬 탭 */
+.sort-tabs { flex-shrink: 0; display: flex; gap: 6px; padding: 12px 20px 0; }
+.sort-tab {
+  padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;
+  color: var(--ink-faint); background: transparent; border: 1px solid transparent;
+  transition: all var(--t-fast);
+}
+.sort-tab:hover { color: var(--ink-soft); }
+.sort-tab.on { color: var(--ink); background: var(--card); border-color: var(--line); box-shadow: var(--sh-sm); }
 
 .searchbar {
   flex-shrink: 0; display: flex; align-items: center; gap: 9px;
@@ -251,21 +292,22 @@ function formatPrice(n) {
 .arch img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
 .card:hover .arch img { transform: scale(1.06); }
 .ph { color: var(--sage); opacity: .5; }
-.heart {
-  position: absolute; top: 10px; right: 10px; width: 33px; height: 33px; border-radius: 50%;
-  background: rgba(28,22,16,.4); border: 1px solid rgba(255,255,255,.35);
-  box-shadow: 0 2px 8px rgba(0,0,0,.28); backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  transition: transform var(--t-fast) var(--ease-back), background var(--t-fast);
-}
-.heart:active { transform: scale(.88); }
-.heart.liked { background: var(--rose); border-color: transparent; color: #fff; }
 .meta { padding: 13px 6px 5px; cursor: pointer; }
 .brand { font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-faint); }
 .name { font-size: 13.5px; font-weight: 600; line-height: 1.4; margin: 5px 0 8px; color: var(--ink); }
 .card:hover .name { text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+.price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .price { font-size: 16px; color: var(--ink); }
+.like-btn {
+  display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  padding: 5px 9px; border-radius: 99px; font-size: 12px; font-weight: 700;
+  color: var(--ink-faint); background: var(--sheet); border: 1px solid var(--line);
+  transition: transform var(--t-fast) var(--ease-back), color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+.like-btn:hover { color: var(--rose-ink); border-color: var(--rose); }
+.like-btn:active { transform: scale(.92); }
+.like-btn.liked { color: #fff; background: var(--rose); border-color: transparent; }
+.lb-count { line-height: 1; }
 
 /* 스켈레톤 */
 .skel { pointer-events: none; animation: none; }

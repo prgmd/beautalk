@@ -221,7 +221,7 @@ function formatPrice(n) {
     <div class="main">
     <!-- 앱바 -->
     <header class="appbar">
-      <span class="ab-brand serif">beau<span class="it">talk</span></span>
+      <button class="ab-brand serif" @click="$router.push('/home')" aria-label="홈으로">beau<span class="it">talk</span></button>
       <div class="ab-right">
         <!-- 날씨 드롭다운 -->
         <div class="wx-dropdown">

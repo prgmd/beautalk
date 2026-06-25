@@ -64,12 +64,7 @@ function toggleConcern(c) {
   else selectedConcerns.value.splice(idx, 1)
 }
 
-async function confirmConcerns() {
-  if (!selectedConcerns.value.length) return
-  messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: selectedConcerns.value.join(', ') })
-  await nextTick()
-  scrollToBottom()
-
+function advanceToAvoid() {
   setTimeout(async () => {
     step.value = 3
     messages.value.push({
@@ -81,6 +76,23 @@ async function confirmConcerns() {
     await nextTick()
     scrollToBottom()
   }, 400)
+}
+
+async function confirmConcerns() {
+  if (!selectedConcerns.value.length) return
+  messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: selectedConcerns.value.join(', ') })
+  await nextTick()
+  scrollToBottom()
+  advanceToAvoid()
+}
+
+// 고민 없음/모름 — 빈 채로 다음 단계로
+async function skipConcerns() {
+  selectedConcerns.value = []
+  messages.value.push({ id: Date.now(), role: 'user', type: 'text', text: '딱히 없어요' })
+  await nextTick()
+  scrollToBottom()
+  advanceToAvoid()
 }
 
 function addAvoid() {
@@ -214,7 +226,10 @@ function goChat() {
                 @click="toggleConcern(c)"
               >{{ c }}</button>
             </div>
-            <button class="cta" :disabled="!selectedConcerns.length" @click="confirmConcerns">확인</button>
+            <div class="concerns-actions">
+              <button class="cta" :disabled="!selectedConcerns.length" @click="confirmConcerns">확인</button>
+              <button class="skip-link" @click="skipConcerns">잘 모르겠어요</button>
+            </div>
           </div>
 
           <!-- 기피 성분 입력 (step 3) -->
@@ -468,6 +483,13 @@ function goChat() {
   box-shadow: none;
   cursor: default;
 }
+
+.concerns-actions { display: flex; align-items: center; gap: 4px; }
+.skip-link {
+  padding: 12px 16px; min-height: 44px; font-size: 13.5px; font-weight: 600;
+  color: var(--ink-faint); transition: color var(--t-fast) var(--ease);
+}
+.skip-link:hover { color: var(--ink-soft); }
 
 .save-error { font-size: 13px; color: var(--danger); }
 

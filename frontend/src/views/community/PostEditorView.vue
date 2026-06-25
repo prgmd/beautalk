@@ -4,11 +4,13 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { api } from '@/services/api'
 import { useCommunityStore, CATEGORIES } from '@/stores/community'
 import { useConfirmStore } from '@/stores/confirm'
+import { useLikesStore } from '@/stores/likes'
 import { normalizeProduct } from '@/utils/product'
 import GlobalSidebar from '@/components/GlobalSidebar.vue'
 import Icon from '@/components/Icon.vue'
 
 const confirm = useConfirmStore()
+const likes = useLikesStore()
 const saved = ref(false)
 
 const route = useRoute()
@@ -84,6 +86,14 @@ function removeProduct(id) {
   selectedProducts.value = selectedProducts.value.filter((p) => p.id !== id)
 }
 
+// ── 찜한 제품 빠른 태그 ──
+// 서버에 저장 가능한 실제 제품(UUID)만, 아직 안 고른 것만 칩으로 노출.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const likedSuggestions = computed(() => {
+  const picked = new Set(selectedProducts.value.map((p) => p.id))
+  return likes.items.filter((p) => UUID_RE.test(p.id) && !picked.has(p.id))
+})
+
 const canSubmit = computed(() => title.value.trim() && content.value.trim() && !saving.value)
 
 async function submit() {
@@ -143,6 +153,7 @@ onBeforeRouteLeave(async () => {
 
 onMounted(() => {
   if (isEdit.value) loadForEdit()
+  if (!likes.loaded) likes.fetchLikes().catch(() => {})
 })
 </script>
 
@@ -198,6 +209,24 @@ onMounted(() => {
                   <p class="picked-name">{{ sp.name }}</p>
                 </div>
                 <button class="picked-clear" @click="removeProduct(sp.id)" aria-label="태그 제거"><Icon name="x" :size="14" /></button>
+              </div>
+            </div>
+
+            <!-- 찜한 제품 빠른 태그 -->
+            <div v-if="likedSuggestions.length" class="liked-quick">
+              <p class="lq-label"><Icon name="heart-fill" :size="12" /> 찜한 제품에서 빠르게 추가</p>
+              <div class="lq-chips">
+                <button
+                  v-for="p in likedSuggestions" :key="p.id"
+                  class="lq-chip" @click="pickProduct(p)"
+                >
+                  <span class="lq-thumb">
+                    <img v-if="p.image" :src="p.image" :alt="p.name" />
+                    <Icon v-else name="leaf" :size="14" />
+                  </span>
+                  <span class="lq-name">{{ p.name }}</span>
+                  <span class="lq-plus">+</span>
+                </button>
               </div>
             </div>
 
@@ -269,6 +298,32 @@ onMounted(() => {
   border-color: var(--sage); box-shadow: 0 0 0 3px rgba(126,139,109,.15);
 }
 .title-input::placeholder, .content-input::placeholder, .picker-input::placeholder { color: var(--ink-faint); }
+
+/* 찜한 제품 빠른 태그 */
+.liked-quick { margin-bottom: 12px; }
+.lq-label {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 600; color: var(--rose-ink); margin-bottom: 8px;
+}
+.lq-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.lq-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px 5px 5px; border-radius: 99px;
+  background: var(--card); border: 1px solid var(--line);
+  transition: transform var(--t-fast) var(--ease), border-color var(--t-fast), background var(--t-fast);
+}
+.lq-chip:hover { border-color: var(--rose); background: var(--rose-soft); }
+.lq-chip:active { transform: scale(.97); }
+.lq-thumb {
+  width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+  background: var(--sage-soft); display: flex; align-items: center; justify-content: center; color: var(--sage);
+}
+.lq-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.lq-name {
+  font-size: 12.5px; font-weight: 600; color: var(--ink);
+  max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lq-plus { font-size: 14px; font-weight: 700; color: var(--rose-ink); }
 
 .picker { position: relative; }
 .picker-ic { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); color: var(--ink-faint); pointer-events: none; z-index: 1; }

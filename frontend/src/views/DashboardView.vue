@@ -106,8 +106,8 @@ function go(path) { router.push(path) }
               <p v-else class="pc-empty-sub">고민을 추가하면 더 정확한 추천을 받을 수 있어요.</p>
             </template>
             <template v-else>
-              <p class="pc-skin serif">아직 피부 타입이<br>없어요</p>
-              <p class="pc-empty-sub">피부 타입 진단을 받거나 프로필을 설정해 보세요.</p>
+              <p class="pc-skin is-empty serif">아직 피부 타입이<br>없어요</p>
+              <p class="pc-empty-sub">진단을 받거나 프로필을 설정해 보세요.</p>
             </template>
           </div>
         </section>
@@ -116,7 +116,7 @@ function go(path) { router.push(path) }
         <!-- 상담 2종 -->
         <p class="sec-title">무엇을 도와드릴까요?</p>
         <div class="consult-grid">
-          <button class="consult-card primary" @click="go('/chat')">
+          <button class="consult-card" @click="go('/chat')">
             <span class="cc-emoji">💌</span>
             <span class="cc-title">화장품 추천</span>
             <span class="cc-desc">대화로 내 피부에 맞는<br>제품을 찾아드려요</span>
@@ -169,12 +169,12 @@ function go(path) { router.push(path) }
 .suggest { font-size: 13.5px; color: var(--ink-soft); margin-top: 8px; line-height: 1.55; }
 
 /* ── 상단 그리드: 날씨 타일 + 프로필 ── */
-.top-grid { display: grid; grid-template-columns: minmax(0,0.85fr) 1.15fr; gap: 12px; align-items: stretch; }
+.top-grid { display: grid; grid-template-columns: minmax(0,1fr) 1.1fr; gap: 12px; align-items: stretch; }
 
-/* 귀여운 1:1 날씨 타일 */
+/* 귀여운 1:1 날씨 타일 — align-self:start로 정사각형 유지(세로 늘어남 방지) */
 .wx-tile {
   position: relative; overflow: hidden;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1; align-self: start;
   border-radius: 24px;
   border: 1px solid var(--line-soft);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -258,6 +258,7 @@ function go(path) { router.push(path) }
 .pc-go { font-size: 12px; color: var(--sage-ink); font-weight: 700; }
 .pc-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; }
 .pc-skin { font-size: 27px; font-weight: 500; color: var(--ink); line-height: 1.15; }
+.pc-skin.is-empty { font-size: 18px; line-height: 1.35; }
 .pc-skin-suffix { font-size: 18px; color: var(--ink-soft); }
 .pc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .pc-chip { font-size: 12px; font-weight: 600; padding: 5px 11px; border-radius: 99px; background: var(--sage-soft); color: var(--sage-ink); }
@@ -276,7 +277,6 @@ function go(path) { router.push(path) }
   animation: bt-rise .5s var(--ease) .08s both;
 }
 .consult-card:hover { transform: translateY(-3px); box-shadow: var(--sh-hover); border-color: var(--sage); }
-.consult-card.primary { background: linear-gradient(165deg, var(--sage-soft), var(--card)); border-color: var(--line); }
 .cc-emoji { font-size: 30px; line-height: 1; }
 .cc-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-top: 4px; }
 .cc-desc { font-size: 12px; color: var(--ink-soft); line-height: 1.5; flex: 1; }
@@ -312,6 +312,7 @@ function go(path) { router.push(path) }
   /* 프로필 요약 */
   .pc-label { font-size: 11px; }
   .pc-skin { font-size: 32px; }
+  .pc-skin.is-empty { font-size: 21px; }
   .pc-skin-suffix { font-size: 21px; }
   .pc-chip { font-size: 12.5px; }
   .pc-empty-sub { font-size: 13.5px; }
