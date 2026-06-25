@@ -78,7 +78,10 @@ onMounted(() => {
         <button class="burger" :aria-label="ui.sidebarCollapsed ? '메뉴 펼치기' : '메뉴 접기'" @click="ui.toggleSidebar()">
           <span /><span /><span />
         </button>
-        <span class="brand serif">beau<span class="it">talk</span></span>
+        <span class="brand-lockup">
+          <img src="/logo.svg" alt="" class="brand-mark" />
+          <span class="brand serif">beau<span class="it">talk</span></span>
+        </span>
       </div>
 
       <div class="nav-body">
@@ -181,9 +184,11 @@ onMounted(() => {
   }
   .burger:hover { background: rgba(255, 255, 255, .55); }
   .burger span { display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--ink-soft); }
+  .brand-lockup { display: inline-flex; align-items: center; gap: 7px; }
+  .brand-mark { width: 24px; height: 24px; flex-shrink: 0; }
   .brand { font-size: 23px; font-weight: 500; letter-spacing: -.3px; white-space: nowrap; color: var(--ink); }
   .brand .it { font-style: italic; color: var(--sage); }
-  .appnav.collapsed .brand { display: none; }
+  .appnav.collapsed .brand-lockup { display: none; }
 
   /* 메뉴 섹션 */
   .nav-body { display: flex; flex-direction: column; gap: 4px; }
