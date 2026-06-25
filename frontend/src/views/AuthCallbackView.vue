@@ -1,41 +1,86 @@
 <template>
-  <div>로그인 처리 중...</div>
+  <div class="callback">
+    <DewyLoader
+      text="로그인하는 중"
+      subtitle="잠시만 기다려 주세요"
+      :size="140"
+    />
+  </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useProfileStore } from '@/stores/profile'
+import { API_BASE } from '@/services/config'
+import DewyLoader from '@/components/DewyLoader.vue'
 
 const router = useRouter()
-const route = useRoute()   // 현재 URL 정보 접근용 (쿼리스트링 포함)
+const route = useRoute()
 const auth = useAuthStore()
+const profile = useProfileStore()
 
 onMounted(async () => {
-  // 카카오 콜백 URL: /auth/callback?access=eyJ...&refresh=eyJ...
-  // route.query로 쿼리스트링 파라미터를 객체로 접근 가능
-  const access = route.query.access
-  const refresh = route.query.refresh
-
-  // 토큰이 없으면 비정상 접근 → 로그인 페이지로 튕겨냄
-  if (!access || !refresh) {
-    router.push('/login')
+  // 백엔드가 OAuth 에러 발생 시 ?error= 를 붙여 리다이렉트한다.
+  // 에러 사유를 LoginView로 그대로 전달해 안내 메시지를 띄운다.
+  if (route.query.error) {
+    router.push({ path: '/login', query: { error: route.query.error } })
     return
   }
 
-  // 프로필 API 호출로 온보딩 완료 여부 확인
-  // Authorization 헤더에 방금 받은 access 토큰 첨부
-  const res = await fetch('http://localhost:8000/api/v1/profile', {
-    headers: { Authorization: `Bearer ${access}` }
-  })
-  const data = res.status === 204 ? null : await res.json()
-  // 프로필 없으면 Django가 204 반환 → data = null → !!null = false
-  // 프로필 있으면 객체 반환 → !!{} = true
+  // 백엔드가 세션에 저장한 JWT를 교환한다.
+  // - access 토큰 → 응답 바디
+  // - refresh 토큰 → HttpOnly 쿠키 (브라우저가 자동 관리)
+  let access
+  try {
+    const res = await fetch(`${API_BASE}/auth/exchange/`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!res.ok) throw new Error('exchange failed')
+    const data = await res.json()
+    access = data.access
+  } catch {
+    router.push({ path: '/login', query: { error: 'token_exchange_failed' } })
+    return
+  }
 
-  // Pinia store에 저장 → localStorage에도 자동 반영 (auth.js 참고)
-  auth.login({ access, refresh, hasProfile: !!data })
+  // access 토큰은 메모리(Pinia)에만 저장
+  auth.login({}, access)
 
-  // 프로필 존재 여부로 이동 경로 분기
-  router.push(data ? '/chat' : '/onboarding')
+  let data
+  try {
+    data = await profile.fetchProfile()
+  } catch {
+    data = null
+  }
+
+  if (data) auth.setProfileComplete()
+
+  router.push(data ? '/home' : '/onboarding')
 })
 </script>
+
+<style scoped>
+.callback {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding:
+    calc(env(safe-area-inset-top) + 24px) 24px
+    calc(env(safe-area-inset-bottom) + 24px);
+  background: var(--canvas);
+  animation: bt-rise var(--t-slow) var(--ease) both;
+}
+
+/* ── 데스크톱 ≥900px ── */
+@media (min-width: 900px) {
+  .callback {
+    padding: 48px 24px;
+    gap: 8px;
+  }
+}
+</style>

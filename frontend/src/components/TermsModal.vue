@@ -1,5 +1,7 @@
 <script setup>
-const props = defineProps({
+import { onMounted, onUnmounted } from 'vue'
+
+defineProps({
   type: {
     type: String, // 'terms' | 'privacy'
     required: true,
@@ -7,6 +9,16 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
+
+function onKey(e) { if (e.key === 'Escape') emit('close') }
+onMounted(() => {
+  document.body.style.overflow = 'hidden'
+  window.addEventListener('keydown', onKey)
+})
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', onKey)
+})
 
 const CONTENT = {
   terms: {
@@ -63,47 +75,58 @@ const CONTENT = {
 </script>
 
 <template>
-  <Transition name="modal">
-    <div class="overlay" @click="emit('close')">
-      <div class="modal" @click.stop>
-        <button class="close-btn" @click="emit('close')">×</button>
-        <h2 class="title">{{ CONTENT[type].title }}</h2>
-        <div class="body">
-          <section v-for="sec in CONTENT[type].sections" :key="sec.heading" class="section">
-            <h3 class="section-title">{{ sec.heading }}</h3>
-            <p class="section-body">{{ sec.body }}</p>
-          </section>
-        </div>
-        <button class="confirm-btn" @click="emit('close')">확인</button>
+  <div class="overlay" @click="emit('close')">
+    <div class="sheet" @click.stop>
+      <div class="grab" />
+      <button class="close-btn" @click="emit('close')">×</button>
+      <h2 class="title serif">{{ CONTENT[type].title }}</h2>
+      <div class="body">
+        <section v-for="sec in CONTENT[type].sections" :key="sec.heading" class="section">
+          <h3 class="section-title serif">{{ sec.heading }}</h3>
+          <p class="section-body">{{ sec.body }}</p>
+        </section>
       </div>
+      <button class="confirm-btn" @click="emit('close')">확인</button>
     </div>
-  </Transition>
+  </div>
 </template>
 
 <style scoped>
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 200;
-  padding: 24px;
+  background: rgba(34, 28, 22, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
-.modal {
-  background: var(--surface);
-  border-radius: 18px;
+.sheet {
+  position: relative;
   width: 100%;
   max-width: 480px;
-  max-height: 80vh;
+  margin: 0 auto;
+  background: var(--card);
+  border-radius: 26px 26px 0 0;
+  box-shadow: var(--sh-lg);
+  max-height: 90vh;
   overflow-y: auto;
-  position: relative;
-  padding: 28px;
+  padding: 8px 24px calc(20px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 16px;
+  animation: bt-rise var(--t) var(--ease);
+}
+
+.grab {
+  width: 36px;
+  height: 4px;
+  margin: 4px auto 4px;
+  border-radius: 999px;
+  background: var(--line-strong);
 }
 
 .close-btn {
@@ -112,40 +135,51 @@ const CONTENT = {
   right: 16px;
   width: 32px;
   height: 32px;
-  border: none;
-  background: rgba(0, 0, 0, 0.04);
   border-radius: 50%;
+  background: var(--panel);
   font-size: 20px;
-  color: var(--text-secondary);
+  color: var(--ink-soft);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background var(--t-fast) var(--ease);
 }
-.close-btn:hover { background: rgba(0, 0, 0, 0.08); }
+.close-btn:hover { background: var(--line); }
 
-.title { font-size: 18px; font-weight: 700; padding-right: 32px; }
+.title { font-size: 20px; font-weight: 600; color: var(--ink); padding: 8px 32px 0 0; }
 
-.body { display: flex; flex-direction: column; gap: 16px; }
+.body { display: flex; flex-direction: column; gap: 20px; }
 
 .section { display: flex; flex-direction: column; gap: 6px; }
-.section-title { font-size: 14px; font-weight: 600; }
-.section-body { font-size: 13px; line-height: 1.7; color: var(--text-secondary); }
+.section-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.section-body { font-size: 13px; line-height: 1.8; color: var(--ink-soft); }
 
 .confirm-btn {
-  align-self: flex-end;
-  padding: 10px 24px;
-  background: var(--text-primary);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+  align-self: stretch;
+  padding: 13px 24px;
+  background: var(--ink);
+  color: var(--canvas);
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--sh-ink);
+  transition: transform var(--t-fast) var(--ease);
 }
+.confirm-btn:hover { transform: translateY(-1px); }
 
-/* Transition */
-.modal-enter-active, .modal-leave-active { transition: opacity 0.2s; }
-.modal-enter-from, .modal-leave-to { opacity: 0; }
-.modal-enter-active .modal, .modal-leave-active .modal { transition: transform 0.2s; }
-.modal-enter-from .modal, .modal-leave-to .modal { transform: scale(0.96); }
+/* Desktop — centered dialog */
+@media (min-width: 900px) {
+  .overlay { align-items: center; }
+  .sheet {
+    max-width: 520px;
+    margin: 0 auto;
+    border-radius: var(--radius-xl);
+    max-height: 86vh;
+    overflow-y: auto;
+    box-shadow: var(--sh-lg);
+    padding-bottom: 24px;
+  }
+  .grab { display: none; }
+}
 </style>

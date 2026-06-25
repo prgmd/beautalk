@@ -30,6 +30,7 @@ SATISFACTION_MAPPING = {
     "보통이에요": "중자극",
 }
 
+# 대분류 4종 (참고용 — fltDispCatNo 코드 형식 예시).
 CATEGORIES = {
     '스킨케어': {'no': '10000010001', 't_click': '%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4'},
     '클렌징':   {'no': '10000010010', 't_click': '%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%ED%81%B4%EB%A0%8C%EC%A7%95'},
@@ -37,22 +38,39 @@ CATEGORIES = {
     '메이크업': {'no': '10000010002', 't_click': '%ED%8C%90%EB%A7%A4%EB%9E%AD%ED%82%B9_%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85'},
 }
 
+# 부족한 form 집중 보강 타겟. cat_no = 올리브영 '하위' 카테고리의 dispCatNo.
+#   찾는 법: 올리브영 > 카테고리 > 스킨케어 > [스킨/토너·로션 등 하위] 클릭
+#            → 주소창(또는 베스트 랭킹 URL)의 dispCatNo= 뒤 숫자를 복사해 cat_no에 채운다.
+#   form은 backfill_form이 제품명으로 분류하므로 save_category는 대분류면 충분하다.
+#   cat_no가 빈 칸이면 그 타겟은 건너뛴다(부분 실행 안전).
+CRAWL_TARGETS = [
+    {'label': '로션/에멀전',     'cat_no': '100000100010016', 'save_category': '스킨케어'},
+    {'label': '스킨/토너',       'cat_no': '100000100010013', 'save_category': '스킨케어'},  # 수집 완료(재실행 시 dedup로 스킵)
+    {'label': '에센스/세럼/앰플', 'cat_no': '100000100010014', 'save_category': '스킨케어'},
+    {'label': '미스트/오일',     'cat_no': '100000100010010', 'save_category': '스킨케어'},
+    {'label': '패드',            'cat_no': '100000100090004', 'save_category': '마스크팩'},
+    {'label': '마스크/시트팩',   'cat_no': '100000100090001', 'save_category': '마스크팩'},
+]
+
 
 def get_driver():
     return uc.Chrome(version_main=148)
 
 
-def get_product_urls(driver, category_no, t_click, top_n=50):
+def get_product_urls(driver, disp_cat_no, top_n=50):
+    """하위 카테고리(dispCatNo) 목록 페이지에서 상품 URL을 모은다.
+
+    네가 올리브영 카테고리 화면에서 따온 getMCategoryList의 dispCatNo를 그대로 사용한다.
+    (기존 getBestList의 fltDispCatNo와 번호 체계가 달라 이 페이지를 직접 긁는다)
+    """
     urls = []
     page = 1
 
     while len(urls) < top_n:
         print(f'  {page}페이지 크롤링 중...')
         driver.get(
-            f'https://www.oliveyoung.co.kr/store/main/getBestList.do'
-            f'?dispCatNo=900000100100001&fltDispCatNo={category_no}'
-            f'&pageIdx={page}&rowsPerPage=8'
-            f'&t_page=%EB%9E%AD%ED%82%B9&t_click={t_click}'
+            f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do'
+            f'?dispCatNo={disp_cat_no}&pageIdx={page}&rowsPerPage=24&prdSort=01'
         )
 
         try:
@@ -60,17 +78,24 @@ def get_product_urls(driver, category_no, t_click, top_n=50):
                 EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.cate_prd_list li a.prd_thumb'))
             )
         except Exception as e:
-            print(f'    요소 로드 타임아웃: {e}')
+            print(f'    요소 로드 타임아웃(셀렉터 확인 필요): {e}')
             break
 
         items = driver.find_elements(By.CSS_SELECTOR, '.cate_prd_list li a.prd_thumb')
+        print(f'    상품 {len(items)}개 발견')
         if not items:
             break
 
+        new_in_page = 0
         for item in items:
             href = item.get_attribute('href')
             if href and href not in urls:
                 urls.append(href)
+                new_in_page += 1
+
+        # 다음 페이지에 새 상품이 없으면(마지막 페이지 반복) 종료 — 무한루프 방지
+        if new_in_page == 0:
+            break
 
         page += 1
 
@@ -247,9 +272,14 @@ def run():
     print(f'기존 제품: {len(existing_urls)}개')
 
     try:
-        for cat_name, cat_info in CATEGORIES.items():
-            print(f'[{cat_name}] 크롤링 시작')
-            urls = get_product_urls(driver, cat_info['no'], cat_info['t_click'], top_n=50)
+        for target in CRAWL_TARGETS:
+            label, cat_no, save_cat = target['label'], target['cat_no'], target['save_category']
+            if not cat_no:
+                print(f'[{label}] cat_no 미설정 → 건너뜀 (CRAWL_TARGETS에 dispCatNo를 채우세요)')
+                continue
+
+            print(f'[{label}] 크롤링 시작 (저장 카테고리: {save_cat})')
+            urls = get_product_urls(driver, cat_no, top_n=50)
             new_urls = [u for u in urls if u.split('&tab=')[0] not in existing_urls]
             print(f'  수집된 URL: {len(urls)}개 (신규: {len(new_urls)}개, 건너뜀: {len(urls) - len(new_urls)}개)')
 
@@ -264,7 +294,7 @@ def run():
                         price=data['price'],
                         image_url=data['image_url'],
                         oliveyoung_url=data['oliveyoung_url'],
-                        category=cat_name,
+                        category=save_cat,
                         average_rating=data.get('average_rating'),
                         review_count=data.get('review_count', 0),
                         ai_summary=data.get('ai_summary', ''),

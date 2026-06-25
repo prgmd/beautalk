@@ -1,14 +1,18 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 import { useProfileStore } from '@/stores/profile'
+import { useToastStore } from '@/stores/toast'
+import Icon from '@/components/Icon.vue'
 
 const profile = useProfileStore()
-const router = useRouter()
+const toast = useToastStore()
 
 const editing = ref(false)
+const loading = ref(false)
+const saving = ref(false)
+const errorMsg = ref('')
 
-const SKIN_TYPES = ['건성', '지성', '복합성', '민감성']
+const SKIN_TYPES = ['건성', '지성', '복합성', '민감성', '미정']
 const CONCERNS = ['여드름', '주름', '색소침착', '모공', '트러블', '건조함', '민감성', '탄력']
 
 const editSkinType = ref('')
@@ -16,22 +20,48 @@ const editConcerns = ref([])
 const editAvoidInput = ref('')
 const editAvoidList = ref([])
 
+// 진입 시 백엔드에서 최신 프로필 로드 (이미 로드됐으면 생략)
+onMounted(async () => {
+  if (profile.loaded) return
+  loading.value = true
+  try {
+    await profile.fetchProfile()
+  } catch {
+    errorMsg.value = '프로필을 불러오지 못했어요.'
+  }
+  loading.value = false
+})
+
 function startEdit() {
   editSkinType.value = profile.skinType
   editConcerns.value = [...profile.concerns]
   editAvoidList.value = [...profile.avoidIngredients]
+  errorMsg.value = ''
   editing.value = true
 }
 
 function cancelEdit() { editing.value = false }
 
-function saveEdit() {
-  profile.update({
-    skinType: editSkinType.value,
-    concerns: editConcerns.value,
-    avoidIngredients: editAvoidList.value,
-  })
-  editing.value = false
+async function saveEdit() {
+  if (saving.value) return
+  saving.value = true
+  errorMsg.value = ''
+  // 입력칸에 남아있는(추가 안 누른) 기피 성분도 반영
+  const pending = editAvoidInput.value.trim()
+  if (pending && !editAvoidList.value.includes(pending)) editAvoidList.value.push(pending)
+  editAvoidInput.value = ''
+  try {
+    await profile.patchProfile({
+      skinType: editSkinType.value,
+      concerns: editConcerns.value,
+      avoidIngredients: editAvoidList.value,
+    })
+    editing.value = false
+    toast.success('피부 프로필을 저장했어요')
+  } catch {
+    errorMsg.value = '저장에 실패했어요. 잠시 후 다시 시도해 주세요.'
+  }
+  saving.value = false
 }
 
 function toggleConcern(c) {
@@ -53,42 +83,51 @@ function removeAvoid(item) {
 
 <template>
   <div class="view">
-    <div class="page-header">
-      <div>
-        <h2 class="page-title">피부 프로필</h2>
-        <p class="page-desc">챗봇이 추천할 때 자동으로 참조하는 정보입니다.</p>
+    <header class="page-header">
+      <div class="header-text">
+        <h2 class="page-title t-page">피부 프로필</h2>
+        <p class="page-desc">챗봇이 추천할 때 <em>자동으로</em> 참조하는 정보입니다.</p>
       </div>
-      <button v-if="!editing" class="edit-btn" @click="startEdit">✏️ 수정</button>
+      <button v-if="!editing" class="edit-btn" @click="startEdit">수정</button>
       <div v-else class="edit-actions">
-        <button class="cancel-btn" @click="cancelEdit">취소</button>
-        <button class="save-btn" @click="saveEdit">저장</button>
+        <button class="cancel-btn" :disabled="saving" @click="cancelEdit">취소</button>
+        <button class="save-btn" :disabled="saving" @click="saveEdit">{{ saving ? '저장 중...' : '저장' }}</button>
       </div>
-    </div>
+    </header>
+
+    <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+    <p v-if="loading" class="loading-msg">프로필을 불러오는 중...</p>
 
     <!-- 보기 모드 -->
     <div v-if="!editing" class="cards">
-      <div class="profile-card">
-        <p class="card-label">피부 타입</p>
-        <p class="card-value">{{ profile.skinType }}</p>
-      </div>
-      <div class="profile-card">
-        <p class="card-label">피부 고민</p>
+      <article class="profile-card">
+        <span class="leaf" aria-hidden="true">❋</span>
+        <p class="card-sub">피부 타입</p>
+        <p class="card-value serif" :class="{ 'no-value': !profile.skinType }">{{ profile.skinType || '미설정' }}</p>
+      </article>
+
+      <article class="profile-card">
+        <span class="leaf" aria-hidden="true">❋</span>
+        <p class="card-sub">피부 고민</p>
         <div class="tags">
           <span v-for="c in profile.concerns" :key="c" class="tag">{{ c }}</span>
+          <span v-if="!profile.concerns.length" class="no-data">없음</span>
         </div>
-      </div>
-      <div class="profile-card">
-        <p class="card-label">기피 성분</p>
+      </article>
+
+      <article class="profile-card">
+        <span class="leaf" aria-hidden="true">❋</span>
+        <p class="card-sub">기피 성분</p>
         <div class="tags">
           <span v-for="i in profile.avoidIngredients" :key="i" class="tag">{{ i }}</span>
           <span v-if="!profile.avoidIngredients.length" class="no-data">없음</span>
         </div>
-      </div>
+      </article>
     </div>
 
     <!-- 편집 모드 -->
     <div v-else class="edit-form">
-      <div class="edit-section">
+      <section class="edit-section">
         <p class="edit-label">피부 타입</p>
         <div class="type-btns">
           <button
@@ -98,9 +137,9 @@ function removeAvoid(item) {
             @click="editSkinType = t"
           >{{ t }}</button>
         </div>
-      </div>
+      </section>
 
-      <div class="edit-section">
+      <section class="edit-section">
         <p class="edit-label">피부 고민</p>
         <div class="tags-row">
           <button
@@ -110,148 +149,248 @@ function removeAvoid(item) {
             @click="toggleConcern(c)"
           >{{ c }}</button>
         </div>
-      </div>
+      </section>
 
-      <div class="edit-section">
+      <section class="edit-section">
         <p class="edit-label">기피 성분</p>
         <div class="avoid-tags">
           <span v-for="item in editAvoidList" :key="item" class="avoid-tag">
             {{ item }}
-            <button class="remove-tag" @click="removeAvoid(item)">×</button>
+            <button class="remove-tag" :aria-label="`${item} 삭제`" @click="removeAvoid(item)"><Icon name="x" :size="14" /></button>
           </span>
         </div>
         <div class="avoid-input-row">
           <input v-model="editAvoidInput" placeholder="성분 입력 후 엔터" @keyup.enter="addAvoid" />
           <button class="add-btn" @click="addAvoid">추가</button>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
 
 <style scoped>
-.view { max-width: 600px; width: 100%; margin: 0 auto; }
+.view { display: flex; flex-direction: column; }
 
+/* Header */
 .page-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
+  animation: bt-rise 0.4s var(--ease) both;
 }
-.page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.page-desc { font-size: 13px; color: var(--text-secondary); }
+.header-text { min-width: 0; }
+.page-desc { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+.page-desc em { font-style: italic; color: var(--sage-ink); }
 
+.error-msg { font-size: 13px; color: var(--danger); margin-bottom: 12px; }
+.loading-msg { font-size: 13px; color: var(--ink-faint); margin-bottom: 12px; }
+
+/* Header buttons */
 .edit-btn {
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--sheet);
   font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
   cursor: pointer;
-  transition: background 0.15s;
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
-.edit-btn:hover { background: var(--bg); }
+.edit-btn:active { transform: scale(.98); }
 
-.edit-actions { display: flex; gap: 8px; }
+.edit-actions { display: flex; gap: 8px; flex-shrink: 0; }
 .cancel-btn {
   padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--sheet);
   font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
   cursor: pointer;
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease);
 }
+.cancel-btn:active:not(:disabled) { transform: scale(.98); }
 .save-btn {
-  padding: 8px 16px;
+  padding: 8px 20px;
   border: none;
-  border-radius: 8px;
-  background: var(--text-primary);
-  color: #fff;
+  border-radius: 99px;
+  background: var(--ink);
+  color: var(--canvas);
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--sh-ink);
+  transition: transform var(--t-fast) var(--ease);
 }
+.save-btn:active:not(:disabled) { transform: scale(.98); }
+.save-btn:disabled, .cancel-btn:disabled { opacity: 0.5; cursor: default; box-shadow: none; transform: none; }
 
-.cards { display: flex; flex-direction: column; gap: 12px; }
+/* View-mode cards */
+.cards { display: flex; flex-direction: column; gap: 14px; }
 
 .profile-card {
-  background: var(--bg);
-  border-radius: 12px;
-  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  box-shadow: var(--sh-soft);
+  animation: bt-rise 0.45s var(--ease) both;
 }
-.card-label { font-size: 12px; color: var(--text-muted); }
-.card-value { font-size: 16px; font-weight: 600; }
+.profile-card:nth-child(1) { animation-delay: 0.04s; }
+.profile-card:nth-child(2) { animation-delay: 0.1s; }
+.profile-card:nth-child(3) { animation-delay: 0.16s; }
+.leaf {
+  position: absolute;
+  top: -10px; right: -6px;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--sage-soft);
+  pointer-events: none;
+  user-select: none;
+}
+.card-sub { font-size: 12px; font-weight: 700; letter-spacing: .4px; color: var(--sage-ink); margin-bottom: 8px; }
+.card-value { font-size: 22px; font-weight: 500; color: var(--ink); }
+.card-value.no-value { color: var(--ink-faint); font-style: italic; font-size: 18px; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .tag {
-  padding: 5px 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
+  padding: 6px 14px;
+  background: var(--sage-soft);
+  border: 1px solid transparent;
+  border-radius: 99px;
   font-size: 13px;
+  font-weight: 600;
+  color: var(--sage-ink);
 }
-.no-data { font-size: 13px; color: var(--text-muted); }
+.no-data { font-size: 13px; color: var(--ink-faint); font-style: italic; }
 
 /* Edit form */
-.edit-form { display: flex; flex-direction: column; gap: 24px; }
-.edit-section { display: flex; flex-direction: column; gap: 10px; }
-.edit-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+.edit-form { display: flex; flex-direction: column; gap: 26px; }
+.edit-section {
+  display: flex; flex-direction: column; gap: 12px;
+  animation: bt-rise 0.45s var(--ease) both;
+}
+.edit-section:nth-child(1) { animation-delay: 0.04s; }
+.edit-section:nth-child(2) { animation-delay: 0.1s; }
+.edit-section:nth-child(3) { animation-delay: 0.16s; }
+.edit-label { font-size: 15px; font-weight: 600; color: var(--ink); }
 
-.type-btns { display: flex; gap: 8px; }
-.type-btn {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+.type-btns, .tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.type-btn, .tag-btn {
+  padding: 9px 18px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--card);
   font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
   cursor: pointer;
-  transition: all 0.15s;
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
-.type-btn:hover, .type-btn.selected { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
-
-.tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.tag-btn {
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
+.tag-btn { padding: 8px 16px; font-size: 13px; }
+.type-btn:active, .tag-btn:active { transform: scale(.97); }
+.type-btn.selected, .tag-btn.selected {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: transparent;
+  box-shadow: var(--sh-ink);
 }
-.tag-btn:hover, .tag-btn.selected { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
-.avoid-tags { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; }
+.avoid-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 28px; }
 .avoid-tag {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
-  background: var(--tag-bg);
-  border-radius: 20px;
+  padding: 6px 8px 6px 14px;
+  background: var(--sage-soft);
+  border-radius: 99px;
   font-size: 13px;
+  font-weight: 600;
+  color: var(--sage-ink);
+  animation: bt-pop 0.25s var(--ease-back) both;
 }
-.remove-tag { border: none; background: none; color: var(--text-muted); font-size: 14px; cursor: pointer; }
+.remove-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--sage-ink);
+  opacity: 0.6;
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity var(--t-fast) var(--ease);
+}
+.remove-tag:hover { opacity: 1; }
 
 .avoid-input-row { display: flex; gap: 8px; }
 .avoid-input-row input {
   flex: 1;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  min-width: 0;
+  padding: 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
   font-size: 14px;
+  color: var(--ink);
   outline: none;
+  transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
-.avoid-input-row input:focus { border-color: var(--text-primary); }
+.avoid-input-row input::placeholder { color: var(--ink-faint); }
+.avoid-input-row input:focus {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(126,139,109,0.15);
+}
 .add-btn {
-  padding: 8px 16px;
-  background: var(--text-primary);
-  color: #fff;
+  flex-shrink: 0;
+  padding: 10px 20px;
+  background: var(--ink);
+  color: var(--canvas);
   border: none;
-  border-radius: 8px;
+  border-radius: 99px;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--sh-ink);
+  transition: transform var(--t-fast) var(--ease);
+}
+.add-btn:active { transform: scale(.98); }
+
+/* ===== Desktop polish (≥900px) ===== */
+@media (min-width: 900px) {
+  .view { max-width: 860px; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-desc { font-size: 14px; }
+
+  /* View-mode cards: roomier 2-column grid, full-width concerns/avoid */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .profile-card { padding: 26px 28px; }
+  .profile-card:nth-child(2),
+  .profile-card:nth-child(3) { grid-column: 1 / -1; }
+  .card-value { font-size: 26px; }
+
+  /* Edit form: constrain reading width, roomier chip rows */
+  .edit-form { max-width: 680px; gap: 30px; }
+  .type-btns, .tags-row { gap: 10px; }
+  .type-btn, .tag-btn { padding: 10px 20px; }
+  .tag-btn { padding: 9px 18px; }
 }
 </style>

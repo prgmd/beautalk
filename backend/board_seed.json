@@ -1,0 +1,203 @@
+[
+  {
+    "model": "accounts.userinfo",
+    "pk": "aaaa1111-1111-1111-1111-111111111111",
+    "fields": {
+      "user": null,
+      "email": "jiwon@demo.com",
+      "auth_provider": "kakao",
+      "created_at": "2026-06-01T09:00:00Z"
+    }
+  },
+  {
+    "model": "accounts.userinfo",
+    "pk": "aaaa2222-2222-2222-2222-222222222222",
+    "fields": {
+      "user": null,
+      "email": "minseo@demo.com",
+      "auth_provider": "google",
+      "created_at": "2026-06-01T09:10:00Z"
+    }
+  },
+  {
+    "model": "accounts.userinfo",
+    "pk": "aaaa3333-3333-3333-3333-333333333333",
+    "fields": {
+      "user": null,
+      "email": "haneul@demo.com",
+      "auth_provider": "kakao",
+      "created_at": "2026-06-01T09:20:00Z"
+    }
+  },
+
+  {
+    "model": "board.post",
+    "pk": "bbbb1111-0000-0000-0000-000000000001",
+    "fields": {
+      "user": "aaaa1111-1111-1111-1111-111111111111",
+      "category": "free",
+      "title": "요즘 피부가 너무 칙칙해요 ㅠㅠ",
+      "content": "환절기라 그런지 피부 톤이 영 안 사네요. 다들 어떻게 관리하시나요?",
+      "products": [],
+      "created_at": "2026-06-10T11:00:00Z",
+      "updated_at": "2026-06-10T11:00:00Z"
+    }
+  },
+  {
+    "model": "board.post",
+    "pk": "bbbb1111-0000-0000-0000-000000000002",
+    "fields": {
+      "user": "aaaa2222-2222-2222-2222-222222222222",
+      "category": "free",
+      "title": "겨울철 보습 루틴 공유해요",
+      "content": "세안 후 30초 안에 토너-세럼-크림 순서로 바르는 게 핵심이더라고요!",
+      "products": [],
+      "created_at": "2026-06-12T14:30:00Z",
+      "updated_at": "2026-06-12T14:30:00Z"
+    }
+  },
+  {
+    "model": "board.post",
+    "pk": "bbbb1111-0000-0000-0000-000000000003",
+    "fields": {
+      "user": "aaaa3333-3333-3333-3333-333333333333",
+      "category": "qna",
+      "title": "여드름성 피부엔 어떤 토너가 좋나요?",
+      "content": "각질이랑 트러블이 같이 있는데 진정되는 토너 추천받고 싶어요. 이 제품 어떤가요?",
+      "products": ["003527a0-9b2c-412b-9456-e8adfdd9eb5a"],
+      "created_at": "2026-06-15T10:05:00Z",
+      "updated_at": "2026-06-15T10:05:00Z"
+    }
+  },
+  {
+    "model": "board.post",
+    "pk": "bbbb1111-0000-0000-0000-000000000004",
+    "fields": {
+      "user": "aaaa1111-1111-1111-1111-111111111111",
+      "category": "qna",
+      "title": "민감성인데 순한 클렌저 추천받아요",
+      "content": "거품 클렌저만 쓰면 당기는데, 약산성 추천 부탁드려요!",
+      "products": [],
+      "created_at": "2026-06-17T16:40:00Z",
+      "updated_at": "2026-06-17T16:40:00Z"
+    }
+  },
+  {
+    "model": "board.post",
+    "pk": "bbbb1111-0000-0000-0000-000000000005",
+    "fields": {
+      "user": "aaaa2222-2222-2222-2222-222222222222",
+      "category": "sale",
+      "title": "이거 올영 세일 떴어요! 🔥",
+      "content": "원래 사려고 찜해뒀던 건데 지금 행사 중이네요. 필요하신 분들 참고하세요~",
+      "products": ["01157e60-d36d-4136-b71c-013bfb8e7ef7"],
+      "created_at": "2026-06-19T09:15:00Z",
+      "updated_at": "2026-06-19T09:15:00Z"
+    }
+  },
+  {
+    "model": "board.post",
+    "pk": "bbbb1111-0000-0000-0000-000000000006",
+    "fields": {
+      "user": "aaaa3333-3333-3333-3333-333333333333",
+      "category": "sale",
+      "title": "1+1 행사 정보 모아봐요",
+      "content": "이번 주 올영 세일 품목들 댓글로 같이 공유해요!",
+      "products": [],
+      "created_at": "2026-06-20T13:00:00Z",
+      "updated_at": "2026-06-20T13:00:00Z"
+    }
+  },
+  {
+    "model": "board.post",
+    "pk": "bbbb1111-0000-0000-0000-000000000007",
+    "fields": {
+      "user": "aaaa1111-1111-1111-1111-111111111111",
+      "category": "free",
+      "title": "뷰토크 추천 받고 만족했어요!",
+      "content": "챗봇이랑 대화하니까 제 고민에 맞는 걸 딱 골라주더라고요. 강추!",
+      "products": [],
+      "created_at": "2026-06-21T19:25:00Z",
+      "updated_at": "2026-06-21T19:25:00Z"
+    }
+  },
+
+  {
+    "model": "board.comment",
+    "pk": 1,
+    "fields": {
+      "post": "bbbb1111-0000-0000-0000-000000000001",
+      "user": "aaaa2222-2222-2222-2222-222222222222",
+      "content": "저는 비타민C 세럼 챙겨 바르니까 좀 나아졌어요!",
+      "created_at": "2026-06-10T12:00:00Z"
+    }
+  },
+  {
+    "model": "board.comment",
+    "pk": 2,
+    "fields": {
+      "post": "bbbb1111-0000-0000-0000-000000000001",
+      "user": "aaaa3333-3333-3333-3333-333333333333",
+      "content": "수분 부족일 수도 있어요. 수분크림 추천!",
+      "created_at": "2026-06-10T12:30:00Z"
+    }
+  },
+  {
+    "model": "board.comment",
+    "pk": 3,
+    "fields": {
+      "post": "bbbb1111-0000-0000-0000-000000000003",
+      "user": "aaaa1111-1111-1111-1111-111111111111",
+      "content": "저도 이 토너 쓰는데 진정 효과 좋아요 :)",
+      "created_at": "2026-06-15T11:00:00Z"
+    }
+  },
+  {
+    "model": "board.comment",
+    "pk": 4,
+    "fields": {
+      "post": "bbbb1111-0000-0000-0000-000000000005",
+      "user": "aaaa3333-3333-3333-3333-333333333333",
+      "content": "오 정보 감사합니다! 바로 담으러 가요",
+      "created_at": "2026-06-19T10:00:00Z"
+    }
+  },
+  {
+    "model": "board.comment",
+    "pk": 5,
+    "fields": {
+      "post": "bbbb1111-0000-0000-0000-000000000006",
+      "user": "aaaa1111-1111-1111-1111-111111111111",
+      "content": "토너 1+1 하던데 그것도 추가요!",
+      "created_at": "2026-06-20T14:00:00Z"
+    }
+  },
+
+  {
+    "model": "board.postlike",
+    "pk": 1,
+    "fields": {
+      "user": "aaaa2222-2222-2222-2222-222222222222",
+      "post": "bbbb1111-0000-0000-0000-000000000003",
+      "created_at": "2026-06-15T12:00:00Z"
+    }
+  },
+  {
+    "model": "board.postlike",
+    "pk": 2,
+    "fields": {
+      "user": "aaaa3333-3333-3333-3333-333333333333",
+      "post": "bbbb1111-0000-0000-0000-000000000003",
+      "created_at": "2026-06-15T12:30:00Z"
+    }
+  },
+  {
+    "model": "board.postlike",
+    "pk": 3,
+    "fields": {
+      "user": "aaaa1111-1111-1111-1111-111111111111",
+      "post": "bbbb1111-0000-0000-0000-000000000005",
+      "created_at": "2026-06-19T11:00:00Z"
+    }
+  }
+]

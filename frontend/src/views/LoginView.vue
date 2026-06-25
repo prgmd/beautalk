@@ -1,42 +1,36 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import TermsModal from '@/components/TermsModal.vue'
+import { API_BASE } from '@/services/config'
 
-const router = useRouter()
-const auth = useAuthStore()
-
-const tab = ref('login') // 'login' | 'signup'
-const email = ref('')
-const password = ref('')
-const agreeTerms = ref(false)
-const agreePrivacy = ref(false)
-const error = ref('')
+const route = useRoute()
 const activeModal = ref(null) // null | 'terms' | 'privacy'
 
-function handleSubmit() {
-  error.value = ''
-  if (!email.value || !password.value) {
-    error.value = '이메일과 비밀번호를 입력해주세요.'
-    return
-  }
-  if (tab.value === 'signup' && (!agreeTerms.value || !agreePrivacy.value)) {
-    error.value = '필수 약관에 동의해주세요.'
-    return
-  }
-  // TODO: API 연결
-  auth.login({ email: email.value, hasProfile: false })
-  router.push('/onboarding')
+// 백엔드 OAuth 콜백이 실패하면 /login?error=<사유> 로 리다이렉트한다.
+// (backend/accounts/views.py 의 KakaoCallbackView/GoogleCallbackView 참고)
+const ERROR_MESSAGES = {
+  csrf_detected: '보안 인증에 실패했습니다. 다시 시도해 주세요.',
+  email_duplicated: '이미 다른 소셜 계정으로 가입된 이메일입니다. 기존에 사용하던 플랫폼으로 로그인해 주세요.',
+  oauth_failed: '소셜 로그인이 취소되었거나 실패했습니다. 다시 시도해 주세요.',
+  missing_code: '로그인 정보가 올바르지 않습니다. 다시 시도해 주세요.',
+  token_exchange_failed: '로그인 처리 중 오류가 발생했습니다. 다시 시도해 주세요.',
+  userinfo_failed: '사용자 정보를 가져오지 못했습니다. 다시 시도해 주세요.',
 }
+
+const errorMessage = computed(() => {
+  const code = route.query.error
+  if (!code) return ''
+  return ERROR_MESSAGES[code] || '로그인 중 오류가 발생했습니다. 다시 시도해 주세요.'
+})
 
 function handleOAuth(provider) {
   // 백엔드 로그인 시작 endpoint로 이동
   // 백엔드가 카카오/구글 인증 URL 조립 후 해당 로그인 페이지로 리다이렉트
   // Vue Router 아닌 window.location.href 사용 — 외부 사이트로 완전히 이동해야 하기 때문
   const urls = {
-    kakao: 'http://localhost:8000/api/v1/auth/kakao/login/',
-    google: 'http://localhost:8000/api/v1/auth/google/login/',
+    kakao: `${API_BASE}/auth/kakao/login/`,
+    google: `${API_BASE}/auth/google/login/`,
   }
   window.location.href = urls[provider]
 }
@@ -44,44 +38,21 @@ function handleOAuth(provider) {
 
 <template>
   <div class="page">
+    <span class="leaf-deco d1" aria-hidden="true">❋</span>
+    <span class="leaf-deco d2" aria-hidden="true">❋</span>
+    <span class="leaf-deco d3" aria-hidden="true">✦</span>
     <div class="card">
-      <div class="logo">beautalk</div>
-      <h1 class="title">시작하기</h1>
+      <header class="masthead">
+        <img src="/logo.png" alt="" class="brand-mark" />
+        <div class="logo serif">beaut<em>alk</em></div>
+      </header>
 
-      <div class="tabs">
-        <button class="tab" :class="{ active: tab === 'signup' }" @click="tab = 'signup'">가입</button>
-        <button class="tab" :class="{ active: tab === 'login' }" @click="tab = 'login'">로그인</button>
+      <div class="headline-block">
+        <h1 class="title serif">내 피부를 위한<br /><em>섬세한</em> 시작</h1>
+        <p class="subtitle">챗봇이 내 피부에 맞는 화장품을 다정하게 추천해 드려요.</p>
       </div>
 
-      <form class="form" @submit.prevent="handleSubmit">
-        <div class="field">
-          <label>이메일</label>
-          <input v-model="email" type="email" placeholder="name@example.com" />
-        </div>
-        <div class="field">
-          <label>비밀번호</label>
-          <input v-model="password" type="password" placeholder="••••••••" />
-        </div>
-
-        <div v-if="tab === 'signup'" class="agreements">
-          <label class="checkbox-row">
-            <input v-model="agreeTerms" type="checkbox" />
-            <span>(필수) 이용약관 동의 <a href="#" @click.prevent="activeModal = 'terms'">보기</a></span>
-          </label>
-          <label class="checkbox-row">
-            <input v-model="agreePrivacy" type="checkbox" />
-            <span>(필수) 개인정보처리방침 동의 <a href="#" @click.prevent="activeModal = 'privacy'">보기</a></span>
-          </label>
-        </div>
-
-        <p v-if="error" class="error">{{ error }}</p>
-
-        <button type="submit" class="btn-primary">
-          {{ tab === 'signup' ? '가입하기' : '로그인' }}
-        </button>
-      </form>
-
-      <div class="divider"><span>또는</span></div>
+      <p v-if="errorMessage" class="error-banner" role="alert">{{ errorMessage }}</p>
 
       <div class="oauth">
         <button class="btn-oauth kakao" @click="handleOAuth('kakao')">
@@ -93,6 +64,13 @@ function handleOAuth(provider) {
           구글로 시작
         </button>
       </div>
+
+      <p class="terms-notice">
+        시작하면
+        <a href="#" @click.prevent="activeModal = 'terms'">이용약관</a> 및
+        <a href="#" @click.prevent="activeModal = 'privacy'">개인정보처리방침</a>에
+        동의하는 것으로 간주됩니다.
+      </p>
     </div>
 
     <TermsModal v-if="activeModal" :type="activeModal" @close="activeModal = null" />
@@ -101,143 +79,157 @@ function handleOAuth(provider) {
 
 <style scoped>
 .page {
-  min-height: 100vh;
-  background: var(--bg);
+  position: relative;
+  height: 100%;
+  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding:
+    calc(env(safe-area-inset-top) + 32px) 24px
+    calc(env(safe-area-inset-bottom) + 32px);
+  overflow: hidden;
+  /* 앱과 통합된 온브랜드 배경 — 사진 대신 부드러운 그라데이션 */
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(126,139,109,.16) 0%, transparent 55%),
+    linear-gradient(165deg, var(--canvas) 0%, var(--sage-soft) 100%);
 }
 
+/* 잎·반짝이 장식 (배경 모티프) */
+.leaf-deco {
+  position: absolute; z-index: 0; pointer-events: none; user-select: none;
+  color: var(--sage); line-height: 1;
+}
+.leaf-deco.d1 { top: 8%; left: 9%; font-size: 120px; opacity: .14; transform: rotate(-12deg); }
+.leaf-deco.d2 { bottom: 6%; right: 8%; font-size: 150px; opacity: .12; transform: rotate(14deg); }
+.leaf-deco.d3 { top: 18%; right: 16%; font-size: 40px; opacity: .35; }
+
 .card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 40px 32px;
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 36px 28px;
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--sh-lg);
+  animation: bt-rise var(--t-slow) var(--ease) both;
+}
+
+.masthead { text-align: center; }
+
+.brand-mark {
+  width: 66px;
+  height: 66px;
+  display: block;
+  margin: 0 auto 6px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--sage);
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .logo {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--text-muted);
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+  color: var(--ink);
 }
+.logo em { font-style: italic; color: var(--sage-ink); }
+
+.headline-block { text-align: center; }
 
 .title {
-  text-align: center;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.32;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+.title em { font-style: italic; color: var(--rose-ink); }
+
+.subtitle {
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.7;
 }
 
-.tabs {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-}
-
-.tab {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  background: transparent;
-  font-size: 15px;
-  color: var(--text-muted);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.tab.active {
-  color: var(--text-primary);
-  border-bottom-color: var(--text-primary);
-  font-weight: 500;
-}
-
-.form { display: flex; flex-direction: column; gap: 14px; }
-
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field label { font-size: 13px; color: var(--text-secondary); }
-.field input {
+.error-banner {
   padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 14px;
-  background: var(--surface);
-  outline: none;
-  transition: border-color 0.15s;
-}
-.field input:focus { border-color: var(--text-primary); }
-
-.agreements {
-  background: var(--bg);
-  border-radius: 8px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  cursor: pointer;
-}
-.checkbox-row a { color: #4A90D9; }
-
-.error {
-  font-size: 13px;
+  border-radius: var(--radius-sm);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
   color: var(--danger);
-}
-
-.btn-primary {
-  width: 100%;
-  padding: 14px;
-  background: var(--btn-primary);
-  color: var(--btn-primary-fg);
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  transition: opacity 0.15s;
-}
-.btn-primary:hover { opacity: 0.85; }
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-muted);
   font-size: 13px;
-}
-.divider::before, .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  line-height: 1.5;
+  text-align: center;
+  animation: bt-pop var(--t) var(--ease-back) both;
 }
 
-.oauth { display: flex; flex-direction: column; gap: 10px; }
+.oauth { display: flex; flex-direction: column; gap: 11px; margin-top: 4px; }
 
 .btn-oauth {
   width: 100%;
-  padding: 13px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  font-size: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--card);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: background 0.15s;
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), background var(--t-fast);
 }
-.btn-oauth:hover { background: var(--bg); }
+.btn-oauth:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.btn-oauth:active { transform: scale(0.98); box-shadow: var(--sh-sm); }
+.btn-oauth.kakao { background: #FEE500; border-color: #FEE500; color: #191600; }
+.btn-oauth.kakao:hover { box-shadow: 0 10px 24px rgba(254, 229, 0, 0.35); }
 .oauth-icon { width: 20px; height: 20px; }
+
+.terms-notice {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 1.7;
+}
+.terms-notice a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; }
+.terms-notice a:hover { color: var(--ink); }
+
+/* ── 데스크톱 ≥900px ── */
+@media (min-width: 900px) {
+  .page {
+    padding: 48px 24px;
+  }
+
+  /* 잎 장식을 넓은 화면에 맞춰 확대 */
+  .leaf-deco.d1 { font-size: 180px; }
+  .leaf-deco.d2 { font-size: 220px; }
+
+  .card {
+    max-width: 420px;
+    gap: 24px;
+  }
+
+  .logo { font-size: 40px; }
+
+  .title { font-size: 32px; }
+
+  .subtitle { font-size: 14.5px; }
+}
 </style>
