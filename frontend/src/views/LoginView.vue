@@ -217,14 +217,9 @@ function handleOAuth(provider) {
     padding: 48px 24px;
   }
 
-  /* 식물 장식을 넓은 화면에 맞춰 확대 */
-  .sprig {
-    width: 88px;
-    height: 132px;
-    opacity: 0.55;
-  }
-  .sprig-top { top: 40px; left: 56px; }
-  .sprig-bottom { bottom: 40px; right: 56px; }
+  /* 잎 장식을 넓은 화면에 맞춰 확대 */
+  .leaf-deco.d1 { font-size: 180px; }
+  .leaf-deco.d2 { font-size: 220px; }
 
   .card {
     max-width: 420px;
