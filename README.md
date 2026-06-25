@@ -32,7 +32,7 @@ beautalk는 **AI 상담사 '뷰토크'와 대화**하면서 피부 타입·고�
 | Frontend | Vue 3 (`<script setup>`) · Pinia · Vue Router · Vite |
 | Backend | Django 5.2 · Django REST Framework · SimpleJWT |
 | Database | PostgreSQL 16 + **pgvector** (벡터 검색) |
-| AI | GMS(OpenAI 호환) — `gpt-5-nano` 대화·추천, `text-embedding-3-small` 임베딩 |
+| AI | GMS(OpenAI 호환) — `gpt-4o` 대화·추천(모델 5종 실측 비교로 선정), `text-embedding-3-small` 임베딩 |
 | Infra | AWS EC2 · Docker Compose · Nginx · HTTPS(Let's Encrypt) |
 | 인증 | 카카오 · 구글 OAuth 2.0 |
 
@@ -87,7 +87,7 @@ Django User ─1:1─ UserInfo ─1:1─ SkinProfile
 
 | 활용 | 내용 |
 |---|---|
-| 대화 | 사용자 자연어 이해·문답으로 추천 조건 수집 (`gpt-5-nano`) |
+| 대화 | 사용자 자연어 이해·문답으로 추천 조건 수집 (`gpt-4o`) |
 | 추천 이유 | 후보 제품에 대한 맞춤 추천 사유 생성 |
 | 리뷰 요약 | 수집한 리뷰를 제품별 `ai_summary`·피부타입별 만족도로 가공 |
 | 임베딩 | 요약·대화를 1536차원 벡터로 변환(RAG 의미검색의 재료) |
@@ -100,7 +100,7 @@ Django User ─1:1─ UserInfo ─1:1─ SkinProfile
 
 - **API Key 관리(명세 NF1302)**: 모든 시크릿을 `.env`로 분리, **git에 키 0건 커밋**. (`git ls-files | grep env` → 공개 URL 파일 하나만)
 - **인증/인가**: OAuth 2.0 + JWT(access 30분 / refresh 7일 HttpOnly 쿠키, 회전+블랙리스트), 소유권 검사(IDOR 방어), LLM 전용 호출 한도(throttle).
-- **데이터(명세 NF1303)**: 올리브영 제품 156종 + AI 요약, `loaddata` 가능한 fixture(`backend/products_seed.json`, `backend/board_seed.json`).
+- **데이터(명세 NF1303)**: 올리브영 제품 306종(중복 제거 후, 요약·임베딩 99.7%) + AI 요약, `loaddata` 가능한 fixture(`backend/products_seed.json`, `backend/board_seed.json`).
 
 → [개발 이력 05 · 인증과 보안](docs/development-history/05-auth-security.md)
 

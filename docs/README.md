@@ -97,7 +97,7 @@
 
 **확장 아이디어 (후속):**
 - **추천 교체(삭제 → 다음 순위 채움)** — 결과 3종 중 하나를 삭제하면 풀의 다음 순위가 올라와 채운다. 파이프라인이 이미 15개 후보(`RECOMMEND_POOL_SIZE`)를 뽑아 3개만 쓰므로 "다음 순위"가 공짜로 존재.
-  - 구현(추천): stateless `POST /recommend/replace` — `{history, filters, exclude_ids}` → `_recommend_candidates` 재실행 → 이미 보여준 거 제외 → 다음 1개 + reason 1콜(gpt-5-nano). 풀(상태) DB 저장 불필요.
+  - 구현(추천): stateless `POST /recommend/replace` — `{history, filters, exclude_ids}` → `_recommend_candidates` 재실행 → 이미 보여준 거 제외 → 다음 1개 + reason 1콜(gpt-4o). 풀(상태) DB 저장 불필요.
   - 결정할 것: 교체품 reason 생성(추천)·풀 고갈 처리("더 없음")·히스토리는 뷰 한정(원본 로그 보존)·replace 전용 throttle.
 
 ---

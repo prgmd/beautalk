@@ -81,7 +81,7 @@ board/                # 커뮤니티 게시판 (F1303 필수 — 용도별: 자�
 ├── tests.py          # 게시판 CRUD·댓글·좋아요·IDOR·역참조 테스트 (board 20가지)
 
 crawling.py           # 크롤링 스크립트
-products_seed.json    # Product 156건 시드 (SQLite→PG 이관용 fixture, loaddata로 적재)
+products_seed.json    # Product 306건 시드 (중복 제거·요약·임베딩·제형 포함 fixture, loaddata로 적재)
 board_seed.json       # 게시판 데모 fixture (유저·글 7·댓글 5·좋아요 3, 제품 태그 2건, loaddata)
 requirements.txt      # 의존성 (psycopg2-binary, pgvector — PostgreSQL + 벡터 검색)
 
@@ -93,15 +93,15 @@ requirements.txt      # 의존성 (psycopg2-binary, pgvector — PostgreSQL + �
 │   GOOGLE_CLIENT_SECRET=...
 │   GMS_API_KEY=...
 │   GMS_API_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions
-│   GMS_MODEL=gpt-5-nano
-│   GMS_REASONING_EFFORT=low   # gpt-5 추론 깊이(minimal|low|medium|high). 낮출수록 응답 빠름. 미설정 시 low
+│   GMS_MODEL=gpt-4o          # 모델 5종 실측 비교로 선정(model-selection-report.md). 비추론형이 더 빠름
+│   GMS_REASONING_EFFORT=low   # gpt-5/o 계열일 때만 적용(추론 깊이). gpt-4o엔 코드가 자동 미전송
 │   GMS_EMBED_MODEL=text-embedding-3-small   # RAG 임베딩 모델 (미설정 시 기본값)
 │   # 선택: LANGSMITH_TRACING=true / LANGSMITH_API_KEY=... / LANGSMITH_PROJECT=beautalk (LLM 관측)
 │   DB_ENGINE=django.db.backends.postgresql   # PostgreSQL 전용 (SQLite 폴백 제거)
 │   DB_NAME / DB_USER / DB_PASSWORD / DB_HOST / DB_PORT
 ```
 
-> 챗봇은 GMS(`gpt-5-nano`)를 `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions`로
+> 챗봇은 GMS(`gpt-4o`)를 `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions`로
 > 직접 호출하는 Stateless 구조. 프론트가 `history[]`를 관리해 매 요청마다 전송한다.
 > 서버사이드 사용량 제한 / RAG(pgvector)는 Phase 2.
 
