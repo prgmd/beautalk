@@ -40,6 +40,7 @@ function handleOAuth(provider) {
   <div class="page">
     <div class="card">
       <header class="masthead">
+        <img src="/logo.svg" alt="" class="brand-mark" />
         <p class="eyebrow">Botanical Beauty Lab</p>
         <div class="logo serif">beaut<em>alk</em></div>
       </header>
@@ -109,6 +110,13 @@ function handleOAuth(provider) {
 }
 
 .masthead { text-align: center; }
+
+.brand-mark {
+  width: 66px;
+  height: 66px;
+  display: block;
+  margin: 0 auto 6px;
+}
 
 .eyebrow {
   font-size: 10px;
