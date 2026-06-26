@@ -308,6 +308,50 @@ def _build_chat_prompt(user, availability='', weather='') -> str:
   특히 '제품군+가격' 또는 '제품군+피부정보'가 모이면 망설이지 말고 ready=true로 넘기세요."""
 
 
+def _parse_chat_reply(raw):
+    """LLM 출력에서 (content, ready)를 견고하게 추출한다.
+
+    LLM이 가끔 코드펜스(```json)·앞뒤 잡설·깨진 JSON을 섞어 보내면,
+    예전엔 raw 문자열을 그대로 답변에 노출해 `{"content": ..., "ready": true}`가
+    채팅에 그대로 떴다. 단계적으로 복구하고, 끝내 실패해도 raw JSON은 보여주지 않는다.
+    """
+    text = (raw or '').strip()
+    # 1) 코드펜스 제거: ```json ... ```
+    text = re.sub(r'^```(?:json)?\s*', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\s*```$', '', text).strip()
+
+    # 2) 통째 파싱 → 실패 시 첫 '{' ~ 마지막 '}' 슬라이스 후 재시도
+    a, b = text.find('{'), text.rfind('}')
+    sliced = text[a:b + 1] if (a != -1 and b > a) else ''
+    for candidate in (text, sliced):
+        if not candidate:
+            continue
+        try:
+            parsed = json.loads(candidate)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if isinstance(parsed, dict):
+            content = (parsed.get('content') or '').strip()
+            if content:
+                return content, bool(parsed.get('ready', False))
+
+    # 3) JSON이 깨졌어도 "content" 값만 정규식으로 건진다.
+    m = re.search(r'"content"\s*:\s*("(?:[^"\\]|\\.)*")', text)
+    if m:
+        try:
+            content = json.loads(m.group(1)).strip()
+        except json.JSONDecodeError:
+            content = m.group(1).strip('"').strip()
+        if content:
+            ready = bool(re.search(r'"ready"\s*:\s*true', text, re.IGNORECASE))
+            return content, ready
+
+    # 4) 끝내 실패: JSON 잔해처럼 보이면 버리고 안내문. (raw JSON 노출 금지)
+    if text.startswith('{') or '"content"' in text:
+        return '죄송해요, 답변을 정리하지 못했어요. 한 번만 더 말씀해 주시겠어요?', False
+    return text, False
+
+
 class ChatView(APIView):
     """POST /api/v1/chat/  — 대화 단계 (Stateless)
 
@@ -340,15 +384,8 @@ class ChatView(APIView):
         if error:
             return error
 
-        # LLM이 JSON을 못 지킨 경우, 전체 텍스트를 답변으로 쓰고 ready=false로 안전 처리
-        try:
-            parsed = json.loads(raw)
-            ai_content = (parsed.get('content') or '').strip()
-            ready = bool(parsed.get('ready', False))
-            if not ai_content:
-                ai_content, ready = raw, False
-        except (json.JSONDecodeError, TypeError, AttributeError):
-            ai_content, ready = raw, False
+        # 코드펜스·잡설·깨진 JSON을 견고하게 복구한다. 실패해도 raw JSON은 노출하지 않음.
+        ai_content, ready = _parse_chat_reply(raw)
 
         # 성공한 대화만 사용량으로 집계하고, 남은 횟수를 응답에 실어 프론트가 즉시 반영하게 한다.
         quota = _increment_chat_quota(request.user)

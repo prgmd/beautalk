@@ -14,7 +14,7 @@ beautalk는 **AI 상담사 '뷰토크'와 대화**하면서 피부 타입·고�
 
 ---
 
-## 2. 팀원 및 업무 분담 *(명세 A)*
+## 2. 팀원 및 업무 분담
 
 | 이름 | 역할 | 주요 담당 | GitHub |
 |---|---|---|---|
@@ -38,24 +38,11 @@ beautalk는 **AI 상담사 '뷰토크'와 대화**하면서 피부 타입·고�
 
 ---
 
-<<<<<<< HEAD
-## 문서
-
-| 파일 | 설명 |
-|---|---|
-| [docs/API.md](docs/API.md) | API 명세서 (엔드포인트, Request/Response, 에러 코드) |
-| [docs/progress.md](docs/progress.md) | 구현 현황 및 진행 예정 작업 |
-| [docs/structure.md](docs/structure.md) | 프로젝트 디렉토리 구조 |
-| [docs/plan.md](docs/plan.md) | 보안 취약점 진단·해결, RAG 도입 계획, 잔여 작업 로드맵 |
-
 ## 팀원
 | 이름 | 역할 | GitHub |
 |---|---|---|
 | 김채은 | 프론트엔드 | https://github.com/c7aeun |
 | 장준환 | 백엔드 | https://github.com/prgmd |
-=======
-## 4. 핵심 기능 *(명세 E)*
->>>>>>> 67672277818ad79dffd8f1139cd70ac458905fe8
 
 - **AI 추천 챗봇** — 대화로 조건을 모아(대화 단계) → 제품 추천(추천 단계)으로 분리. 추천 이유·조건 충족 배지(✓/✗) 표시.
 - **하이브리드 추천 엔진** — SQL 정형 필터(가격·제형) + RAG 의미검색. (아래 §5)
@@ -64,11 +51,9 @@ beautalk는 **AI 상담사 '뷰토크'와 대화**하면서 피부 타입·고�
 - **커뮤니티 게시판** — 용도별(자유·Q&A·세일) 글·댓글·좋아요, **제품 태그**로 글↔제품 연결.
 - **마이페이지** — 프로필·찜 목록·추천 내역·계정/탈퇴.
 
-화면 약 13개, REST API 23개. (→ [개발 이력 06~09](docs/development-history/))
-
 ---
 
-## 5. 추천 알고리즘 기술적 설명 *(명세 D)*
+## 5. 추천 알고리즘 기술적 설명
 
 > **하드 조건(가격·제형)은 SQL이 보장, 부드러운 취향은 AI 의미검색(RAG)이 담당하는 2겹 구조.**
 
@@ -78,11 +63,9 @@ beautalk는 **AI 상담사 '뷰토크'와 대화**하면서 피부 타입·고�
 4. **LLM 선정** — 위 후보만 LLM이 보고 골라 **추천 이유** 작성. (조건 위반 제품은 LLM이 볼 수조차 없음)
 5. **단계적 완화** — 후보가 3개 미만이면 가격 ±1만원 → 제형 → 카테고리 순으로 풀고 *무엇을 풀었는지 정직하게 표기.*
 
-→ 왜 이렇게 만들었는지(전 제품 주입 vs RAG vs 하이브리드 비교)는 **[개발 이력 07](docs/development-history/07-rag-hybrid-recommendation.md)** 참고.
-
 ---
 
-## 6. 데이터베이스 모델링 (ERD) *(명세 C)*
+## 6. 데이터베이스 모델링 (ERD)
 
 ```
 Django User ─1:1─ UserInfo ─1:1─ SkinProfile
@@ -96,11 +79,9 @@ Django User ─1:1─ UserInfo ─1:1─ SkinProfile
       Review (FK)        Product.embedding = pgvector(1536), Product.form = ArrayField
 ```
 
-자세한 필드·관계 표는 **[개발 이력 02 · 설계](docs/development-history/02-design.md)** 참고.
-
 ---
 
-## 7. 생성형 AI 활용 *(명세 F)*
+## 7. 생성형 AI 활용
 
 | 활용 | 내용 |
 |---|---|
@@ -109,8 +90,6 @@ Django User ─1:1─ UserInfo ─1:1─ SkinProfile
 | 리뷰 요약 | 수집한 리뷰를 제품별 `ai_summary`·피부타입별 만족도로 가공 |
 | 임베딩 | 요약·대화를 1536차원 벡터로 변환(RAG 의미검색의 재료) |
 
-→ [개발 이력 04](docs/development-history/04-data.md) · [06](docs/development-history/06-chatbot-recommendation.md) · [07](docs/development-history/07-rag-hybrid-recommendation.md)
-
 ---
 
 ## 8. 보안 & 데이터
@@ -118,8 +97,6 @@ Django User ─1:1─ UserInfo ─1:1─ SkinProfile
 - **API Key 관리(명세 NF1302)**: 모든 시크릿을 `.env`로 분리, **git에 키 0건 커밋**. (`git ls-files | grep env` → 공개 URL 파일 하나만)
 - **인증/인가**: OAuth 2.0 + JWT(access 30분 / refresh 7일 HttpOnly 쿠키, 회전+블랙리스트), 소유권 검사(IDOR 방어), LLM 전용 호출 한도(throttle).
 - **데이터(명세 NF1303)**: 올리브영 제품 306종(중복 제거 후, 요약·임베딩 99.7%) + AI 요약, `loaddata` 가능한 fixture(`backend/products_seed.json`, `backend/board_seed.json`).
-
-→ [개발 이력 05 · 인증과 보안](docs/development-history/05-auth-security.md)
 
 ---
 
@@ -153,23 +130,3 @@ npm run dev
 ```
 
 ---
-
-## 10. 명세서 요구사항 충족
-
-명세서 필수 요구사항 9개 + 심화(배포)까지 충족했습니다. 항목별 근거는
-**[요구사항 충족 정리](docs/requirements-compliance.md)** 에 한 장으로 정리되어 있습니다.
-
-| F1301 추천 | F1302 API | F1303 커뮤니티 | F1304 RESTful | F1305 배포 | NF1301 Git | NF1302 키관리 | NF1303 데이터 | NF1304 페이지 |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ✅ | ✅ | ✅ | ✅ | ✅(심화) | ✅ | ✅ | ✅ | ✅ |
-
----
-
-## 11. 문서
-
-- 📜 **[개발 이력 (기획→배포→검증)](docs/development-history/README.md)** — 비전공자도 읽는 단계별 정리
-- 📊 **[요구사항 충족 정리](docs/requirements-compliance.md)**
-- 🎤 **[발표 자료](presentation/README.md)**
-- 🗂 [docs 문서 허브](docs/README.md) — 기획·설계·트러블슈팅 원본
-
-> *(제출 시: 명세 1.6에 따라 GitLab 커밋 내역 스크린샷을 이 README 하단 또는 발표자료에 첨부하세요.)*
