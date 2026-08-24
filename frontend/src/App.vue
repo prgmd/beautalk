@@ -1,85 +1,55 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted } from 'vue'
+import { RouterView } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useLikesStore } from '@/stores/likes'
+import { usePaywallStore } from '@/stores/paywall'
+import { API_BASE } from '@/services/config'
+import ProductDetailModal from '@/components/ProductDetailModal.vue'
+import PaywallModal from '@/components/PaywallModal.vue'
+import ToastHost from '@/components/ToastHost.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
+
+const auth = useAuthStore()
+const likes = useLikesStore()
+const paywall = usePaywallStore()
+
+onMounted(async () => {
+  // 페이지 새로고침 시 메모리의 accessToken이 사라진다.
+  // localStorage에 user 정보가 남아있으면 HttpOnly 쿠키로 조용히 토큰을 복원한다.
+  if (auth.user && !auth.accessToken) {
+    try {
+      const res = await fetch(`${API_BASE}/auth/token/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        auth.setAccessToken(data.access)
+      } else {
+        auth.logout()
+      }
+    } catch {
+      auth.logout()
+    }
+  }
+
+  // 로그인 상태면 찜 목록을 미리 동기화해 앱 전역의 ♥ 표시를 맞춘다.
+  if (auth.isLoggedIn) {
+    likes.fetchLikes().catch(() => {})
+  }
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <Transition name="route" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
+  <ProductDetailModal />
+  <PaywallModal v-if="paywall.isOpen" @close="paywall.close()" />
+  <ToastHost />
+  <ConfirmDialog />
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
