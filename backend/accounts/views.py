@@ -309,11 +309,19 @@ class CookieTokenRefreshView(APIView):
             if not User.objects.filter(pk=user_id, is_active=True).exists():
                 raise TokenError('user no longer exists')
             access = str(refresh.access_token)
+
+            try:
+                refresh.blacklist()
+            except AttributeError:
+                pass
+            refresh.set_jti()
+            refresh.set_exp()
+            refresh.set_iat()
+            refresh.outstand()
         except TokenError:
             return Response({'error': 'invalid or expired refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
 
         response = Response({'access': access})
-        # 동일 refresh 토큰 유효기간 동안 쿠키 만료시간을 갱신해 슬라이딩 세션처럼 동작시킨다
         set_refresh_cookie(response, str(refresh))
         return response
 

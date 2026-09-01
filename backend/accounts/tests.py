@@ -2,6 +2,10 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import (
+    BlacklistedToken,
+    OutstandingToken,
+)
 
 from .models import UserInfo, SkinProfile
 from .views import resolve_oauth_user, REFRESH_COOKIE_NAME
@@ -29,6 +33,48 @@ class LogoutBlacklistTest(TestCase):
         client2.cookies[REFRESH_COOKIE_NAME] = refresh
         res2 = client2.post('/api/v1/auth/token/refresh')
         self.assertEqual(res2.status_code, 401)
+
+
+class RefreshRotationTest(TestCase):
+    """refresh 갱신 시 기존 토큰이 무효화되고 새 토큰이 발급되는지"""
+
+    def setUp(self):
+        self.user = User.objects.create(username='kakao_1')
+        UserInfo.objects.create(user=self.user, email='a@kakao.com', auth_provider='kakao')
+
+    def test_refresh_rotates_and_blacklists_old_token(self):
+        old = str(RefreshToken.for_user(self.user))
+
+        client = APIClient()
+        client.cookies[REFRESH_COOKIE_NAME] = old
+        res = client.post('/api/v1/auth/token/refresh')
+        self.assertEqual(res.status_code, 200)
+
+        new_cookie = res.cookies.get(REFRESH_COOKIE_NAME)
+        self.assertIsNotNone(new_cookie)
+        self.assertNotEqual(new_cookie.value, old)
+
+        replay = APIClient()
+        replay.cookies[REFRESH_COOKIE_NAME] = old
+        self.assertEqual(replay.post('/api/v1/auth/token/refresh').status_code, 401)
+
+        follow = APIClient()
+        follow.cookies[REFRESH_COOKIE_NAME] = new_cookie.value
+        self.assertEqual(follow.post('/api/v1/auth/token/refresh').status_code, 200)
+
+    def test_rotated_token_is_registered_as_outstanding(self):
+        old = RefreshToken.for_user(self.user)
+
+        client = APIClient()
+        client.cookies[REFRESH_COOKIE_NAME] = str(old)
+        res = client.post('/api/v1/auth/token/refresh')
+
+        new_jti = RefreshToken(res.cookies[REFRESH_COOKIE_NAME].value).payload['jti']
+        self.assertNotEqual(new_jti, old.payload['jti'])
+        self.assertTrue(OutstandingToken.objects.filter(jti=new_jti).exists())
+        self.assertTrue(
+            BlacklistedToken.objects.filter(token__jti=old.payload['jti']).exists()
+        )
 
 
 class AccountDeleteTest(TestCase):
