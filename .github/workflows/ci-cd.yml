@@ -117,4 +117,5 @@ jobs:
             # 백엔드 재빌드·기동(t3.micro는 스왑으로 버팀) 후 마이그레이션
             docker compose -f docker-compose.prod.yml up -d --build
             docker compose -f docker-compose.prod.yml exec -T backend python manage.py migrate --noinput
+            docker compose -f docker-compose.prod.yml exec -T backend python manage.py createcachetable
             docker image prune -f
