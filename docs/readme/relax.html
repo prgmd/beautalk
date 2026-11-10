@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Noto+Serif+KR:wght@600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+.chips { display:flex; flex-direction:column; gap:10px; margin-top:22px; }
+.chip { display:flex; justify-content:space-between; align-items:center; padding:11px 14px; border-radius:14px; border:1px solid var(--line); background:var(--sheet); font-size:15.5px; }
+.chip .k { color:var(--ink-soft); font-weight:600; }
+.chip .v { font-weight:700; }
+.chip.off { background:var(--rose-soft); border-color:#e8c9d4; }
+.chip.off .v { color:var(--rose-ink); }
+.chip.gone { background:transparent; border-style:dashed; color:var(--ink-faint); }
+.chip.gone .k, .chip.gone .v { color:var(--ink-faint); text-decoration:line-through; }
+.foot { position:absolute; left:40px; right:40px; top:405px; display:flex; gap:20px; }
+.foot .side { position:static; flex:1; }
+.badge { display:inline-block; padding:4px 10px; border-radius:999px; font-size:14px; font-weight:700; margin-right:6px; }
+</style>
+</head>
+<body style="width:1680px;height:560px">
+<svg class="wires" width="1680" height="560">
+  <defs><marker id="r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c98aa0"/></marker></defs>
+  <line x1="410" y1="200" x2="456" y2="200" stroke="#c98aa0" stroke-width="4" marker-end="url(#r)"/>
+  <line x1="832" y1="200" x2="878" y2="200" stroke="#c98aa0" stroke-width="4" marker-end="url(#r)"/>
+  <line x1="1254" y1="200" x2="1300" y2="200" stroke="#c98aa0" stroke-width="4" marker-end="url(#r)"/>
+</svg>
+
+<div class="step" style="left:40px;top:30px;width:370px;height:340px">
+  <div class="no">요청</div><div class="ttl">원래 조건</div>
+  <div class="chips">
+    <div class="chip"><span class="k">가격</span><span class="v">30,000원 이하</span></div>
+    <div class="chip"><span class="k">제형</span><span class="v">로션</span></div>
+    <div class="chip"><span class="k">카테고리</span><span class="v">스킨케어</span></div>
+  </div>
+</div>
+<div class="step" style="left:462px;top:30px;width:370px;height:340px">
+  <div class="no">1단계</div><div class="ttl">가격 넓히기</div>
+  <div class="chips">
+    <div class="chip off"><span class="k">가격</span><span class="v">40,000원 이하</span></div>
+    <div class="chip"><span class="k">제형</span><span class="v">로션</span></div>
+    <div class="chip"><span class="k">카테고리</span><span class="v">스킨케어</span></div>
+  </div>
+  <div class="desc" style="margin-top:18px">예산은 가장 먼저, 가장 조금 풉니다. 위아래로 1만원씩만.</div>
+</div>
+<div class="step" style="left:884px;top:30px;width:370px;height:340px">
+  <div class="no">2단계</div><div class="ttl">제형 풀기</div>
+  <div class="chips">
+    <div class="chip off"><span class="k">가격</span><span class="v">40,000원 이하</span></div>
+    <div class="chip gone"><span class="k">제형</span><span class="v">로션</span></div>
+    <div class="chip"><span class="k">카테고리</span><span class="v">스킨케어</span></div>
+  </div>
+</div>
+<div class="step" style="left:1306px;top:30px;width:340px;height:340px">
+  <div class="no">3단계</div><div class="ttl">카테고리 풀기</div>
+  <div class="chips">
+    <div class="chip off"><span class="k">가격</span><span class="v">40,000원 이하</span></div>
+    <div class="chip gone"><span class="k">제형</span><span class="v">로션</span></div>
+    <div class="chip gone"><span class="k">카테고리</span><span class="v">스킨케어</span></div>
+  </div>
+  <div class="desc" style="margin-top:18px">로션을 찾는데 크림이 나오는 단계라 맨 마지막입니다.</div>
+</div>
+
+<span class="tag" style="left:433px;top:166px">3개 미만</span>
+<span class="tag" style="left:855px;top:166px">3개 미만</span>
+<span class="tag" style="left:1277px;top:166px">3개 미만</span>
+
+<div class="foot">
+  <div class="side">
+    <div class="tile sm rose"><i data-lucide="badge-check"></i></div>
+    <div><div class="lbl" style="font-size:18px">무엇을 풀었는지 숨기지 않습니다</div>
+    <div class="desc"><span class="badge sage">✓ 충족</span><span class="badge rose">✗ 완화됨</span> 제품마다 원래 조건 충족 여부를 표시</div></div>
+  </div>
+  <div class="side">
+    <div class="tile sm sand"><i data-lucide="package-open"></i></div>
+    <div><div class="lbl" style="font-size:18px">다 풀어도 부족하면 있는 만큼</div>
+    <div class="desc">빈 화면보다 적은 추천이 낫습니다</div></div>
+  </div>
+</div>
+<script>lucide.createIcons({attrs:{'stroke-width':1.8}})</script>
+</body>
+</html>
